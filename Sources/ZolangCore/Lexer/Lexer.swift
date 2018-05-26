@@ -17,12 +17,12 @@ public struct Lexer {
         while (content.count > 0) {
             let matched = RegExRepo.tokenizers.first(where: { args -> Bool in
                 let (regEx, _) = args
-                return content.zo.getPrefix(regex: regEx) != nil
+                return content.getPrefix(regex: regEx) != nil
             })
             
             if let tokenBuilder = matched {
-                if let tokenStr = content.zo.getPrefix(regex: tokenBuilder.key) {
-                    content = content.zo.offsetted(by: tokenStr.count)
+                if let tokenStr = content.getPrefix(regex: tokenBuilder.key) {
+                    content = content.offsetted(by: tokenStr.count)
                     
                     if let token = tokenBuilder.value(tokenStr) {
                         tokens.append(token)
