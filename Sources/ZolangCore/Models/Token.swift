@@ -1,0 +1,86 @@
+//
+//  Token.swift
+//  ZolangCore
+//
+//  Created by Þorvaldur Rúnarsson on 26/05/2018.
+//
+
+import Foundation
+
+public enum TokenType: String {
+    case parensOpen
+    case parensClose
+    case bracketOpen
+    case bracketClose
+    case curlyOpen
+    case curlyClose
+    case newline
+    case equals
+    
+    case comma
+    case dot
+    case colon
+    
+    case identifier
+    
+    case describe
+    case `as`
+    case be
+    case `while`
+    case `let`
+    case `return`
+    case from
+    case `if`
+    case make
+    
+    case `operator`
+    
+    case stringLiteral
+    case floatingPoint
+    case decimal
+    
+    case other
+}
+public struct Token: Equatable {
+    let type: TokenType
+    let payload: String?
+    
+    init(type: TokenType, payload: String? = nil) {
+        self.type = type
+        self.payload = payload
+    }
+    
+    public static func == (lhs: Token, rhs: Token) -> Bool {
+        switch (lhs.type, rhs.type) {
+        case (.parensOpen, .parensOpen),
+             (.parensClose, .parensClose),
+             (.bracketOpen, .bracketOpen),
+             (.bracketClose, .bracketClose),
+             (.curlyOpen, .curlyOpen),
+             (.curlyClose, .curlyClose),
+             (.newline, .newline),
+             (.comma, .comma),
+             (.dot, .dot),
+             (.colon, .colon),
+             (.equals, .equals),
+             (.identifier, .identifier),
+             (.describe, .describe),
+             (.make, .make),
+             (.as, .as),
+             (.from, .from),
+             (.if, .if),
+             (.while, .while),
+             (.be, .be),
+             (.return, .return),
+             (.let, .let),
+             (.`operator`, .`operator`),
+             (.stringLiteral, .stringLiteral),
+             (.floatingPoint, .floatingPoint),
+             (.decimal, .decimal),
+             (.other, .other):
+            return lhs.payload == rhs.payload
+        default:
+            return false
+        }
+    }
+}
