@@ -88,7 +88,7 @@ extension Array where Element == Token {
         }
     }
     
-    private func isPrefixFunctionCall(skipping: [TokenType] = [], startingAt: Index = 0) -> Bool {
+    func isPrefixFunctionCall(skipping: [TokenType] = [], startingAt: Index = 0) -> Bool {
         guard count > 2 else { return false }
         let start = index(ofAnyIn: [.identifier], skippingOnly: skipping, startingAt: startingAt) ?? startingAt
         guard let end = index(ofFirstThatIsNot: .newline, startingAt: start + 1) else { return false }
@@ -97,7 +97,7 @@ extension Array where Element == Token {
         return array[start] == .identifier && array[end] == .parensOpen
     }
     
-    private func isPrefixLiteral() -> Bool {
+    func isPrefixLiteral() -> Bool {
         guard !isEmpty else { return false }
         let valid: [TokenType] = [
             .stringLiteral,

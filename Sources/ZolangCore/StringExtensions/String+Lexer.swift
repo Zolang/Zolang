@@ -8,11 +8,11 @@
 import Foundation
 
 extension String {
-    public func offsetted(by offset: Int) -> String {
+    func offsetted(by offset: Int) -> String {
         return "\(self[self.index(self.startIndex, offsetBy: offset)...])"
     }
     
-    public func getPrefix(regex: String) -> String? {
+    func getPrefix(regex: String) -> String? {
         let expression = try! NSRegularExpression(pattern: "^\(regex)", options: [])
         
         let range = expression.rangeOfFirstMatch(in: self,
