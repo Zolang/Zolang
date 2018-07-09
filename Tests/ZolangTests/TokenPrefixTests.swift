@@ -61,7 +61,7 @@ class TokenPrefixTests: XCTestCase {
     
     func testExpressionPrefix() {
 
-        print(Lexer(string: "yey == bla").tokenize())
+        print(Lexer().tokenize(string: "yey == bla"))
         
         var expectedToBeExpression: [Token] = [
             .identifier("someFunc"), .parensOpen, .parensClose

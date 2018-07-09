@@ -167,4 +167,23 @@ extension Array where Element == Token {
         }
         
     }
+    
+    func hasPrefixTypes(types: [TokenType]) -> Bool {
+        guard types.count <= count else { return false }
+        return self.prefix(upTo: types.count)
+            .map { $0.type } == types
+    }
+    
+    func newLineCount(to index: Index) -> Int {
+        assert(index < self.count)
+        var count = 0
+        var i = 0
+        while i < index {
+            if self[i].type == .newline {
+                count += 1
+            }
+            i += 1
+        }
+        return count
+    }
 }

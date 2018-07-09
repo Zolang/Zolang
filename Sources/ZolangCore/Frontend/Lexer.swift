@@ -8,11 +8,10 @@
 import Foundation
 
 public struct Lexer {
-    public let string: String
     
-    public func tokenize() -> [Token] {
+    public func tokenize(string: String) -> [Token] {
         var tokens = [Token]()
-        var content = self.string
+        var content = string
         
         while (content.count > 0) {
             let matched = RegExRepo.tokenizers.first(where: { args -> Bool in
@@ -35,9 +34,5 @@ public struct Lexer {
             }
         }
         return tokens
-    }
-    
-    public init(string: String) {
-        self.string = string
     }
 }

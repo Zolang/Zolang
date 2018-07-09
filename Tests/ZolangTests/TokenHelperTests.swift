@@ -52,7 +52,7 @@ class TokenHelperTests: XCTestCase {
             .describe, .identifier("Person"), .`as`, .curlyOpen, .newline,
         ]
         
-        var tokens = Lexer(string: code2).tokenize()
+        var tokens = Lexer().tokenize(string: code2)
         
         XCTAssert(tokens.getPrefix(to: .newline) == expected)
         XCTAssert(tokens.getPrefix(to: .describe) == [.describe])
@@ -61,8 +61,8 @@ class TokenHelperTests: XCTestCase {
             .let, .identifier("person"), .as, .identifier("Person"),
         ]
         
-        tokens = Lexer(string: code1)
-            .tokenize()
+        tokens = Lexer()
+            .tokenize(string: code1)
             .getPrefix(to: .equals)
         
         XCTAssertFalse(tokens == expected)
@@ -73,11 +73,11 @@ class TokenHelperTests: XCTestCase {
     func testRangeOfScope() {
         let code = describeCode
         let code2 = String(code[..<code.index(before: code.endIndex)])
-        var tokens = Lexer(string: code2).tokenize()
+        var tokens = Lexer().tokenize(string: code2)
         var range = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose)
         XCTAssertNil(range)
         
-        tokens = Lexer(string: code).tokenize()
+        tokens = Lexer().tokenize(string: code)
         
         range = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose)
         
@@ -101,7 +101,7 @@ class TokenHelperTests: XCTestCase {
             .curlyClose
         ]
         
-        let tokens = Lexer(string: code).tokenize()
+        let tokens = Lexer().tokenize(string: code)
         
         let range = tokens.rangeOfDescribe()!
         let describeSlice = tokens[range]
@@ -111,16 +111,16 @@ class TokenHelperTests: XCTestCase {
     func testRangeOfExpression() {
         let validExpression = "somefunc(someLabel1: someParam, someLabel2: someParam) + variable1 * (variable2 / variable3)"
         
-        var tokens = Lexer(string: validExpression).tokenize()
+        var tokens = Lexer().tokenize(string: validExpression)
         var range: ClosedRange<Int> = 0...(tokens.count - 1)
         XCTAssert(tokens.rangeOfExpression()! == range)
         
         let expressionWithMissingParens = "(something + (12345 + 5)"
-        tokens = Lexer(string: expressionWithMissingParens).tokenize()
+        tokens = Lexer().tokenize(string: expressionWithMissingParens)
         XCTAssertNil(tokens.rangeOfExpression())
         
         let expressionWithMatchingParens = expressionWithMissingParens + ")"
-        tokens = Lexer(string: expressionWithMatchingParens).tokenize()
+        tokens = Lexer().tokenize(string: expressionWithMatchingParens)
         range = 0...(tokens.count - 1)
         XCTAssert(tokens.rangeOfExpression()! == range)
     }
