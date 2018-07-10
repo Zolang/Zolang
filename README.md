@@ -4,11 +4,33 @@
 
 The language is an attempt to solve a classic problem in implementations of cross platform software. When these applications need to use platform specific APIs they are often forced to rewrite a lot of boilerplate code for each platform.
 
-Zolang aims to minimise this boilerplate code by following the "write once run everywhere" paradigm and be transpilable to virtually any general purpose programming language. Zolang does this by offloading code generation to its users, who will be able to request features on demand by implementing transpiler specification files.
-
-The above claims result in the definition:
+Zolang aims to minimise this boilerplate code by following the "write once run everywhere" paradigm and be transpilable to virtually any general purpose programming language. Zolang does this by offloading code generation to its users, who will be able to request features on demand by implementing transpiler specification files written in Stencil (template language).
 
 > Zolang is a limited, highly readable, typesafe frontend for virtually any general purpose programming language.
+
+Theoretically though, these specification files could contain anything from code representations written in external another programming languages, to bits and pieces of a server implementation
+
+Example:
+
+```
+describe Person {
+	name as text
+	street as text
+	number as integer
+
+	address return text from () {
+		let addr be "${street} ${number}"
+		print("Fetching address ${addr}")
+		return addr
+	}
+
+	speak return from (message as text) {
+		print("${name} says ${message}")
+	}
+}
+```
+
+This specification of a "Person" could compile to a model declaration in another language or even to a CRUD server implementation for the model "Person"
 
 ## Name
 I'm a Star Wars fan and In the Star Wars world Zolan is the home planet of a species called clawdites, who are known for their ability to transform their appearance to be the one of virtually any other creature.
