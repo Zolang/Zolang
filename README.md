@@ -30,7 +30,7 @@ describe Person {
 }
 ```
 
-This specification of a "Person" could compile to a model declaration in another language or even to a CRUD server implementation for the model "Person"
+This specification of a `Person` could compile to a model declaration in another language or even to a CRUD server implementation for the model `Person`, the possibilities are endless.
 
 ## Name
 I'm a Star Wars fan and In the Star Wars world Zolan is the home planet of a species called clawdites, who are known for their ability to transform their appearance to be the one of virtually any other creature.
