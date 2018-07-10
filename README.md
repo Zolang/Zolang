@@ -121,15 +121,15 @@ let person be Person(name: "John Doe",
 					 street: "John's Street",
 					 number: 8,
 					 address: text from () {
-						return "John's Street 8"
+						return "717 John's Street"
 					 })
 ```
 
-Of course the problem with this is that now if we mutate street or number, the address will not update automatically. We can manually update the person's by using `make`.
+Of course the problem with this is that now if we mutate street or number, the address will not update automatically. We can manually update the person's address by using `make`.
 
 ```
 make person.address return text from () {
-	return "Jane Doe"
+	return "101 Jane's Court"
 }
 ```
 
