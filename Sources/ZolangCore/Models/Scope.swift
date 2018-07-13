@@ -7,22 +7,22 @@
 
 import Foundation
 
-class Scope {
+public class Scope {
     private var validIdentifiers: [String: Type]
     private var validTypes: [Type]
     
-    init() {
+    public init() {
         self.validIdentifiers = [:]
         self.validTypes = []
     }
     
-    func add(type: Type) {
+    public func add(type: Type) {
         if self.validTypes.contains(type) == false {
             self.validTypes.append(type)
         }
     }
     
-    func add(identifier: String, type: Type) throws {
+    public func add(identifier: String, type: Type) throws {
         self.validIdentifiers[identifier] = type
     }
 }

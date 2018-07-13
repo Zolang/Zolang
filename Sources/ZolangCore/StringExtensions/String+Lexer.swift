@@ -8,19 +8,26 @@
 import Foundation
 
 extension String {
-    func offsetted(by offset: Int) -> String {
-        return "\(self[self.index(self.startIndex, offsetBy: offset)...])"
+    
+    public var zo: ZolangExtensions<String> {
+        return ZolangExtensions(base: self)
+    }
+}
+
+extension ZolangExtensions where Base == String {
+    public func offsetted(by offset: Int) -> String {
+        return "\(base[base.index(base.startIndex, offsetBy: offset)...])"
     }
     
-    func getPrefix(regex: String) -> String? {
+    public func getPrefix(regex: String) -> String? {
         let expression = try! NSRegularExpression(pattern: "^\(regex)", options: [])
         
-        let range = expression.rangeOfFirstMatch(in: self,
+        let range = expression.rangeOfFirstMatch(in: base,
                                                  options: [],
                                                  range: NSRange(location: 0,
-                                                                length: utf16.count))
+                                                                length: base.utf16.count))
         if range.location == 0 {
-            return (self as NSString).substring(with: range)
+            return (base as NSString).substring(with: range)
         }
         return nil
     }

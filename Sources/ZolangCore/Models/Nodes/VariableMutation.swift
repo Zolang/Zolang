@@ -6,12 +6,12 @@
 //
 
 import Foundation
-struct VariableMutation: Node {
+public struct VariableMutation: Node {
     
-    let identifier: String
-    let expression: Expression
+    public let identifier: String
+    public let expression: Expression
     
-    init(tokens: [Token], context: inout ParserContext) throws {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         let validPrefix: [TokenType] = [ .make, .identifier, .be ]
 
         guard tokens.hasPrefixTypes(types: validPrefix) else {

@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Function: Node {
-    init(tokens: [Token], context: inout ParserContext) throws {
+public struct Function: Node {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
 }

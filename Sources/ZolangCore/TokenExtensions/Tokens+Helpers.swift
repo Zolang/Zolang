@@ -9,7 +9,7 @@ import Foundation
 
 extension Array where Element == Token {
     
-    func index(ofAnyIn set: [TokenType], skippingOnly: [TokenType] = [], startingAt: Index = 0) -> Index? {
+    public func index(ofAnyIn set: [TokenType], skippingOnly: [TokenType] = [], startingAt: Index = 0) -> Index? {
         var index = startingAt
         while index < endIndex {
             if set.contains(self[index].type) {
@@ -23,7 +23,7 @@ extension Array where Element == Token {
         return nil
     }
     
-    func index(ofNextWithTypeIn set: [TokenType], startingAt: Index = 0) -> Index? {
+    public func index(ofNextWithTypeIn set: [TokenType], startingAt: Index = 0) -> Index? {
         var index = startingAt
         while index < endIndex {
             if set.contains(self[index].type) {
@@ -34,7 +34,7 @@ extension Array where Element == Token {
         return nil
     }
     
-    func index(ofStatementWithType type: StatementType) -> Index? {
+    public func index(ofStatementWithType type: StatementType) -> Index? {
         var index = 0
         
         while index < self.endIndex {
@@ -46,7 +46,7 @@ extension Array where Element == Token {
         return nil
     }
     
-    func index(ofFirstThatIsNot type: TokenType, startingAt: Index = 0) -> Index? {
+    public func index(ofFirstThatIsNot type: TokenType, startingAt: Index = 0) -> Index? {
         var index = startingAt
         while index < endIndex {
             let token = self[index]
@@ -60,7 +60,7 @@ extension Array where Element == Token {
         return nil
     }
     
-    func rangeOfScope(start: Int = 0, open: Token, close: Token) -> ClosedRange<Int>? {
+    public func rangeOfScope(start: Int = 0, open: Token, close: Token) -> ClosedRange<Int>? {
         var index = start
         var start = index
         var end = index
@@ -91,7 +91,7 @@ extension Array where Element == Token {
         return start...end
     }
     
-    func rangeOfDescribe() -> ClosedRange<Int>? {
+    public func rangeOfDescribe() -> ClosedRange<Int>? {
         
         guard let startOfDescribe = index(ofStatementWithType: .modelDescription) else { return nil }
         
@@ -101,7 +101,7 @@ extension Array where Element == Token {
         return startOfDescribe...range.upperBound
     }
     
-    func rangeOfFunctionCall() -> ClosedRange<Int>? {
+    public func rangeOfFunctionCall() -> ClosedRange<Int>? {
         var index = 0
         while index < endIndex && !Array(self[index...]).isPrefixFunctionCall() {
             index += 1
@@ -113,7 +113,7 @@ extension Array where Element == Token {
         return index...matchingParensRange.upperBound
     }
     
-    func rangeOfExpression() -> ClosedRange<Int>? {
+    public func rangeOfExpression() -> ClosedRange<Int>? {
         guard let start = index(ofStatementWithType: .expression) else { return nil }
         guard count - start > 0 else { return nil }
         
@@ -168,13 +168,24 @@ extension Array where Element == Token {
         
     }
     
-    func hasPrefixTypes(types: [TokenType]) -> Bool {
-        guard types.count <= count else { return false }
-        return self.prefix(upTo: types.count)
-            .map { $0.type } == types
+    public func hasPrefixTypes(types: [TokenType], skipping: [TokenType] = []) -> Bool {
+        var types = types
+        var i = 0
+        while i < count && types.isEmpty == false {
+            defer { i += 1 }
+            
+            let tokenType = self[i].type
+            guard skipping.contains(tokenType) == false else { continue }
+            
+            let type = types.removeFirst()
+            guard tokenType == type else { return false }
+        }
+
+        guard types.isEmpty else { return false }
+        return true
     }
     
-    func newLineCount(to index: Index) -> Int {
+    public func newLineCount(to index: Index) -> Int {
         assert(index < self.count)
         var count = 0
         var i = 0
@@ -185,5 +196,41 @@ extension Array where Element == Token {
             i += 1
         }
         return count
+    }
+    
+    @discardableResult
+    public mutating func trimNewlines(to index: Index) -> Int {
+        assert(index < self.count)
+        var count = 0
+        var i = 0
+        while i < index {
+            if self[i].type == .newline {
+                count += 1
+                remove(at: i)
+            } else {
+                i += 1
+            }
+        }
+        return count
+    }
+
+    @discardableResult
+    public mutating func trimLeadingNewlines() -> Int {
+        var i = 0
+        while first?.type == .newline {
+            remove(at: 0)
+            i += 1
+        }
+        return i
+    }
+    
+    @discardableResult
+    public mutating func trimTrailingNewlines() -> Int {
+        var i = 0
+        while last?.type == .newline {
+            removeLast(1)
+            i += 1
+        }
+        return i
     }
 }

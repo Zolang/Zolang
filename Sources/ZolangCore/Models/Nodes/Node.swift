@@ -7,6 +7,6 @@
 
 import Foundation
 
-protocol Node {
+public protocol Node {
     init(tokens: [Token], context: inout ParserContext) throws
 }

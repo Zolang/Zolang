@@ -7,14 +7,14 @@
 
 import Foundation
 
-final class ParserContext {
-    let file: String
+public final class ParserContext {
+    public let file: String
 
-    var line: Int
+    public var line: Int
     private(set) var scope: Scope
     private(set) var errorStack: [ZolangError]
     
-    init(file: String, line: Int = 0, scope: Scope = Scope(), errorStack: [ZolangError] = []) {
+    public init(file: String, line: Int = 0, scope: Scope = Scope(), errorStack: [ZolangError] = []) {
         self.file = file
         self.line = line
         self.scope = scope

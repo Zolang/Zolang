@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import ZolangCore
 
 class TokenHelperTests: XCTestCase {
     

@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct WhileLoop: Node {
-    init(tokens: [Token], context: inout ParserContext) throws {
+public struct WhileLoop: Node {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
 }

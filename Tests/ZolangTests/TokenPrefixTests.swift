@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import ZolangCore
 
 class TokenPrefixTests: XCTestCase {
     
@@ -57,6 +58,31 @@ class TokenPrefixTests: XCTestCase {
         XCTAssert(variableDeclaration.prefixType() == .variableDeclaration)
         
         XCTAssertNil(notZolang.prefixType())
+    }
+    
+    func testHasPrefix() {
+        var sample: [Token] = [
+            .describe, .newline, .identifier("Some"), .newline, .as, .newline, .curlyOpen, .curlyClose
+        ]
+        
+        var prefix: [TokenType] = [
+            .describe, .identifier, .as, .curlyOpen
+        ]
+        
+        let expectedToBeTrue = sample.hasPrefixTypes(types: prefix, skipping: [ .newline ])
+        XCTAssert(expectedToBeTrue)
+        
+        prefix = [
+            .let, .identifier, .be
+        ]
+        
+        var expectedToBeFalse = sample.hasPrefixTypes(types: prefix, skipping: [ .newline ])
+        XCTAssertFalse(expectedToBeFalse)
+        
+        sample = [ .identifier("sample") ]
+        prefix = [ .identifier, .parensOpen ]
+        expectedToBeFalse = sample.hasPrefixTypes(types: prefix, skipping: [ .newline ])
+        XCTAssertFalse(expectedToBeFalse)
     }
     
     func testExpressionPrefix() {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-indirect enum Type {
+public indirect enum Type {
     case text
     case number
     case list(Type)

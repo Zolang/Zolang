@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct IfStatement: Node {
-    init(tokens: [Token], context: inout ParserContext) throws {
+public struct IfStatement: Node {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
 }

@@ -9,32 +9,32 @@ import Foundation
 
 extension Array where Element == Token {
     
-    private func isPrefixModelDescription() -> Bool {
+    public func isPrefixModelDescription() -> Bool {
         guard let first = self.first else { return false }
         return first.type == .describe
     }
     
-    private func isPrefixVariableDeclaration() -> Bool {
+    public func isPrefixVariableDeclaration() -> Bool {
         guard let first = self.first else { return false }
         return first.type == .let
     }
     
-    private func isPrefixVariableMutation() -> Bool {
+    public func isPrefixVariableMutation() -> Bool {
         guard count > 2 else { return false }
         return self[0...2].map { $0.type } == [ .make, .identifier, .be ]
     }
     
-    func isPrefixWhileLoop() -> Bool {
+    public func isPrefixWhileLoop() -> Bool {
         guard let first = self.first else { return false }
         return first.type == .while
     }
     
-    func isPrefixIfStatement() -> Bool {
+    public func isPrefixIfStatement() -> Bool {
         guard let first = self.first else { return false }
         return first.type == .if
     }
     
-    func isPrefixExpression() -> Bool {
+    public func isPrefixExpression() -> Bool {
         guard let first = self.first else { return false }
         switch first.type {
         case .as,
@@ -70,7 +70,7 @@ extension Array where Element == Token {
         }
     }
     
-    func prefixType() -> StatementType? {
+    public func prefixType() -> StatementType? {
         if isPrefixModelDescription() {
             return .modelDescription
         } else if isPrefixVariableDeclaration() {
@@ -88,7 +88,7 @@ extension Array where Element == Token {
         }
     }
     
-    func isPrefixFunctionCall(skipping: [TokenType] = [], startingAt: Index = 0) -> Bool {
+    public func isPrefixFunctionCall(skipping: [TokenType] = [], startingAt: Index = 0) -> Bool {
         guard count > 2 else { return false }
         let start = index(ofAnyIn: [.identifier], skippingOnly: skipping, startingAt: startingAt) ?? startingAt
         guard let end = index(ofFirstThatIsNot: .newline, startingAt: start + 1) else { return false }
@@ -97,7 +97,7 @@ extension Array where Element == Token {
         return array[start] == .identifier && array[end] == .parensOpen
     }
     
-    func isPrefixLiteral() -> Bool {
+    public func isPrefixLiteral() -> Bool {
         guard !isEmpty else { return false }
         let valid: [TokenType] = [
             .stringLiteral,
@@ -107,7 +107,7 @@ extension Array where Element == Token {
         return valid.contains(self[0].type)
     }
     
-    func getPrefix(to: Token) -> [Token] {
+    public func getPrefix(to: Token) -> [Token] {
         
         var index = 0
         

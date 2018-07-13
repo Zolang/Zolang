@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct ModelDescription: Node {
-    init(tokens: [Token], context: inout ParserContext) throws {
+public struct ModelDescription: Node {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
 }

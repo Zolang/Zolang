@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum Mutation: Node {
+public enum Mutation: Node {
     case variableMutation(VariableMutation)
     case functionMutation(FunctionMutation)
 
-    init(tokens: [Token], context: inout ParserContext) throws {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         guard tokens.isEmpty == false else {
             throw ZolangError
                 .ErrorType

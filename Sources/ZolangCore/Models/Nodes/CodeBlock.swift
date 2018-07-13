@@ -7,7 +7,7 @@
 
 import Foundation
 
-indirect enum CodeBlock: Node {
+public indirect enum CodeBlock: Node {
     case expression(Expression)
     case variableDeclaration(VariableDeclaration)
     case variableMutation(VariableMutation)
@@ -15,7 +15,7 @@ indirect enum CodeBlock: Node {
     case whileLoop(WhileLoop)
     case combination(CodeBlock, CodeBlock)
     
-    init(tokens: [Token], context: inout ParserContext) throws {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
 }

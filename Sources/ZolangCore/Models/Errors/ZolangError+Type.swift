@@ -8,7 +8,7 @@
 import Foundation
 
 extension ZolangError {
-    enum ErrorType: Error {
+    public enum ErrorType: Error {
         case unexpectedToken(Token, TokenType?)
         case unexpectedStartOfStatement(StatementType)
         case unexpectedNewline(StatementType)

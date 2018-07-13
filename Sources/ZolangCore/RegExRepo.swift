@@ -45,7 +45,7 @@ extension RegExRepo {
         RegExRepo.`operator`: { return Token(type: .`operator`, payload: $0) },
         
         RegExRepo.label: {
-            if let keyword = $0.getPrefix(regex: RegExRepo.keyword),
+            if let keyword = $0.zo.getPrefix(regex: RegExRepo.keyword),
                 let token = Token.keyword(keyword) {
                 return token
             } else {

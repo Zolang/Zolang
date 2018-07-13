@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum StatementType {
+public enum StatementType {
     case modelDescription
     case variableDeclaration
     case variableMutation
@@ -36,7 +36,7 @@ extension StatementType {
 }
 
 extension StatementType: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         switch self {
         case .ifStatement: return "if statement"
         case .modelDescription: return "model description"

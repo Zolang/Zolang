@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct ZolangError: Error {
-    let type: ErrorType
-    let file: String
-    let line: Int
+public struct ZolangError: Error {
+    public let type: ErrorType
+    public let file: String
+    public let line: Int
     
-    var localizedDescription: String {
+    public var localizedDescription: String {
         return "Error in file: \(file) - line: \(line) - message: \(type.localizedDescription)"
     }
 }

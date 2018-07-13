@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct VariableDeclaration: Node {
+public struct VariableDeclaration: Node {
 
-    init(tokens: [Token], context: inout ParserContext) throws {
+    public init(tokens: [Token], context: inout ParserContext) throws {
         throw ZolangError.ErrorType.unknown
     }
     

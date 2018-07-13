@@ -7,22 +7,27 @@
 
 import Foundation
 
-indirect enum Expression: Node {
+public indirect enum Expression: Node {
     case integerLiteral(String)
     case floatLiteral(String)
     case stringLiteral(String)
     case identifier(String)
-    case arrayAccess(String, Expression)
-    case functionCall(String, ParamList)
+    case listAccess(String, Expression)
+    case listLiteral([Expression])
+    case functionCall(String, [Expression])
     case parentheses(Expression)
     case operation(Expression, String, Expression)
     
-    init(tokens: [Token], context: inout ParserContext) throws {
+    public init(tokens: [Token], context: inout ParserContext) throws {
+        var tokens = tokens
         
+        context.line += tokens.trimLeadingNewlines()
+
         let validValuePrefix: [(key: ValueType, value: [TokenType])] = [
             (.parentheses, [ .parensOpen ]),
+            (.listLiteral, [ .bracketOpen ]),
             (.functionCall, [ .identifier, .parensOpen ]),
-            (.arrayAccess, [ .identifier, .bracketOpen ]),
+            (.listAccess, [ .identifier, .bracketOpen ]),
             (.identifier, [ .identifier ]),
             (.integerLiteral, [ .decimal ]),
             (.floatLiteral, [ .floatingPoint ]),
@@ -30,13 +35,13 @@ indirect enum Expression: Node {
         ]
         
         guard let valueType = (validValuePrefix.first { (key, types) -> Bool in
-            tokens.hasPrefixTypes(types: types)
+            tokens.hasPrefixTypes(types: types, skipping: [ .newline ])
         })?.key else {
             throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
         }
         
         switch valueType {
-        case .arrayAccess:
+        case .listAccess:
             let lineCount = tokens.newLineCount(to: tokens.index(ofNextWithTypeIn: [ .bracketOpen ])!)
             guard let range = tokens.rangeOfScope(open: .bracketOpen, close: .bracketClose) else {
     
@@ -65,7 +70,7 @@ indirect enum Expression: Node {
                     throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
                 }
 
-                self = .arrayAccess(identifier, try Expression(tokens: innerTokens, context: &context))
+                self = .listAccess(identifier, try Expression(tokens: innerTokens, context: &context))
             }
         case .parentheses:
             guard let parensRange = tokens.rangeOfScope(open: .parensOpen, close: .parensClose) else {
@@ -88,6 +93,8 @@ indirect enum Expression: Node {
                 self = .parentheses(try Expression(tokens: innerTokens, context: &context))
             }
         case .functionCall:
+            throw ZolangError.ErrorType.unknown
+        case .listLiteral:
             throw ZolangError.ErrorType.unknown
         case .identifier:
             if let operatorExpression = try Expression.parseOperator(index: 1,
@@ -153,24 +160,29 @@ indirect enum Expression: Node {
     }
     
     static func parseOperator(index: Int, tokens: [Token], context: inout ParserContext) throws -> Expression? {
+        var tokens = tokens
+
         guard index < tokens.count,
             let nextIndex = tokens.index(ofFirstThatIsNot: .newline, startingAt: index),
+            nextIndex != tokens.count - 1,
             tokens[nextIndex].type == .operator else {
             return nil
         }
         
-        let newTokens = tokens
-            .split(maxSplits: 1,
-                   omittingEmptySubsequences: true) { token -> Bool in
-                token.type == .operator
-            }
-            .map(Array.init)
+        let newlinesToAdd = tokens.trimNewlines(to: nextIndex)
+        let to = nextIndex - newlinesToAdd
+
+        let leftTokens = Array(tokens[..<to])
+        let rightTokens = Array(tokens[to+1..<tokens.count])
         
-        let firstExpression = try Expression(tokens: newTokens[0], context: &context)
+        var leftExpressionTokens = leftTokens
+        leftExpressionTokens.trimTrailingNewlines()
+
+        let firstExpression = try Expression(tokens: leftExpressionTokens, context: &context)
         
-        context.line += tokens.newLineCount(to: nextIndex)
+        context.line += newlinesToAdd
         
-        let secondExpression = try Expression(tokens: newTokens[1], context: &context)
+        let secondExpression = try Expression(tokens: rightTokens, context: &context)
         
         return .operation(firstExpression,
                           tokens[nextIndex].payload!,
@@ -182,7 +194,8 @@ extension Expression {
     private enum ValueType: String {
         case functionCall
         case parentheses
-        case arrayAccess
+        case listAccess
+        case listLiteral
         case identifier
         case integerLiteral
         case floatLiteral

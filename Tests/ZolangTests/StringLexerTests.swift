@@ -21,8 +21,8 @@ class StringLexerTests: XCTestCase {
         ]
         
         for exp in expected {
-            XCTAssertFalse(string.offsetted(by: exp.key - 1) == exp.value)
-            XCTAssert(string.offsetted(by: exp.key) == exp.value)
+            XCTAssertFalse(string.zo.offsetted(by: exp.key - 1) == exp.value)
+            XCTAssert(string.zo.offsetted(by: exp.key) == exp.value)
         }
     }
     
@@ -33,10 +33,10 @@ class StringLexerTests: XCTestCase {
         let expectedToBeNil = "\\5&82kdæadjak"
         let expectedToBeNotNil = "\(countToEight)\\ask"
         
-        XCTAssertNil(expectedToBeNil.getPrefix(regex: regex))
+        XCTAssertNil(expectedToBeNil.zo.getPrefix(regex: regex))
         
-        XCTAssertNotNil(expectedToBeNotNil.getPrefix(regex: regex))
-        XCTAssert(expectedToBeNotNil.getPrefix(regex: regex) == countToEight)
+        XCTAssertNotNil(expectedToBeNotNil.zo.getPrefix(regex: regex))
+        XCTAssert(expectedToBeNotNil.zo.getPrefix(regex: regex) == countToEight)
     }
     
     func testLabelRegex() {
@@ -44,10 +44,10 @@ class StringLexerTests: XCTestCase {
         
         let validName = "ab91kz"
         let expectedToMatch = "\(validName) not included"
-        XCTAssert(expectedToMatch.getPrefix(regex: regex) == validName)
+        XCTAssert(expectedToMatch.zo.getPrefix(regex: regex) == validName)
         
         let invalidName = "9abcd"
-        XCTAssertNil(invalidName.getPrefix(regex: regex))
+        XCTAssertNil(invalidName.zo.getPrefix(regex: regex))
     }
     
     func testSeparators() {
@@ -59,23 +59,23 @@ class StringLexerTests: XCTestCase {
         var valid = ","
         let invalid = "bla"
         var string = "\(valid) yey"
-        XCTAssertNil(invalid.getPrefix(regex: commaRegex))
-        XCTAssert(string.getPrefix(regex: commaRegex) == valid)
+        XCTAssertNil(invalid.zo.getPrefix(regex: commaRegex))
+        XCTAssert(string.zo.getPrefix(regex: commaRegex) == valid)
         
         valid = ":"
         string = "\(valid) yey"
-        XCTAssertNil(invalid.getPrefix(regex: colonRegex))
-        XCTAssert(string.getPrefix(regex: colonRegex) == valid)
+        XCTAssertNil(invalid.zo.getPrefix(regex: colonRegex))
+        XCTAssert(string.zo.getPrefix(regex: colonRegex) == valid)
         
         valid = "."
         string = "\(valid) yey"
-        XCTAssertNil(invalid.getPrefix(regex: dotRegex))
-        XCTAssert(string.getPrefix(regex: dotRegex) == valid)
+        XCTAssertNil(invalid.zo.getPrefix(regex: dotRegex))
+        XCTAssert(string.zo.getPrefix(regex: dotRegex) == valid)
         
         valid = "="
         string = "\(valid) yey"
-        XCTAssertNil(invalid.getPrefix(regex: equalsRegex))
-        XCTAssert(string.getPrefix(regex: equalsRegex) == valid)
+        XCTAssertNil(invalid.zo.getPrefix(regex: equalsRegex))
+        XCTAssert(string.zo.getPrefix(regex: equalsRegex) == valid)
         
     }
     
@@ -83,22 +83,22 @@ class StringLexerTests: XCTestCase {
         let newlineRegex = RegExRepo.newline
         
         let invalid = "bla"
-        XCTAssertNil(invalid.getPrefix(regex: newlineRegex))
+        XCTAssertNil(invalid.zo.getPrefix(regex: newlineRegex))
         
         var valid = "\n"
         var string = "\(valid) yey"
-        XCTAssert(string.getPrefix(regex: newlineRegex) == valid)
+        XCTAssert(string.zo.getPrefix(regex: newlineRegex) == valid)
         
         let inlineWhitespaceRegex = RegExRepo.inlineWhitespaceCharacter
-        XCTAssertNil(invalid.getPrefix(regex: inlineWhitespaceRegex))
+        XCTAssertNil(invalid.zo.getPrefix(regex: inlineWhitespaceRegex))
         
         valid = "\t"
         string = "\(valid)yey"
-        XCTAssert(string.getPrefix(regex: inlineWhitespaceRegex) == valid)
+        XCTAssert(string.zo.getPrefix(regex: inlineWhitespaceRegex) == valid)
         
         valid = " "
         string = "\(valid)yey"
-        XCTAssert(string.getPrefix(regex: inlineWhitespaceRegex) == valid)
+        XCTAssert(string.zo.getPrefix(regex: inlineWhitespaceRegex) == valid)
     }
     
     func testBrackets() {
@@ -115,8 +115,8 @@ class StringLexerTests: XCTestCase {
         
         for exp in expected {
             let string = "\(exp.valid) yey"
-            XCTAssertNil(invalid.getPrefix(regex: exp.regex))
-            XCTAssert(string.getPrefix(regex: exp.regex) == exp.valid)
+            XCTAssertNil(invalid.zo.getPrefix(regex: exp.regex))
+            XCTAssert(string.zo.getPrefix(regex: exp.regex) == exp.valid)
         }
     }
     
@@ -131,8 +131,8 @@ class StringLexerTests: XCTestCase {
         
         for exp in expected {
             let string = "\(exp.valid) yey"
-            XCTAssertNil(invalid.getPrefix(regex: exp.regex))
-            XCTAssert(string.getPrefix(regex: exp.regex) == exp.valid)
+            XCTAssertNil(invalid.zo.getPrefix(regex: exp.regex))
+            XCTAssert(string.zo.getPrefix(regex: exp.regex) == exp.valid)
         }
     }
     
@@ -140,7 +140,7 @@ class StringLexerTests: XCTestCase {
         let regex = RegExRepo.operator
         
         let invalid = "a"
-        XCTAssertNil(invalid.getPrefix(regex: regex))
+        XCTAssertNil(invalid.zo.getPrefix(regex: regex))
         
         let validStrings = [
             "+",
@@ -158,7 +158,7 @@ class StringLexerTests: XCTestCase {
         ]
         
         for op in validStrings {
-            XCTAssert("\(op) yey".getPrefix(regex: regex) == op, op)
+            XCTAssert("\(op) yey".zo.getPrefix(regex: regex) == op, op)
         }
     }
 }
