@@ -11,6 +11,7 @@ public indirect enum Expression: Node {
     case integerLiteral(String)
     case floatLiteral(String)
     case stringLiteral(String)
+    case booleanLiteral(String)
     case identifier(String)
     case listAccess(String, Expression)
     case listLiteral([Expression])
@@ -31,7 +32,8 @@ public indirect enum Expression: Node {
             (.identifier, [ .identifier ]),
             (.integerLiteral, [ .decimal ]),
             (.floatLiteral, [ .floatingPoint ]),
-            (.stringLiteral, [ .stringLiteral ])
+            (.stringLiteral, [ .stringLiteral ]),
+            (.booleanLiteral, [ .booleanLiteral ])
         ]
         
         guard let valueType = (validValuePrefix.first { (key, types) -> Bool in
@@ -93,9 +95,43 @@ public indirect enum Expression: Node {
                 self = .parentheses(try Expression(tokens: innerTokens, context: &context))
             }
         case .functionCall:
-            throw ZolangError.ErrorType.unknown
+            let identifier = tokens.first!.payload!
+
+            let indexOfParens = tokens.index(ofAnyIn: [ .parensOpen ])!
+            let numberOfNewlines = tokens.newLineCount(to: indexOfParens)
+            guard let parensRange = tokens.rangeOfScope(open: .parensOpen, close: .parensClose),
+                parensRange.count >= 2 else {
+                throw ZolangError(type: .invalidExpression, file: context.file, line: context.line + numberOfNewlines)
+            }
+            
+            if let operatorExpression = try Expression.parseOperator(index: parensRange.upperBound + 1,
+                                                                     tokens: tokens,
+                                                                     context: &context) {
+                self = operatorExpression
+                
+            } else {
+                self = .functionCall(identifier, try .parseExpressionList(tokens: tokens,
+                                                                          scopeDef: (.parensOpen, .parensClose),
+                                                                          seperators: [ .comma ],
+                                                                          context: context))
+            }
+
         case .listLiteral:
-            throw ZolangError.ErrorType.unknown
+            guard let rangeOfBrackets = tokens.rangeOfScope(open: .bracketOpen, close: .bracketClose) else {
+                throw ZolangError(type: .missingMatchingBracket, file: context.file, line: context.line)
+            }
+
+            if let operatorExpression = try Expression.parseOperator(index: rangeOfBrackets.upperBound + 1,
+                                                                     tokens: tokens,
+                                                                     context: &context) {
+                self = operatorExpression
+                
+            } else {
+                self = .listLiteral(try .parseExpressionList(tokens: tokens,
+                                                             scopeDef: (.bracketOpen, .bracketClose),
+                                                             seperators: [ .comma ],
+                                                             context: context))
+            }
         case .identifier:
             if let operatorExpression = try Expression.parseOperator(index: 1,
                                                                      tokens: tokens,
@@ -156,6 +192,21 @@ public indirect enum Expression: Node {
                 
                 self = .stringLiteral(tokens.first!.payload!)
             }
+        case .booleanLiteral:
+            if let operatorExpression = try Expression.parseOperator(index: 1,
+                                                                     tokens: tokens,
+                                                                     context: &context) {
+                self = operatorExpression
+                
+            } else {
+                guard tokens.count == 1 else {
+                    throw ZolangError(type: .unexpectedToken(tokens[1], nil),
+                                      file: context.file,
+                                      line: context.line)
+                }
+                
+                self = .booleanLiteral(tokens.first!.payload!)
+            }
         }
     }
     
@@ -200,5 +251,78 @@ extension Expression {
         case integerLiteral
         case floatLiteral
         case stringLiteral
+        case booleanLiteral
+    }
+}
+
+extension Array where Element == Expression {
+    static func parseExpressionList(tokens: [Token], scopeDef: (open: Token, close: Token), seperators: [TokenType], context: ParserContext) throws -> [Expression] {
+        guard let indexOfOpen = tokens.index(ofAnyIn: [ scopeDef.open.type ]) else {
+            throw ZolangError(type: .missingToken(String(describing: scopeDef.open.payload)),
+                                                  file: context.file,
+                                                  line: context.line)
+        }
+
+        let numberOfNewlines = tokens.newLineCount(to: indexOfOpen)
+        guard let scopeRange = tokens.rangeOfScope(open: scopeDef.open, close: scopeDef.close),
+            scopeRange.count >= 2 else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line + numberOfNewlines)
+        }
+        
+        guard scopeRange.count > 2 else { return [] }
+        
+        let startOfList = scopeRange.lowerBound + 1
+        
+        guard let commaIndices = tokens.indices(of: [ .comma ],
+                                                outsideOf: [ (.parensOpen, .parensClose), (.bracketOpen, .bracketClose) ],
+                                                startingAt: startOfList),
+            commaIndices.isEmpty == false else {
+
+            var context = context
+            let innerTokenRange = (scopeRange.lowerBound + 1)...(scopeRange.upperBound - 1)
+            let innerTokens = [Token](tokens[innerTokenRange])
+
+            let lines = tokens.newLineCount(to: innerTokenRange.lowerBound)
+            context.line += lines
+            var expressions: [Expression] = []
+            if let expression = (try? Expression(tokens: innerTokens, context: &context)) {
+                expressions.append(expression)
+            }
+            
+            return expressions
+        }
+        
+        
+        var start: Int = startOfList
+        
+        let oldLineCount = context.line
+        
+        let parseExpressionForRange: (CountableRange<Int>) throws -> Expression = { [unowned context] range in
+            var context = context
+            
+            let newlineCount = tokens.newLineCount(to: range.lowerBound)
+
+            let expressionTokens = [Token](tokens[range])
+            
+            context.line = oldLineCount + (newlineCount - oldLineCount)
+            let expression = try Expression(tokens: expressionTokens, context: &context)
+            return expression
+        }
+        
+        var expressions = try commaIndices
+            .map { commaIndex throws -> Expression in
+                let range = start..<commaIndex
+                start = commaIndex + 1
+                
+                return try parseExpressionForRange(range)
+        }
+        
+        if let expression = (try? parseExpressionForRange(start..<scopeRange.upperBound)) {
+            expressions.append(expression)
+        }
+        
+        return expressions
     }
 }

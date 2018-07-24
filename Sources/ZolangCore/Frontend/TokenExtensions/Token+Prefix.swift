@@ -65,6 +65,7 @@ extension Array where Element == Token {
              .floatingPoint,
              .decimal,
              .stringLiteral,
+             .booleanLiteral,
              .parensOpen:
             return true
         }

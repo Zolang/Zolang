@@ -41,6 +41,10 @@ extension Token {
         return Token(type: .stringLiteral, payload: text)
     }
     
+    public static func booleanLiteral(_ value: String) -> Token {
+        return Token(type: .booleanLiteral, payload: value)
+    }
+    
     public static func `operator`(_ raw: String) -> Token {
         return Token(type: .operator, payload: raw)
     }

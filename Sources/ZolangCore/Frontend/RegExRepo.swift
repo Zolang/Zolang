@@ -34,7 +34,8 @@ public enum RegExRepo {
     
     public static let `operator` = "(\\|\\|)|(\\&\\&)|(===)|(==)|(<=)|(>=)|<|>|\\+|-|\\*|\\/"
     
-    public static let keyword = "describe|return|while|from|let|as|be|if"
+    public static let boolean = "true|false"
+    public static let keyword = "describe|make|return|while|from|let|as|be|if"
 }
 
 extension RegExRepo {
@@ -45,14 +46,21 @@ extension RegExRepo {
         RegExRepo.`operator`: { return Token(type: .`operator`, payload: $0) },
         
         RegExRepo.label: {
-            if let keyword = $0.zo.getPrefix(regex: RegExRepo.keyword),
+            if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean) {
+                return Token(type: .booleanLiteral, payload: boolean)
+            } else if let keyword = $0.zo.getPrefix(regex: RegExRepo.keyword),
                 let token = Token.keyword(keyword) {
                 return token
             } else {
                 return Token(type: .identifier, payload: $0)
             }
         },
-        RegExRepo.string: { Token(type: .stringLiteral, payload: $0) },
+        RegExRepo.string: { payload in
+            let start = payload.index(after: payload.startIndex)
+            let end = payload.index(before: payload.endIndex)
+
+            return Token(type: .stringLiteral, payload: String(payload[start..<end]))
+        },
         RegExRepo.floatingPoint: { Token(type: .floatingPoint, payload: $0) },
         RegExRepo.decimal: { Token(type: .decimal, payload: $0) },
         

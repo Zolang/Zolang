@@ -9,12 +9,16 @@ import Foundation
 
 extension Array where Element == Token {
     
-    public func index(ofAnyIn set: [TokenType], skippingOnly: [TokenType] = [], startingAt: Index = 0) -> Index? {
+    public func index(ofAnyIn set: [TokenType], skippingOnly: [TokenType]? = nil, startingAt: Index = 0) -> Index? {
         var index = startingAt
+        
+        let skipAllOther = skippingOnly == nil
+        let skippingOnly = skippingOnly ?? []
+
         while index < endIndex {
             if set.contains(self[index].type) {
                 return index
-            } else if skippingOnly.contains(self[index].type) {
+            } else if skipAllOther || skippingOnly.contains(self[index].type) {
                 index += 1
             } else {
                 return nil
@@ -91,6 +95,29 @@ extension Array where Element == Token {
         return start...end
     }
     
+    public func indices(of tokenTypes: [TokenType], outsideOf scopeDefs: [(open: Token, close: Token)], startingAt: Int = 0) -> [Index]? {
+        var indices: [Index] = []
+        var i = startingAt
+        
+        while i < count {
+            let token = self[i]
+            
+            
+            if let scopeDef = scopeDefs.first(where: { $0.open == token }) {
+                guard let range = rangeOfScope(start: i, open: scopeDef.open, close: scopeDef.close) else { return nil }
+                i = range.upperBound + 1
+            } else {
+                if tokenTypes.contains(token.type) {
+                    indices.append(i)
+                }
+
+                i += 1
+            }
+        }
+
+        return indices
+    }
+    
     public func rangeOfDescribe() -> ClosedRange<Int>? {
         
         guard let startOfDescribe = index(ofStatementWithType: .modelDescription) else { return nil }
@@ -120,7 +147,7 @@ extension Array where Element == Token {
         let token = self[start]
         
         switch token.type {
-        case .identifier, .floatingPoint, .decimal, .stringLiteral:
+        case .identifier, .floatingPoint, .decimal, .stringLiteral, .booleanLiteral:
             var startOfPeakNext = start + 1
             if isPrefixFunctionCall(startingAt: start) {
                 
@@ -184,7 +211,7 @@ extension Array where Element == Token {
         guard types.isEmpty else { return false }
         return true
     }
-    
+
     public func newLineCount(to index: Index) -> Int {
         assert(index < self.count)
         var count = 0

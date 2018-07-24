@@ -36,6 +36,7 @@ public enum TokenType: String {
     case `operator`
     
     case stringLiteral
+    case booleanLiteral
     case floatingPoint
     case decimal
     
@@ -75,6 +76,7 @@ public struct Token: Equatable {
              (.let, .let),
              (.`operator`, .`operator`),
              (.stringLiteral, .stringLiteral),
+             (.booleanLiteral, .booleanLiteral),
              (.floatingPoint, .floatingPoint),
              (.decimal, .decimal),
              (.other, .other):
