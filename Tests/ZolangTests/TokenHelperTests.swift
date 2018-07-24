@@ -71,6 +71,20 @@ class TokenHelperTests: XCTestCase {
         XCTAssert(tokens == expected)
     }
     
+    func testIndicesOutsideOfScope() {
+        let code = "someFunc(boob, \"boob\", b(0, 0, 8), (800 + b), 8.008)"
+        
+        let tokens = Lexer().tokenize(string: code)
+        
+        let expected = [ 3, 5, 14, 20 ]
+        
+        let indices = tokens.indices(of: [ .comma ],
+                                     outsideOf: [ (.parensOpen, .parensClose) ],
+                                     startingAt: 2)
+        
+        XCTAssert(indices == expected)
+    }
+    
     func testRangeOfScope() {
         let code = describeCode
         let code2 = String(code[..<code.index(before: code.endIndex)])
@@ -97,7 +111,7 @@ class TokenHelperTests: XCTestCase {
             .identifier("name"), .as, .identifier("text"), .newline,
             .newline,
             .identifier("speak"), .return, .from, .parensOpen, .parensClose, .curlyOpen, .newline,
-            .identifier("print"), .parensOpen, .stringLiteral("\"Woof: ${name}\""), .parensClose, .newline,
+            .identifier("print"), .parensOpen, .stringLiteral("Woof: ${name}"), .parensClose, .newline,
             .curlyClose, .newline,
             .curlyClose
         ]

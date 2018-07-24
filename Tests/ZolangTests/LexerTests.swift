@@ -38,7 +38,7 @@ class LexerTests: XCTestCase {
             .identifier("print"), .parensOpen, .identifier("x"), .operator("+"), .identifier("y"), .parensClose, .newline,
             .curlyClose, .newline,
             .curlyClose, .newline,
-            ]
+        ]
         
         let tokens = Lexer().tokenize(string: code)
         

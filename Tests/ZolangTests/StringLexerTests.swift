@@ -125,14 +125,14 @@ class StringLexerTests: XCTestCase {
             (regex: RegExRepo.decimal, valid: "12394", invalid: "bla"),
             (regex: RegExRepo.floatingPoint, valid: "555.555", invalid: "123"),
             (regex: RegExRepo.string, valid: "\"12\\\\394\"", invalid: "\"12\\394\""),
+            (regex: RegExRepo.boolean, valid: "true", invalid: "blatrue"),
+            (regex: RegExRepo.boolean, valid: "false", invalid: "bla")
         ]
-        
-        let invalid = "bla"
         
         for exp in expected {
             let string = "\(exp.valid) yey"
-            XCTAssertNil(invalid.zo.getPrefix(regex: exp.regex))
-            XCTAssert(string.zo.getPrefix(regex: exp.regex) == exp.valid)
+            XCTAssertNil(exp.invalid.zo.getPrefix(regex: exp.regex))
+            XCTAssert(string.zo.getPrefix(regex: exp.regex) == exp.valid, exp.valid)
         }
     }
     
@@ -159,6 +159,31 @@ class StringLexerTests: XCTestCase {
         
         for op in validStrings {
             XCTAssert("\(op) yey".zo.getPrefix(regex: regex) == op, op)
+        }
+    }
+    
+    func testKeyword() {
+        let regex = RegExRepo.keyword
+        
+        let invalid = "a"
+        XCTAssertNil(invalid.zo.getPrefix(regex: regex))
+        
+        let validStrings = [
+            "describe",
+            "make",
+            "return",
+            "while",
+            "from",
+            "let",
+            "as",
+            "be",
+            "if"
+        ]
+        
+        XCTAssert(validStrings.joined(separator: "|").sorted() == regex.sorted())
+        
+        for keyword in validStrings {
+            XCTAssert("\(keyword) yey".zo.getPrefix(regex: regex) == keyword, keyword)
         }
     }
 }

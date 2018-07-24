@@ -20,29 +20,31 @@ class ExpressionTests: XCTestCase {
     
     func testInvalidExpression() {
         var context = ParserContext(file: "test.zolang")
-
-        let samples: [[Token]] = [
-            [ .let, .identifier("some"), .be, .newline, .stringLiteral("some") ],
-            [ .make, .identifier("person"), .dot, .identifier("name"), .be, .stringLiteral("valdi") ],
-            [ .describe, .identifier("Person"), .as, .curlyOpen, .newline, .identifier("name"), .as, .identifier("text"), .curlyClose ]
-        ]
         
-        samples.forEach { tokens in
-            do {
-                _ = try Expression(tokens: tokens, context: &context)
-                XCTFail("Should fail")
-            } catch {
-                guard let error = error as? ZolangError else {
-                    XCTFail("Error should be a ZolangError")
-                    fatalError()
-                }
-                
-                guard case .invalidExpression = error.type else {
-                    XCTFail("Error should be unexpectedToken")
-                    fatalError()
+        let samples: [String] = [
+            "let some be\nsome",
+            "make person.name be \"valdi\"",
+            "describe Person as {\nname as text }"
+        ]
+
+        samples
+            .map(Lexer().tokenize)
+            .forEach { tokens in
+                do {
+                    _ = try Expression(tokens: tokens, context: &context)
+                    XCTFail("Should fail")
+                } catch {
+                    guard let error = error as? ZolangError else {
+                        XCTFail("Error should be a ZolangError")
+                        fatalError()
+                    }
+                    
+                    guard case .invalidExpression = error.type else {
+                        XCTFail("Error should be invalidExpression")
+                        fatalError()
+                    }
                 }
             }
-        }
     }
     
     func testMissingMatchingBracket() {
@@ -244,6 +246,83 @@ class ExpressionTests: XCTestCase {
             
             XCTAssert(floatLit == paramFloat)
             
+        } catch {
+            XCTFail("Should not fail: \(error.localizedDescription)")
+        }
+    }
+    
+    func testArrayLiteral() {
+
+        var context = ParserContext(file: "test.zolang")
+        
+        do {
+            let paramIdentifier = "some"
+            let funcIdentifier = "someFunc"
+            let paramString = "string"
+            let paramInt = "55"
+
+            let tokens = Lexer()
+                .tokenize(string: "[\n\(paramIdentifier), \"\(paramString)\", \n\t\(paramInt), [ \(funcIdentifier)([\(paramInt)]) ]]")
+            
+            let expression = try Expression(tokens: tokens, context: &context)
+            
+            guard case let .listLiteral(innerExpressions) = expression else {
+                XCTFail("expression should return arrayLiteral")
+                fatalError()
+            }
+            
+            XCTAssert(innerExpressions.count == 4)
+            
+            guard case let .identifier(paramStr) = innerExpressions[0] else {
+                XCTFail("expression should return identifier")
+                fatalError()
+            }
+            
+            XCTAssert(paramStr == paramIdentifier)
+            
+            guard case let .stringLiteral(strLit) = innerExpressions[1] else {
+                XCTFail("expression should return stringLiteral")
+                fatalError()
+            }
+            
+            XCTAssert(strLit == paramString)
+            
+            guard case let .integerLiteral(intLit) = innerExpressions[2] else {
+                XCTFail("expression should return integer")
+                fatalError()
+            }
+            
+            XCTAssert(intLit == paramInt)
+            
+            guard case let .listLiteral(innerInnerExpressions) = innerExpressions[3] else {
+                XCTFail("expression should return integer")
+                fatalError()
+            }
+            
+            XCTAssert(innerInnerExpressions.count == 1)
+            
+            guard case let .functionCall(innerFuncIdentifier, expressionList) = innerInnerExpressions[0] else {
+                XCTFail("expression should be functionCall")
+                fatalError()
+            }
+            
+            XCTAssert(innerFuncIdentifier == funcIdentifier)
+            XCTAssert(expressionList.count == 1)
+            
+            guard case let .listLiteral(functionInnerExpressions) = expressionList[0] else {
+                XCTFail("expression should be listLiteral")
+                fatalError()
+            }
+
+            XCTAssert(functionInnerExpressions.count == 1)
+            
+            guard case let .integerLiteral(integer) = functionInnerExpressions[0] else {
+                XCTFail("expression should be listLiteral")
+                fatalError()
+            }
+
+            XCTAssert(intLit == integer)
+
         } catch {
             XCTFail("Should not fail: \(error.localizedDescription)")
         }
