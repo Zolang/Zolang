@@ -6,12 +6,16 @@
 //
 
 import Foundation
+
 public struct VariableMutation: Node {
     
     public let identifiers: [String]
     public let expression: Expression
     
     public init(tokens: [Token], context: inout ParserContext) throws {
+        var tokens = tokens
+        context.line += tokens.trimLeadingNewlines()
+
         let validPrefix: [TokenType] = [ .make, .identifier ]
         let invalidStartOfExpression = ZolangError(type: .unexpectedStartOfStatement(.variableMutation),
                                                    file: context.file,
@@ -50,6 +54,14 @@ public struct VariableMutation: Node {
         }
         
         self.identifiers = identifiers
-        self.expression = try Expression(tokens: Array(tokens.suffix(from: i + 1)), context: &context)
+        let rest = Array(tokens.suffix(from: i + 1))
+        guard let range = rest.rangeOfExpression() else {
+            throw ZolangError(type: .invalidExpression,
+                              file: context.file,
+                              line: context.line)
+        }
+        
+        let expressionTokens = Array(rest[range])
+        self.expression = try Expression(tokens: expressionTokens, context: &context)
     }
 }

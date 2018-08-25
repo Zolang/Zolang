@@ -20,8 +20,8 @@ extension Array where Element == Token {
     }
     
     public func isPrefixVariableMutation() -> Bool {
-        guard count > 2 else { return false }
-        return self[0...2].map { $0.type } == [ .make, .identifier, .be ]
+        guard count > 3 else { return false }
+        return self[0...1].map { $0.type } == [ .make, .identifier ]
     }
     
     public func isPrefixWhileLoop() -> Bool {

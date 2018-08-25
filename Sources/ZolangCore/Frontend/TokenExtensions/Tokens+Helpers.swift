@@ -142,7 +142,7 @@ extension Array where Element == Token {
     
     public func rangeOfExpression() -> ClosedRange<Int>? {
         guard let start = index(ofStatementWithType: .expression) else { return nil }
-        guard count - start > 0 else { return nil }
+        guard start < count else { return nil }
         
         let token = self[start]
         
@@ -165,7 +165,7 @@ extension Array where Element == Token {
                 let nextExpressionRange = Array(self[nextNext...])
                     .rangeOfExpression() else {
                         
-                        return start...start
+                        return start...(startOfPeakNext - 1)
             }
             
             return start...(nextNext + nextExpressionRange.upperBound)
@@ -193,6 +193,20 @@ extension Array where Element == Token {
             return nil
         }
         
+    }
+    
+    public func rangeOfVariableDeclarationOrMutation() -> ClosedRange<Int>? {
+        
+        guard let declarationStart = self.index(ofAnyIn: [.make, .let]),
+            let declarationEndIndex = self.index(ofAnyIn: [.be]),
+            (declarationEndIndex + 1) < self.count else { return nil }
+        
+        let expressionStart = Array(self.suffix(from: declarationEndIndex + 1))
+        guard let expressionRange = expressionStart
+            .rangeOfExpression() else {
+            return nil
+        }
+        return declarationStart...(declarationEndIndex + expressionRange.lowerBound + expressionRange.count)
     }
     
     public func hasPrefixTypes(types: [TokenType], skipping: [TokenType] = []) -> Bool {

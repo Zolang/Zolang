@@ -22,7 +22,16 @@ public struct VariableDeclaration: Node {
         }
         
         self.identifier = tokens[1].payload!
-        self.expression = try Expression(tokens: Array(tokens.suffix(from: validPrefix.count)), context: &context)
+        
+        let rest = Array(tokens.suffix(from: validPrefix.count))
+        guard let range = rest.rangeOfExpression() else {
+            throw ZolangError(type: .invalidExpression,
+                              file: context.file,
+                              line: context.line)
+        }
+        
+        let expressionTokens = Array(rest[range])
+        self.expression = try Expression(tokens: expressionTokens, context: &context)
     }
     
 }

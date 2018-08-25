@@ -16,21 +16,28 @@ public indirect enum CodeBlock: Node {
     case combination(CodeBlock, CodeBlock)
     
     public init(tokens: [Token], context: inout ParserContext) throws {
-        var tokens = tokens
-        context.line += tokens.trimLeadingNewlines()
+        var workingTokens = tokens
+        context.line += workingTokens.trimLeadingNewlines()
         
-        let previousLine = context.line
-        
-        guard let prefixType = tokens.prefixType() else {
+        guard let prefixType = workingTokens.prefixType() else {
             throw ZolangError(type: .unknown,
                               file: context.file,
                               line: context.line)
         }
 
         var left: CodeBlock
+        
+        var leftEndIndex: Int
+
         switch prefixType {
         case .expression:
-            left = .expression(try Expression(tokens: tokens, context: &context))
+            guard let range = workingTokens.rangeOfExpression() else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            left = .expression(try Expression(tokens: workingTokens, context: &context))
         case .ifStatement:
             throw ZolangError.ErrorType.unknown
         case .modelDescription:
@@ -38,23 +45,40 @@ public indirect enum CodeBlock: Node {
                               file: context.file,
                               line: context.line)
         case .variableDeclaration:
-            left = .variableDeclaration(try VariableDeclaration(tokens: tokens, context: &context))
+            guard let range = workingTokens.rangeOfVariableDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            left = .variableDeclaration(try VariableDeclaration(tokens: Array(workingTokens[range]), context: &context))
         case .variableMutation:
-            left = .variableMutation(try VariableMutation(tokens: tokens, context: &context))
+            guard let range = workingTokens.rangeOfVariableDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            left = .variableMutation(try VariableMutation(tokens: Array(workingTokens[range]), context: &context))
         case .whileLoop:
             throw ZolangError.ErrorType.unknown
         }
         
-        let index = context.line - previousLine
+        guard leftEndIndex < workingTokens.count else {
+            self = left
+            return
+        }
         
-        let line = context.line
-
+        context.line += workingTokens.newLineCount(to: leftEndIndex)
+        
         do {
-            let right = try CodeBlock(tokens: Array(tokens.suffix(from: index)), context: &context)
+            let rest = Array(workingTokens.suffix(from: leftEndIndex))
+            let right = try CodeBlock(tokens: rest, context: &context)
             self = .combination(left, right)
         } catch {
-            context.line = line
-            self = left
+            throw ZolangError(type: .unknown,
+                              file: context.file,
+                              line: context.line)
         }
     }
 }
