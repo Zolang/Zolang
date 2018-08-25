@@ -139,4 +139,28 @@ class TokenHelperTests: XCTestCase {
         range = 0...(tokens.count - 1)
         XCTAssert(tokens.rangeOfExpression()! == range)
     }
+    
+    func testRangeOfVariableDeclarationOrMutation() {
+        let validMutationOrDeclarations: [(String, ClosedRange<Int>)] = [
+            ("make some be \"text\"", 0...3),
+            ("make some be \n\"text\"", 0...4),
+            ("let some be \"text\"", 0...3),
+            ("let some be \n\"text\"", 0...4),
+            ("\n\n\nmake some be \n\"text\"", 3...7),
+            ("\nsomeIdentifier\nmake some be \n\"text\"", 3...7),
+            ("\n\n\nlet some be \n\"text\"", 3...7),
+            ("\nsomeIdentifier\nlet some be \n\"text\"", 3...7)
+        ]
+        
+        
+        for tuple in validMutationOrDeclarations {
+            let (validMutation, range) = tuple
+            let tokens = Lexer().tokenize(string: validMutation)
+            XCTAssert(tokens.rangeOfVariableDeclarationOrMutation()! == range)
+        }
+        
+        let notAMutationOrDeclaration = "(something + (12345 + 5))"
+        let tokens = Lexer().tokenize(string: notAMutationOrDeclaration)
+        XCTAssertNil(tokens.rangeOfVariableDeclarationOrMutation())
+    }
 }
