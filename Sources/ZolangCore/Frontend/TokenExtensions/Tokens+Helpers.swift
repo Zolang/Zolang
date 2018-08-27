@@ -209,6 +209,39 @@ extension Array where Element == Token {
         return declarationStart...(declarationEndIndex + expressionRange.lowerBound + expressionRange.count)
     }
     
+    public func rangeOfIfStatement() -> ClosedRange<Int>? {
+        guard let declarationStart = self.index(ofStatementWithType: .ifStatement) else {
+            return nil
+        }
+        
+        func _rangeOfBlockSequence(startingAt: Int) -> ClosedRange<Int>? {
+            let working = Array(self.suffix(from: startingAt))
+            guard let codeBlockRange = working.rangeOfScope(open: .curlyOpen,
+                                                            close: .curlyClose) else {
+                return nil
+            }
+            
+            let endOfIfStatement = codeBlockRange.upperBound
+            
+            guard let startOfElse = working.index(ofNextWithTypeIn: [ .else ],
+                                                  startingAt: endOfIfStatement) else {
+                return declarationStart...(startingAt + endOfIfStatement)
+            }
+
+            if let rangeOfNext = _rangeOfBlockSequence(startingAt: startingAt + startOfElse) {
+                return declarationStart...rangeOfNext.upperBound
+            } else {
+                return declarationStart...(startingAt + endOfIfStatement)
+            }
+        }
+        
+        guard let upper = _rangeOfBlockSequence(startingAt: declarationStart)?.upperBound else {
+            return nil
+        }
+        
+        return declarationStart...upper
+    }
+    
     public func hasPrefixTypes(types: [TokenType], skipping: [TokenType] = []) -> Bool {
         var types = types
         var i = 0

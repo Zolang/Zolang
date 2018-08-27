@@ -49,6 +49,7 @@ extension Array where Element == Token {
              .equals,
              .from,
              .if,
+             .else,
              .newline,
              .return,
              .while,

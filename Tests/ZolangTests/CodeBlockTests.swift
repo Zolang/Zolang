@@ -17,6 +17,15 @@ class CodeBlockTests: XCTestCase {
     print(some)
     """
     
+    let whileLoop = """
+    let i be 0
+    
+    while (i < 10) {
+        make i be i + 1
+    }
+
+    """
+    
     override func setUp() {
         super.setUp()
     }
@@ -27,10 +36,23 @@ class CodeBlockTests: XCTestCase {
     
     func testFailure() {
         
+        let invalidCodeBlock = """
+        let i be 0
+
+        while (i < 10) {
+            make i be i + 1
+        }
+
+        something(
+
+        let somethingNew be "abcd"
+        """
+        
         let invalidCode = "make some as bla"
         let invalidSamples: [(String, Int)] = [
-            ("let some be \"test\" \n\n\(invalidCode)", 2),
-            ("make some be \n\"test\" \n\n\(invalidCode)", 3)
+            ("let some be \n\n\"test\" \n\n\(invalidCode)", 4),
+            ("make some be \n\"test\" \n\n\(invalidCode)", 3),
+            (invalidCodeBlock, 6)
         ]
         
         for codeLineTuple in invalidSamples {
@@ -43,7 +65,7 @@ class CodeBlockTests: XCTestCase {
                 _ = try CodeBlock(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
             } catch {
-                XCTAssert((error as? ZolangError)?.line == line, "\((error as? ZolangError)!.line) - \(line)")
+                XCTAssert((error as? ZolangError)?.line == line, "\((error as? ZolangError)!.line)")
             }
         }
     }
@@ -140,7 +162,113 @@ class CodeBlockTests: XCTestCase {
             }
             XCTAssert(funcIdentifier2 == "some")
         } catch {
-            XCTFail()
+            XCTFail(error.localizedDescription)
+        }
+    }
+    
+    func testWhileLoop() {
+        var context = ParserContext(file: "test.zolang")
+        
+        let tokens = Lexer().tokenize(string: whileLoop)
+        
+        do {
+            let codeBlock = try CodeBlock(tokens: tokens, context: &context)
+            
+            guard case let .combination(leftBlock, rightBlock) = codeBlock else {
+                XCTFail()
+                return
+            }
+            
+            guard case let .variableDeclaration(decl) = leftBlock else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(decl.identifier == "i")
+
+            guard case let .integerLiteral(i) = decl.expression else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(i == "0")
+            
+            guard case let .combination(leftBlock2, rightBlock2) = rightBlock else {
+                XCTFail()
+                return
+            }
+            
+            guard case .empty = rightBlock2 else {
+                XCTFail()
+                return
+            }
+            
+            guard case let .whileLoop(expression, whileBlock) = leftBlock2 else {
+                XCTFail()
+                return
+            }
+            
+            guard case let .operation(lExpr, op, rExpr) = expression else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(op == "<")
+            
+            guard case let .identifier(leftID) = lExpr else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(leftID == "i")
+            
+            guard case let .integerLiteral(integer) = rExpr else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(integer == "10")
+            
+            guard case let .combination(leftBlock3, rightBlock3) = whileBlock else {
+                XCTFail()
+                return
+            }
+            
+            guard case .empty = rightBlock3 else {
+                XCTFail()
+                return
+            }
+            
+            guard case let .variableMutation(mut) = leftBlock3 else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(mut.identifiers == ["i"])
+            
+            guard case let .operation(lExpr2, op2, rExpr2) = mut.expression else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(op2 == "+")
+            
+            guard case let .identifier(identifier2) = lExpr2 else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(identifier2 == "i")
+            
+            guard case let .integerLiteral(integer2) = rExpr2 else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssert(integer2 == "1")
+            
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
 }

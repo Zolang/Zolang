@@ -31,6 +31,7 @@ public enum TokenType: String {
     case `return`
     case from
     case `if`
+    case `else`
     case make
     
     case `operator`
@@ -70,6 +71,7 @@ public struct Token: Equatable {
              (.as, .as),
              (.from, .from),
              (.if, .if),
+             (.else, .else),
              (.while, .while),
              (.be, .be),
              (.return, .return),

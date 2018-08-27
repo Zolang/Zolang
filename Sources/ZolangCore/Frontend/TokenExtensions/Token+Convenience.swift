@@ -14,6 +14,8 @@ extension Token {
             return Token(type: .describe)
         case Token.if.type.rawValue:
             return Token(type: .if)
+        case Token.else.type.rawValue:
+            return Token(type: .else)
         case Token.as.type.rawValue:
             return Token(type: .as)
         case Token.be.type.rawValue:
@@ -127,6 +129,10 @@ extension Token {
     
     public static var `if`: Token {
         return Token(type: .`if`)
+    }
+    
+    public static var `else`: Token {
+        return Token(type: .else)
     }
     
     public static var `while`: Token {

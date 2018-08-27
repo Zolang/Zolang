@@ -8,16 +8,22 @@
 import Foundation
 
 public indirect enum CodeBlock: Node {
+    case empty
     case expression(Expression)
     case variableDeclaration(VariableDeclaration)
     case variableMutation(VariableMutation)
     case ifStatement(IfStatement)
-    case whileLoop(WhileLoop)
+    case whileLoop(Expression, CodeBlock)
     case combination(CodeBlock, CodeBlock)
     
     public init(tokens: [Token], context: inout ParserContext) throws {
         var workingTokens = tokens
         context.line += workingTokens.trimLeadingNewlines()
+        
+        guard workingTokens.isEmpty == false else {
+            self = .empty
+            return
+        }
         
         guard let prefixType = workingTokens.prefixType() else {
             throw ZolangError(type: .unknown,
@@ -37,9 +43,20 @@ public indirect enum CodeBlock: Node {
                                   line: context.line)
             }
             leftEndIndex = range.upperBound + 1
-            left = .expression(try Expression(tokens: workingTokens, context: &context))
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
+
+            left = .expression(try Expression(tokens: Array(workingTokens[range]), context: &context))
         case .ifStatement:
-            throw ZolangError.ErrorType.unknown
+            guard let range = workingTokens.rangeOfIfStatement() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.ifStatement),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            leftEndIndex = range.upperBound + 1
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
+            
+            left = .ifStatement(try IfStatement(tokens: Array(workingTokens[range]), context: &context))
         case .modelDescription:
             throw ZolangError(type: .unexpectedToken(.describe, nil),
                               file: context.file,
@@ -51,6 +68,7 @@ public indirect enum CodeBlock: Node {
                                   line: context.line)
             }
             leftEndIndex = range.upperBound + 1
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
             left = .variableDeclaration(try VariableDeclaration(tokens: Array(workingTokens[range]), context: &context))
         case .variableMutation:
             guard let range = workingTokens.rangeOfVariableDeclarationOrMutation() else {
@@ -61,24 +79,51 @@ public indirect enum CodeBlock: Node {
             leftEndIndex = range.upperBound + 1
             left = .variableMutation(try VariableMutation(tokens: Array(workingTokens[range]), context: &context))
         case .whileLoop:
-            throw ZolangError.ErrorType.unknown
+            
+            guard let expressionContainer = workingTokens.rangeOfScope(open: .parensOpen,
+                                                                       close: .parensClose),
+                let curlyRange = workingTokens.rangeOfScope(open: .curlyOpen,
+                                                            close: .curlyClose),
+                expressionContainer.count > 2 else {
+
+                throw ZolangError(type: .unexpectedStartOfStatement(.whileLoop),
+                                  file: context.file,
+                                  line: context.line)
+            }
+
+            let expressionRange: ClosedRange<Int> = (expressionContainer.lowerBound + 1)...(expressionContainer.upperBound - 1)
+            let expressionTokens = Array(workingTokens[expressionRange])
+
+            context.line += workingTokens.newLineCount(to: expressionRange.lowerBound)
+
+            let expression = try Expression(tokens: expressionTokens,
+                                            context: &context)
+
+            if curlyRange.count >= 2 {
+                let codeRange: ClosedRange<Int> = (curlyRange.lowerBound + 1)...(curlyRange.upperBound - 1)
+                let codeTokens = Array(workingTokens[codeRange])
+                
+                let code = try CodeBlock(tokens: codeTokens, context: &context)
+                
+                left = .whileLoop(expression, code)
+            } else {
+                left = .whileLoop(expression, .empty)
+            }
+            
+            leftEndIndex = curlyRange.upperBound + 1
         }
         
         guard leftEndIndex < workingTokens.count else {
             self = left
             return
         }
-        
-        context.line += workingTokens.newLineCount(to: leftEndIndex)
-        
+
         do {
             let rest = Array(workingTokens.suffix(from: leftEndIndex))
             let right = try CodeBlock(tokens: rest, context: &context)
             self = .combination(left, right)
         } catch {
-            throw ZolangError(type: .unknown,
-                              file: context.file,
-                              line: context.line)
+            throw error
         }
     }
 }

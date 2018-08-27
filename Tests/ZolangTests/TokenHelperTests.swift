@@ -163,4 +163,44 @@ class TokenHelperTests: XCTestCase {
         let tokens = Lexer().tokenize(string: notAMutationOrDeclaration)
         XCTAssertNil(tokens.rangeOfVariableDeclarationOrMutation())
     }
+    
+    func testRangeOfIfStatement() {
+        let valid1 = """
+        if (a) {
+            print(a)
+        } else if (b) {
+            print(b)
+        } else {
+            print(":(")
+        }
+        """
+
+        let valid2 = """
+
+        print(a)
+
+        if (a) {
+            yey()
+        }
+
+        print(b)
+        """
+        
+        let valid = [
+            (valid1, ClosedRange<Int>(0...33)),
+            (valid2, ClosedRange<Int>(7...17))
+        ]
+        
+        valid.forEach { (code, expected) in
+            let tokens = Lexer().tokenize(string: code)
+            XCTAssert(tokens.rangeOfIfStatement()! == expected, "\(tokens.rangeOfIfStatement()!)")
+        }
+        
+        let invalid = """
+        if (a) {
+            print(":(")
+        """
+
+        XCTAssertNil(Lexer().tokenize(string: invalid).rangeOfIfStatement())
+    }
 }

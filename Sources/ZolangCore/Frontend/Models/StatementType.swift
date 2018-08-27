@@ -26,7 +26,7 @@ extension StatementType {
         case .variableMutation:
             return VariableMutation.self
         case .whileLoop:
-            return WhileLoop.self
+            return CodeBlock.self//return WhileLoop.self
         case .ifStatement:
             return IfStatement.self
         case .expression:

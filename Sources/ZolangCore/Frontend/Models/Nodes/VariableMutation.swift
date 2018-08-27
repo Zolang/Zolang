@@ -61,6 +61,8 @@ public struct VariableMutation: Node {
                               line: context.line)
         }
         
+        context.line += rest.newLineCount(to: range.lowerBound)
+        
         let expressionTokens = Array(rest[range])
         self.expression = try Expression(tokens: expressionTokens, context: &context)
     }
