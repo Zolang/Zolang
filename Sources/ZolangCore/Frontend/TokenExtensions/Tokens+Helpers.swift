@@ -38,6 +38,19 @@ extension Array where Element == Token {
         return nil
     }
     
+    public func index(of set: [TokenType], skipping: [TokenType] = [], startingAt: Index = 0) -> Index? {
+        var index = startingAt
+        while index < endIndex {
+            if self.hasPrefixTypes(types: set,
+                                   skipping: skipping,
+                                   startingAt: index) {
+                return index
+            }
+            index += 1
+        }
+        return nil
+    }
+    
     public func index(ofStatementWithType type: StatementType) -> Index? {
         var index = 0
         
@@ -65,6 +78,8 @@ extension Array where Element == Token {
     }
     
     public func rangeOfScope(start: Int = 0, open: Token, close: Token) -> ClosedRange<Int>? {
+        guard start < count else { return nil }
+
         var index = start
         var start = index
         var end = index
@@ -242,9 +257,12 @@ extension Array where Element == Token {
         return declarationStart...upper
     }
     
-    public func hasPrefixTypes(types: [TokenType], skipping: [TokenType] = []) -> Bool {
+    public func hasPrefixTypes(types: [TokenType], skipping: [TokenType] = [], startingAt: Int = 0) -> Bool {
+        assert(types.isEmpty == false)
+        guard startingAt < count else { return false }
+
         var types = types
-        var i = 0
+        var i = startingAt
         while i < count && types.isEmpty == false {
             defer { i += 1 }
             
@@ -259,10 +277,13 @@ extension Array where Element == Token {
         return true
     }
 
-    public func newLineCount(to index: Index) -> Int {
-        assert(index < self.count)
+    public func newLineCount(to index: Index, startingAt: Index = 0) -> Int {
+        guard index < self.count && startingAt < self.count && startingAt < index else {
+            return 0
+        }
+
         var count = 0
-        var i = 0
+        var i = startingAt
         while i < index {
             if self[i].type == .newline {
                 count += 1
