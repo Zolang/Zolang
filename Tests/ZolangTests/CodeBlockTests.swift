@@ -77,6 +77,8 @@ class CodeBlockTests: XCTestCase {
         do {
             let codeBlock = try CodeBlock(tokens: tokens,
                                           context: &context)
+            XCTAssert(context.line == 3)
+
             
             guard case let .combination(firstL, firstR) = codeBlock else {
                 XCTFail()
@@ -161,6 +163,7 @@ class CodeBlockTests: XCTestCase {
                 return
             }
             XCTAssert(funcIdentifier2 == "some")
+            
         } catch {
             XCTFail(error.localizedDescription)
         }

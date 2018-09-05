@@ -177,7 +177,8 @@ class StringLexerTests: XCTestCase {
             "let",
             "as",
             "be",
-            "if"
+            "if",
+            "else"
         ]
         
         XCTAssert(validStrings.joined(separator: "|").sorted() == regex.sorted())

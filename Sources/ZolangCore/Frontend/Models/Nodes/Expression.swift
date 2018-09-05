@@ -49,7 +49,6 @@ public indirect enum Expression: Node {
     
                 throw ZolangError(type: .missingMatchingBracket, file: context.file, line: context.line + lineCount)
             }
-
             
             if let operatorExpression = try Expression.parseOperator(index: range.upperBound + 1,
                                                                      tokens: tokens,
@@ -61,16 +60,20 @@ public indirect enum Expression: Node {
                     throw ZolangError(type: .missingIdentifier, file: context.file, line: context.line)
                 }
 
-                guard let innerTokenRange = tokens.rangeOfScope(open: .bracketOpen, close: .bracketClose),
-                    innerTokenRange.count >= 3 else {
+                guard range.count >= 3 else {
                     throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
                 }
                 
-                let innerTokens = Array(tokens[innerTokenRange.lowerBound+1..<innerTokenRange.upperBound])
+                var innerTokens = Array(tokens[range.lowerBound+1..<range.upperBound])
             
+                let leading = innerTokens.trimLeadingNewlines()
+                let trailing = innerTokens.trimTrailingNewlines()
+                
                 guard innerTokens.isEmpty == false else {
                     throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
                 }
+                
+                context.line += leading + trailing
 
                 self = .listAccess(identifier, try Expression(tokens: innerTokens, context: &context))
             }
@@ -221,22 +224,22 @@ public indirect enum Expression: Node {
         }
         
         let newlinesToAdd = tokens.trimNewlines(to: nextIndex)
-        let to = nextIndex - newlinesToAdd
+        let operatorIndex = nextIndex - newlinesToAdd
 
-        let leftTokens = Array(tokens[..<to])
-        let rightTokens = Array(tokens[to+1..<tokens.count])
+        let leftTokens = Array(tokens[..<operatorIndex])
+        let rightTokens = Array(tokens[operatorIndex+1..<tokens.count])
         
         var leftExpressionTokens = leftTokens
-        leftExpressionTokens.trimTrailingNewlines()
+        let trailing = leftExpressionTokens.trimTrailingNewlines()
 
         let firstExpression = try Expression(tokens: leftExpressionTokens, context: &context)
         
-        context.line += newlinesToAdd
+        context.line += newlinesToAdd + trailing
         
         let secondExpression = try Expression(tokens: rightTokens, context: &context)
         
         return .operation(firstExpression,
-                          tokens[nextIndex].payload!,
+                          tokens[operatorIndex + trailing].payload!,
                           secondExpression)
     }
 }
