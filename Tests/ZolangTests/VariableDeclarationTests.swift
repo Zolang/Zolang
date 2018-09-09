@@ -44,19 +44,19 @@ class VariableDeclarationTests: XCTestCase {
     }
     
     func testVariableDeclaration() {
-        var context = ParserContext(file: "test.zolang")
         
-        let samples: [String] = [
-            "let some be \n something",
-            "let some be \n\nsomething"
+        let samples: [(String, Int)] = [
+            ("let some be \n something", 1),
+            ("let some be \n\nsomething", 2)
         ]
         
         samples
-            .map(Lexer().tokenize(string:))
-            .forEach { tokens in
+            .forEach { code, lineAtEnd in
+                var context = ParserContext(file: "test.zolang")
                 do {
-                    _ = try VariableDeclaration(tokens: tokens,
+                    _ = try VariableDeclaration(tokens: Lexer().tokenize(string: code),
                                                 context: &context)
+                    XCTAssert(context.line == lineAtEnd)
                     
                 } catch {
                     XCTFail()

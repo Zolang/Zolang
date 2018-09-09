@@ -39,6 +39,7 @@ extension Array where Element == Token {
         switch first.type {
         case .as,
              .be,
+             .of,
              .bracketClose,
              .bracketOpen,
              .colon,

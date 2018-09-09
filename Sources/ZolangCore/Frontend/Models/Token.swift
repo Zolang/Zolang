@@ -26,6 +26,7 @@ public enum TokenType: String {
     case describe
     case `as`
     case be
+    case of
     case `while`
     case `let`
     case `return`
@@ -69,6 +70,7 @@ public struct Token: Equatable {
              (.describe, .describe),
              (.make, .make),
              (.as, .as),
+             (.of, .of),
              (.from, .from),
              (.if, .if),
              (.else, .else),

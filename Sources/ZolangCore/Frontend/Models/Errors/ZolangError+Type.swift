@@ -18,6 +18,7 @@ extension ZolangError {
         case missingMatchingParens
         case missingIdentifier
         case invalidExpression
+        case invalidType
         case unknown
         
         var localizedDescription: String {
@@ -27,8 +28,11 @@ extension ZolangError {
             case .missingMatchingBracket: return "Missing matching ]"
             case .missingMatchingParens: return "Missing matching )"
             case .invalidExpression: return "Invalid expression"
+            case .invalidType: return "Invalid type"
             case .unexpectedToken(let token, let expectedType):
-                return "Unexpected type: \(token.type) - Expected: \(expectedType)"
+                let unexpectedTypeStr = "Unexpected type: \(token.type)"
+                let expectedStr = expectedType != nil ? "- Expected: \(expectedType!)" : ""
+                return "\(unexpectedTypeStr) \(expectedStr)"
             case .unexpectedStartOfStatement(let statementType):
                 switch statementType {
                 case .expression: return "Unexpected start of expression"

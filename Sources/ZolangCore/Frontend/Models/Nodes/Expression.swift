@@ -21,7 +21,6 @@ public indirect enum Expression: Node {
     
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
-        
         context.line += tokens.trimLeadingNewlines()
 
         let validValuePrefix: [(key: ValueType, value: [TokenType])] = [

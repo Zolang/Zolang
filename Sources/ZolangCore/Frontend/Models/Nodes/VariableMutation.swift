@@ -29,32 +29,25 @@ public struct VariableMutation: Node {
             throw invalidStartOfExpression
         }
         
-        var identifiers: [String] = [tokens[1].payload!]
-        var i = 2
-        var stateIsDot = false
-
-        while tokens[i].type == .identifier || tokens[i].type == .dot {
-            if tokens[i].type == .dot {
-                guard stateIsDot == false else {
-                    throw invalidStartOfExpression
-                }
-                stateIsDot = true
-            } else {
-                guard stateIsDot == true else {
-                    throw invalidStartOfExpression
-                }
-                stateIsDot = false
-                identifiers.append(tokens[i].payload!)
-            }
-            i += 1
-        }
+        var i = 1
         
-        guard tokens[i - 1].type != .dot && tokens[i].type == .be else {
+        
+        do {
+            self.identifiers = (try tokens.parseSeparatedTokens(of: [ .identifier ],
+                                                                separator: .dot,
+                                                                skipping: [ .newline ],
+                                                                i: &i))
+                .compactMap { $0.first?.payload }
+        } catch {
             throw invalidStartOfExpression
         }
         
-        self.identifiers = identifiers
+        guard tokens[i] == .be else {
+            throw invalidStartOfExpression
+        }
+
         let rest = Array(tokens.suffix(from: i + 1))
+
         guard let range = rest.rangeOfExpression() else {
             throw ZolangError(type: .invalidExpression,
                               file: context.file,

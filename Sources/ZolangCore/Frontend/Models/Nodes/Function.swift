@@ -9,6 +9,10 @@ import Foundation
 
 public struct Function: Node {
     public init(tokens: [Token], context: inout ParserContext) throws {
-        throw ZolangError.ErrorType.unknown
+        var tokens = tokens
+        context.line += tokens.trimLeadingNewlines()
+        
+        
+        // {type} from {ParamList} { {code} }
     }
 }

@@ -110,6 +110,26 @@ extension Array where Element == Token {
         return start...end
     }
     
+    public func range(of prefix: [TokenType], skipping: [TokenType], startingAt: Int) -> ClosedRange<Int>? {
+        assert(prefix.isEmpty == false)
+        guard startingAt < count else { return nil }
+        
+        var types = prefix
+        var i = startingAt
+        while i < count && types.isEmpty == false {
+            defer { i += 1 }
+            
+            let tokenType = self[i].type
+            guard skipping.contains(tokenType) == false else { continue }
+            
+            let type = types.removeFirst()
+            guard tokenType == type else { return nil }
+        }
+        
+        guard types.isEmpty else { return nil }
+        return startingAt...(i - 1)
+    }
+    
     public func indices(of tokenTypes: [TokenType], outsideOf scopeDefs: [(open: Token, close: Token)], startingAt: Int = 0) -> [Index]? {
         var indices: [Index] = []
         var i = startingAt
@@ -291,6 +311,46 @@ extension Array where Element == Token {
             i += 1
         }
         return count
+    }
+    
+    func parseSeparatedTokens(of types: [TokenType], separator: TokenType, skipping: [TokenType], i: inout Int) throws -> [[Token]] {
+        guard i < count else { return [] }
+        
+        guard hasPrefixTypes(types: types, skipping: skipping, startingAt: i) else { return [] }
+        var tokenRange = range(of: types, skipping: skipping, startingAt: i)!
+
+        var tokens = [ Array(self[tokenRange]) ]
+        i = tokenRange.upperBound + 1
+        
+        var stateIsSeparator = false
+
+        while i < count, hasPrefixTypes(types: types, skipping: skipping, startingAt: i) || hasPrefixTypes(types: [ separator ], skipping: skipping, startingAt: i) {
+            
+            if hasPrefixTypes(types: [ separator ], skipping: skipping, startingAt: i) {
+                guard stateIsSeparator == false else {
+                    throw ZolangError.ErrorType.unexpectedToken(self[i], types.first)
+                }
+                stateIsSeparator = true
+                i = range(of: [ separator ], skipping: skipping, startingAt: i)!.upperBound + 1
+            } else {
+                guard skipping.contains(self[i].type) == false else { i += 1; continue }
+
+                guard stateIsSeparator else {
+                    throw ZolangError.ErrorType.unexpectedToken(self[i], separator)
+                }
+                stateIsSeparator = false
+                
+                tokenRange = range(of: types, skipping: skipping, startingAt: i)!
+                tokens.append(Array(self[tokenRange]))
+                i = tokenRange.upperBound + 1
+            }
+        }
+        
+        guard self[i - 1].type != separator else {
+            throw ZolangError.ErrorType.unexpectedToken(self[i - 1], nil)
+        }
+        
+        return tokens
     }
     
     @discardableResult

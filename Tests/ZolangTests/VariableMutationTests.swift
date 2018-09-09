@@ -48,7 +48,7 @@ class VariableMutationTests: XCTestCase {
         let samples: [(String, [String], String)] = [
             ("make some be something", ["some"], "something"),
             ("make some.someOther be \nsomething", ["some", "someOther"], "something"),
-            ("make some.another.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother")
+            ("make some\n.\nanother.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother")
         ]
 
         for testTuple in samples {

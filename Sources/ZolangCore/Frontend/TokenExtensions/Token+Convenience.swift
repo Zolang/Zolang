@@ -18,6 +18,8 @@ extension Token {
             return Token(type: .else)
         case Token.as.type.rawValue:
             return Token(type: .as)
+        case Token.of.type.rawValue:
+            return Token(type: .of)
         case Token.be.type.rawValue:
             return Token(type: .be)
         case Token.let.type.rawValue:
@@ -113,6 +115,10 @@ extension Token {
     
     public static var `as`: Token {
         return Token(type: .as)
+    }
+    
+    public static var of: Token {
+        return Token(type: .of)
     }
     
     public static var be: Token {

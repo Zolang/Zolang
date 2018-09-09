@@ -177,6 +177,7 @@ class StringLexerTests: XCTestCase {
             "let",
             "as",
             "be",
+            "of",
             "if",
             "else"
         ]
