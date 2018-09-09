@@ -19,6 +19,7 @@ extension ZolangError {
         case missingIdentifier
         case invalidExpression
         case invalidType
+        case invalidParamDescription
         case unknown
         
         var localizedDescription: String {
@@ -29,6 +30,7 @@ extension ZolangError {
             case .missingMatchingParens: return "Missing matching )"
             case .invalidExpression: return "Invalid expression"
             case .invalidType: return "Invalid type"
+            case .invalidParamDescription: return "Invalid parameter description - expected: <identifier> as <type>"
             case .unexpectedToken(let token, let expectedType):
                 let unexpectedTypeStr = "Unexpected type: \(token.type)"
                 let expectedStr = expectedType != nil ? "- Expected: \(expectedType!)" : ""

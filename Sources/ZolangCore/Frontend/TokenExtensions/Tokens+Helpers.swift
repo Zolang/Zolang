@@ -244,6 +244,19 @@ extension Array where Element == Token {
         return declarationStart...(declarationEndIndex + expressionRange.lowerBound + expressionRange.count)
     }
     
+    public func rangeOfFunctionDeclarationOrMutation() -> ClosedRange<Int>? {
+        guard let declarationStart = self.index(ofAnyIn: [.make, .let]),
+            let declarationEndIndex = self.index(ofAnyIn: [.return]),
+            (declarationEndIndex + 1) < self.count else { return nil }
+        
+        let expressionStart = Array(self.suffix(from: declarationEndIndex + 1))
+        guard let codeRange = expressionStart
+            .rangeOfScope(open: .curlyOpen, close: .curlyClose) else {
+                return nil
+        }
+        return declarationStart...(declarationEndIndex + codeRange.lowerBound + codeRange.count)
+    }
+    
     public func rangeOfIfStatement() -> ClosedRange<Int>? {
         guard let declarationStart = self.index(ofStatementWithType: .ifStatement) else {
             return nil

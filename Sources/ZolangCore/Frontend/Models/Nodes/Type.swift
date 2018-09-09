@@ -22,6 +22,12 @@ public indirect enum Type {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
         
+        guard tokens.isEmpty == false else {
+            throw ZolangError(type: .invalidType,
+                              file: context.file,
+                              line: context.line)
+        }
+        
         guard tokens.hasPrefixTypes(types: [ .identifier ]) else {
             throw ZolangError(type: .unexpectedToken(tokens[0], TokenType.identifier),
                               file: context.file,

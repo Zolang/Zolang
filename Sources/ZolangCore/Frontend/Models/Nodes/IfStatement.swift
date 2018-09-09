@@ -9,8 +9,8 @@ import Foundation
 
 public struct IfStatement: Node {
     
-    let ifList: [(Expression, CodeBlock)]
-    let elseBlock: CodeBlock?
+    public let ifList: [(Expression, CodeBlock)]
+    public let elseBlock: CodeBlock?
     
     public init(tokens: [Token], context: inout ParserContext) throws {
         var workingTokens = tokens
