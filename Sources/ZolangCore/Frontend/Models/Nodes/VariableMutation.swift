@@ -29,8 +29,10 @@ public struct VariableMutation: Node {
             throw invalidStartOfExpression
         }
         
-        var i = 1
+        tokens.removeFirst()
+        context.line += tokens.trimLeadingNewlines()
         
+        var i = 0
         
         do {
             self.identifiers = (try tokens.parseSeparatedTokens(of: [ .identifier ],
@@ -41,6 +43,8 @@ public struct VariableMutation: Node {
         } catch {
             throw invalidStartOfExpression
         }
+        
+        context.line += tokens.newLineCount(to: i)
         
         guard tokens[i] == .be else {
             throw invalidStartOfExpression

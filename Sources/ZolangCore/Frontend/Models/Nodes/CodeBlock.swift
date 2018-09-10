@@ -12,6 +12,8 @@ public indirect enum CodeBlock: Node {
     case expression(Expression)
     case variableDeclaration(VariableDeclaration)
     case variableMutation(VariableMutation)
+    case functionDeclaration(FunctionDeclaration)
+    case functionMutation(FunctionMutation)
     case ifStatement(IfStatement)
     case whileLoop(Expression, CodeBlock)
     case combination(CodeBlock, CodeBlock)
@@ -72,12 +74,29 @@ public indirect enum CodeBlock: Node {
             left = .variableDeclaration(try VariableDeclaration(tokens: Array(workingTokens[range]), context: &context))
         case .variableMutation:
             guard let range = workingTokens.rangeOfVariableDeclarationOrMutation() else {
-                throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
+                throw ZolangError(type: .unexpectedStartOfStatement(.variableMutation),
                                   file: context.file,
                                   line: context.line)
             }
             leftEndIndex = range.upperBound + 1
             left = .variableMutation(try VariableMutation(tokens: Array(workingTokens[range]), context: &context))
+        case .functionDeclaration:
+            guard let range = workingTokens.rangeOfFunctionDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.functionDeclaration),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
+            left = .functionDeclaration(try FunctionDeclaration(tokens: Array(workingTokens[range]), context: &context))
+        case .functionMutation:
+            guard let range = workingTokens.rangeOfFunctionDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.functionMutation),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            left = .functionMutation(try FunctionMutation(tokens: Array(workingTokens[range]), context: &context))
         case .whileLoop:
             
             guard let expressionContainer = workingTokens.rangeOfScope(open: .parensOpen,

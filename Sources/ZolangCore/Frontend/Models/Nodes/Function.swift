@@ -85,5 +85,7 @@ public struct Function: Node {
         } else {
             self.codeBlock = try CodeBlock(tokens: Array(codeRangeTokens[1..<(codeRangeTokens.count - 1)]), context: &context)
         }
+        
+        context.line += tokens.trimTrailingNewlines()
     }
 }

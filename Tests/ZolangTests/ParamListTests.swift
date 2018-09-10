@@ -23,7 +23,7 @@ class ParamListTests: XCTestCase {
         let invalidSamples: [(String, Int)] = [
             ("list \nof, num as number, t as text", 0),
             ("l\n as list \nof, \nnumber, text", 2),
-            ("num as number, some as \nlist of number\n, game as \n.", 2)
+            ("num as number, some as \nlist of number\n, game as \n.", 3)
         ]
         
         invalidSamples.forEach({ (code, line) in

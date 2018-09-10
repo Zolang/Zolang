@@ -43,20 +43,22 @@ class VariableMutationTests: XCTestCase {
     }
     
     func testVariableMutation() {
-        var context = ParserContext(file: "test.zolang")
         
-        let samples: [(String, [String], String)] = [
-            ("make some be something", ["some"], "something"),
-            ("make some.someOther be \nsomething", ["some", "someOther"], "something"),
-            ("make some\n.\nanother.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother")
+        let samples: [(String, [String], String, Int)] = [
+            ("make some be something", ["some"], "something", 0),
+            ("make some.someOther be \nsomething", ["some", "someOther"], "something", 1),
+            ("make some\n.\nanother.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother", 4)
         ]
 
         for testTuple in samples {
-            let (code, expectedIdentifiers, expectedResult) = testTuple
+            let (code, expectedIdentifiers, expectedResult, endOfLine) = testTuple
+            
+            var context = ParserContext(file: "test.zolang")
             let tokenList = Lexer().tokenize(string: code)
             
             do {
                 let mutation = try VariableMutation(tokens: tokenList, context: &context)
+                XCTAssert(context.line == endOfLine)
 
                 XCTAssert(mutation.identifiers == expectedIdentifiers)
 

@@ -22,6 +22,8 @@ class TypeTests: XCTestCase {
     func testFailure() {
         let invalidSamples: [(String, Int)] = [
             ("list of", 0),
+            ("some of number", 0),
+            ("list of \nsome of text", 1),
             ("\nlist\n\n of", 3),
             ("make some.another be something", 0)
         ]

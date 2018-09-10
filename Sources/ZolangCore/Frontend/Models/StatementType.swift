@@ -10,7 +10,9 @@ import Foundation
 public enum StatementType {
     case modelDescription
     case variableDeclaration
+    case functionDeclaration
     case variableMutation
+    case functionMutation
     case expression
     case whileLoop
     case ifStatement
@@ -23,6 +25,10 @@ extension StatementType {
             return ModelDescription.self
         case .variableDeclaration:
             return VariableDeclaration.self
+        case .functionDeclaration:
+            return FunctionDeclaration.self
+        case .functionMutation:
+            return FunctionMutation.self
         case .variableMutation:
             return VariableMutation.self
         case .whileLoop:
@@ -40,6 +46,8 @@ extension StatementType: CustomStringConvertible {
         switch self {
         case .ifStatement: return "if statement"
         case .modelDescription: return "model description"
+        case .functionDeclaration: return "function declaration"
+        case .functionMutation: return "function mutation"
         case .variableDeclaration: return "variable declaration"
         case .variableMutation: return "variable mutation"
         case .whileLoop: return "while loop"

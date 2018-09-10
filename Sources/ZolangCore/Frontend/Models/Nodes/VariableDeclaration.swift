@@ -13,10 +13,13 @@ public struct VariableDeclaration: Node {
     public let expression: Expression
 
     public init(tokens: [Token], context: inout ParserContext) throws {
+        var tokens = tokens
+        context.line += tokens.trimLeadingNewlines()
+
         let validPrefix: [TokenType] = [ .let, .identifier, .be ]
         
         guard tokens.hasPrefixTypes(types: validPrefix) else {
-            throw ZolangError(type: .unexpectedStartOfStatement(.variableMutation),
+            throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
                               file: context.file,
                               line: context.line)
         }

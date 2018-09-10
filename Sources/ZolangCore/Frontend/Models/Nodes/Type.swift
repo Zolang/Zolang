@@ -35,6 +35,8 @@ public indirect enum Type {
         }
         
         guard tokens.filter({ $0.type != .newline }).count != 1 else {
+            defer { context.line += tokens.trimTrailingNewlines() }
+
             guard let prim = PrimitiveType(rawValue: tokens[0].payload!) else {
                 self = .custom(tokens[0].payload!)
                 return
@@ -43,7 +45,8 @@ public indirect enum Type {
             return
         }
 
-        guard let ofIndex = tokens.index(of: [ .of ]) else {
+        guard let ofIndex = tokens.index(of: [ .of ]),
+            tokens.first(where: { $0.type == .identifier})?.payload == "list" else {
             throw ZolangError(type: .invalidType,
                               file: context.file,
                               line: context.line)
@@ -58,7 +61,7 @@ public indirect enum Type {
         context.line += tokens.newLineCount(to: ofIndex)
         
         let rest = Array(tokens.suffix(from: ofIndex + 1))
-        
+
         self = .list(try Type(tokens: rest, context: &context))
     }
 }
