@@ -28,7 +28,7 @@ class ParamListTests: XCTestCase {
         
         invalidSamples.forEach({ (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokens: [Token] = Lexer().tokenize(string: code)
+            let tokens: [Token] = Parser(file: "test.zolang").tokenize(string: code)
             do {
                 
                 _ = try ParamList(tokens: tokens, context: &context)
@@ -64,7 +64,7 @@ class ParamListTests: XCTestCase {
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let paramList = try ParamList(tokens: tokens, context: &context)

@@ -53,7 +53,7 @@ class TokenHelperTests: XCTestCase {
             .describe, .identifier("Person"), .`as`, .curlyOpen, .newline,
         ]
         
-        var tokens = Lexer().tokenize(string: code2)
+        var tokens = Parser(file: "test.zolang").tokenize(string: code2)
         
         XCTAssert(tokens.getPrefix(to: .newline) == expected)
         XCTAssert(tokens.getPrefix(to: .describe) == [.describe])
@@ -62,7 +62,7 @@ class TokenHelperTests: XCTestCase {
             .let, .identifier("person"), .as, .identifier("Person"),
         ]
         
-        tokens = Lexer()
+        tokens = Parser(file: "test.zolang")
             .tokenize(string: code1)
             .getPrefix(to: .equals)
         
@@ -74,7 +74,7 @@ class TokenHelperTests: XCTestCase {
     func testIndicesOutsideOfScope() {
         let code = "someFunc(boob, \"boob\", b(0, 0, 8), (800 + b), 8.008)"
         
-        let tokens = Lexer().tokenize(string: code)
+        let tokens = Parser(file: "test.zolang").tokenize(string: code)
         
         let expected = [ 3, 5, 14, 20 ]
         
@@ -88,11 +88,11 @@ class TokenHelperTests: XCTestCase {
     func testRangeOfScope() {
         let code = describeCode
         let code2 = String(code[..<code.index(before: code.endIndex)])
-        var tokens = Lexer().tokenize(string: code2)
+        var tokens = Parser(file: "test.zolang").tokenize(string: code2)
         var range = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose)
         XCTAssertNil(range)
         
-        tokens = Lexer().tokenize(string: code)
+        tokens = Parser(file: "test.zolang").tokenize(string: code)
         
         range = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose)
         
@@ -116,7 +116,7 @@ class TokenHelperTests: XCTestCase {
             .curlyClose
         ]
         
-        let tokens = Lexer().tokenize(string: code)
+        let tokens = Parser(file: "test.zolang").tokenize(string: code)
         
         let range = tokens.rangeOfDescribe()!
         let describeSlice = tokens[range]
@@ -126,16 +126,16 @@ class TokenHelperTests: XCTestCase {
     func testRangeOfExpression() {
         let validExpression = "somefunc(someLabel1: someParam, someLabel2: someParam) + variable1 * (variable2 / variable3)"
         
-        var tokens = Lexer().tokenize(string: validExpression)
+        var tokens = Parser(file: "test.zolang").tokenize(string: validExpression)
         var range: ClosedRange<Int> = 0...(tokens.count - 1)
         XCTAssert(tokens.rangeOfExpression()! == range)
         
         let expressionWithMissingParens = "(something + (12345 + 5)"
-        tokens = Lexer().tokenize(string: expressionWithMissingParens)
+        tokens = Parser(file: "test.zolang").tokenize(string: expressionWithMissingParens)
         XCTAssertNil(tokens.rangeOfExpression())
         
         let expressionWithMatchingParens = expressionWithMissingParens + ")"
-        tokens = Lexer().tokenize(string: expressionWithMatchingParens)
+        tokens = Parser(file: "test.zolang").tokenize(string: expressionWithMatchingParens)
         range = 0...(tokens.count - 1)
         XCTAssert(tokens.rangeOfExpression()! == range)
     }
@@ -155,12 +155,12 @@ class TokenHelperTests: XCTestCase {
         
         for tuple in validMutationOrDeclarations {
             let (validMutation, range) = tuple
-            let tokens = Lexer().tokenize(string: validMutation)
+            let tokens = Parser(file: "test.zolang").tokenize(string: validMutation)
             XCTAssert(tokens.rangeOfVariableDeclarationOrMutation()! == range)
         }
         
         let notAMutationOrDeclaration = "(something + (12345 + 5))"
-        let tokens = Lexer().tokenize(string: notAMutationOrDeclaration)
+        let tokens = Parser(file: "test.zolang").tokenize(string: notAMutationOrDeclaration)
         XCTAssertNil(tokens.rangeOfVariableDeclarationOrMutation())
     }
     
@@ -173,12 +173,12 @@ class TokenHelperTests: XCTestCase {
         
         for tuple in validMutationOrDeclarations {
             let (validMutation, range) = tuple
-            let tokens = Lexer().tokenize(string: validMutation)
+            let tokens = Parser(file: "test.zolang").tokenize(string: validMutation)
             XCTAssert(tokens.rangeOfFunctionDeclarationOrMutation()! == range)
         }
         
         let notAMutationOrDeclaration = "(something + (12345 + 5))"
-        let tokens = Lexer().tokenize(string: notAMutationOrDeclaration)
+        let tokens = Parser(file: "test.zolang").tokenize(string: notAMutationOrDeclaration)
         XCTAssertNil(tokens.rangeOfFunctionDeclarationOrMutation())
     }
     
@@ -210,7 +210,7 @@ class TokenHelperTests: XCTestCase {
         ]
         
         valid.forEach { (code, expected) in
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
             XCTAssert(tokens.rangeOfIfStatement()! == expected, "\(tokens.rangeOfIfStatement()!)")
         }
         
@@ -219,6 +219,6 @@ class TokenHelperTests: XCTestCase {
             print(":(")
         """
 
-        XCTAssertNil(Lexer().tokenize(string: invalid).rangeOfIfStatement())
+        XCTAssertNil(Parser(file: "test.zolang").tokenize(string: invalid).rangeOfIfStatement())
     }
 }

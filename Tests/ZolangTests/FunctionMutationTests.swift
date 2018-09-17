@@ -32,7 +32,7 @@ class FunctionMutationTests: XCTestCase {
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
             do {
                 _ = try FunctionMutation(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -55,7 +55,7 @@ class FunctionMutationTests: XCTestCase {
             let (code, expectedIdentifiers, expectedType, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let mutation = try FunctionMutation(tokens: tokenList, context: &context)

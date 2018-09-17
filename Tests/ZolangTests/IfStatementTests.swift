@@ -93,7 +93,7 @@ class IfStatementTests: XCTestCase {
             
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 _ = try IfStatement(tokens: tokens, context: &context)
@@ -109,7 +109,7 @@ class IfStatementTests: XCTestCase {
         self.validIfStatementTestTuples.forEach { (code, expectedIfListCount, lineIdxAfterInit, elseIsNil) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let ifStmt = try IfStatement(tokens: tokens, context: &context)

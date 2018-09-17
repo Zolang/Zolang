@@ -29,7 +29,7 @@ class FunctionTests: XCTestCase {
         
         invalidSamples.forEach({ (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokens: [Token] = Lexer().tokenize(string: code)
+            let tokens: [Token] = Parser(file: "test.zolang").tokenize(string: code)
             do {
                 _ = try Function(tokens: tokens, context: &context)
                 XCTFail("Type init should fail")
@@ -64,7 +64,7 @@ class FunctionTests: XCTestCase {
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let function = try Function(tokens: tokens, context: &context)

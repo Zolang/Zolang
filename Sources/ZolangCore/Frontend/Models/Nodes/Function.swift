@@ -80,8 +80,9 @@ public struct Function: Node {
         
         context.line += tokens.newLineCount(to: codeRange.lowerBound, startingAt: paramRange.upperBound)
 
-        if paramTokens.filter({ $0.type != .newline }).count <= 2 {
+        if codeRangeTokens.filter({ $0.type != .newline }).count <= 2 {
             self.codeBlock = .empty
+            context.line += codeRangeTokens.trimLeadingNewlines() + codeRangeTokens.trimTrailingNewlines()
         } else {
             self.codeBlock = try CodeBlock(tokens: Array(codeRangeTokens[1..<(codeRangeTokens.count - 1)]), context: &context)
         }

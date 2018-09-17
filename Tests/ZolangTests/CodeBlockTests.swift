@@ -59,7 +59,7 @@ class CodeBlockTests: XCTestCase {
             var context = ParserContext(file: "test.zolang")
 
             let (code, line) = codeLineTuple
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
 
             do {
                 _ = try CodeBlock(tokens: tokenList, context: &context)
@@ -71,9 +71,10 @@ class CodeBlockTests: XCTestCase {
     }
     
     func testDeclarationExpressionMutation() {
-        var context = ParserContext(file: "test.zolang")
+        let dummyFile = "test.zolang"
+        var context = ParserContext(file: dummyFile)
         
-        let tokens = Lexer().tokenize(string: declarationExpressionMutation)
+        let tokens = Parser(file: dummyFile).tokenize(string: declarationExpressionMutation)
         do {
             let codeBlock = try CodeBlock(tokens: tokens,
                                           context: &context)
@@ -172,7 +173,7 @@ class CodeBlockTests: XCTestCase {
     func testWhileLoop() {
         var context = ParserContext(file: "test.zolang")
         
-        let tokens = Lexer().tokenize(string: whileLoop)
+        let tokens = Parser(file: "test.zolang").tokenize(string: whileLoop)
         
         do {
             let codeBlock = try CodeBlock(tokens: tokens, context: &context)

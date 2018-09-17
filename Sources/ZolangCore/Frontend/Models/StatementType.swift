@@ -16,6 +16,7 @@ public enum StatementType {
     case expression
     case whileLoop
     case ifStatement
+    case returnStatement
 }
 
 extension StatementType {
@@ -31,7 +32,8 @@ extension StatementType {
             return FunctionMutation.self
         case .variableMutation:
             return VariableMutation.self
-        case .whileLoop:
+        case .whileLoop,
+             .returnStatement:
             return CodeBlock.self//return WhileLoop.self
         case .ifStatement:
             return IfStatement.self
@@ -52,6 +54,7 @@ extension StatementType: CustomStringConvertible {
         case .variableMutation: return "variable mutation"
         case .whileLoop: return "while loop"
         case .expression: return "expression"
+        case .returnStatement: return "return statement"
         }
     }
 }

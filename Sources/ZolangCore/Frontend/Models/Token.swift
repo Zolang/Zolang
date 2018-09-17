@@ -45,8 +45,8 @@ public enum TokenType: String {
     case other
 }
 public struct Token: Equatable {
-    let type: TokenType
-    let payload: String?
+    public let type: TokenType
+    public let payload: String?
     
     init(type: TokenType, payload: String? = nil) {
         self.type = type

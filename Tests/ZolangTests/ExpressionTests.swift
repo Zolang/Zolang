@@ -28,7 +28,7 @@ class ExpressionTests: XCTestCase {
         ]
 
         samples
-            .map(Lexer().tokenize)
+            .map(Parser(file: "test.zolang").tokenize)
             .forEach { tokens in
                 do {
                     _ = try Expression(tokens: tokens, context: &context)
@@ -57,7 +57,7 @@ class ExpressionTests: XCTestCase {
         samples
             .map { args -> ([Token], Int) in
                 let (code, line) = args
-                return (Lexer().tokenize(string: code), line)
+                return (Parser(file: "test.zolang").tokenize(string: code), line)
             }
             .forEach { (tokens, line) in
                 var context = ParserContext(file: "test.zolang")
@@ -92,7 +92,7 @@ class ExpressionTests: XCTestCase {
         samples
             .map { args -> ([Token], Int) in
                 let (code, line) = args
-                return (Lexer().tokenize(string: code), line)
+                return (Parser(file: "test.zolang").tokenize(string: code), line)
             }
             .forEach { (tokens, line) in
                 var context = ParserContext(file: "test.zolang")
@@ -119,7 +119,7 @@ class ExpressionTests: XCTestCase {
         var context = ParserContext(file: "test.zolang")
         
         do {
-            let tokens = Lexer()
+            let tokens = Parser(file: "test.zolang")
                 .tokenize(string: "some[\nfake\n]")
 
             let expression = try Expression(tokens: tokens, context: &context)
@@ -209,7 +209,7 @@ class ExpressionTests: XCTestCase {
             let paramInt = "55"
             let paramFloat = "46.1"
 
-            let tokens = Lexer()
+            let tokens = Parser(file: "test.zolang")
                 .tokenize(string: "\(funcIdentifier)\n(\(paramIdentifier), \"\(paramString)\", \(paramInt), \(paramFloat))")
             
             let expression = try Expression(tokens: tokens, context: &context)
@@ -267,7 +267,7 @@ class ExpressionTests: XCTestCase {
             let paramString = "string"
             let paramInt = "55"
 
-            let tokens = Lexer()
+            let tokens = Parser(file: "test.zolang")
                 .tokenize(string: "[\n\(paramIdentifier), \"\(paramString)\", \n\t\(paramInt), [ \(funcIdentifier)([\(paramInt)]) ]]")
             
             let expression = try Expression(tokens: tokens, context: &context)

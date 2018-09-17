@@ -40,7 +40,7 @@ class LexerTests: XCTestCase {
             .curlyClose, .newline,
         ]
         
-        let tokens = Lexer().tokenize(string: code)
+        let tokens = Parser(file: "test.zolang").tokenize(string: code)
         
         XCTAssertFalse(tokens == expected)
         

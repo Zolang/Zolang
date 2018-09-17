@@ -32,7 +32,7 @@ class FunctionDeclarationTests: XCTestCase {
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
             do {
                 _ = try FunctionDeclaration(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -47,7 +47,7 @@ class FunctionDeclarationTests: XCTestCase {
         
         let samples: [(String, String, Type, Int)] = [
             ("let some return Some from () {}", "some", .custom("Some"), 0),
-            ("let some return \ntext from () {}", "some", .primitive(.text), 1),
+            ("\nlet some return \ntext from () {}", "some", .primitive(.text), 2),
             ("let some return list of number from \n\n() {}", "some", .list(.primitive(.number)), 2)
         ]
         
@@ -55,7 +55,7 @@ class FunctionDeclarationTests: XCTestCase {
             let (code, expectedIdentifier, expectedType, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let declaration = try FunctionDeclaration(tokens: tokenList, context: &context)

@@ -33,7 +33,7 @@ class VariableDeclarationTests: XCTestCase {
         ]
         
         let tokens = invalidSamples
-            .map(Lexer().tokenize(string:))
+            .map(Parser(file: "test.zolang").tokenize(string:))
         
         for tokenList in tokens {
             do {
@@ -54,7 +54,7 @@ class VariableDeclarationTests: XCTestCase {
             .forEach { code, lineAtEnd in
                 var context = ParserContext(file: "test.zolang")
                 do {
-                    _ = try VariableDeclaration(tokens: Lexer().tokenize(string: code),
+                    _ = try VariableDeclaration(tokens: Parser(file: "test.zolang").tokenize(string: code),
                                                 context: &context)
                     XCTAssert(context.line == lineAtEnd)
                     

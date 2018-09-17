@@ -224,6 +224,13 @@ extension Array where Element == Token {
             }
             
             return start...(nextNext + nextExpressionRange.upperBound)
+        case .return:
+            guard start + 1 < count,
+                let rangeOfReturnExpression = Array(self.suffix(from: start + 1))
+                    .rangeOfExpression() else { return nil }
+            
+            
+            return start...(rangeOfReturnExpression.upperBound + start + 1)
         default:
             return nil
         }

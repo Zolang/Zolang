@@ -11,7 +11,7 @@ public typealias RegEx = String
 public typealias Tokenizer = (String) -> Token?
 
 public enum RegExRepo {
-    public static let label = "[a-zA-Z][a-zA-Z0-9]*"
+    public static let label = "[a-zA-Z_$][a-zA-Z0-9_$]*"
     
     public static let colon = ":"
     public static let comma = ","

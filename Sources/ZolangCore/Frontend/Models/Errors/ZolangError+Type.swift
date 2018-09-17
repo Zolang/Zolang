@@ -60,6 +60,8 @@ extension ZolangError {
                     return "Unexpected start of \(statementType.description) - expected either: \"make <name> be <expression>\" or: \"make <name> return <type> from (<parameters>) { <code> }\""
                 case .whileLoop:
                     return "Unexpected start of while loop - expected: \"while (<expression>) { <code> }\""
+                case .returnStatement:
+                    return "Unexpected start of return statement - expected \"return <expression>\""
                     
                 }
             case .unexpectedNewline(let statementType):

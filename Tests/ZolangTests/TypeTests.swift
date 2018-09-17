@@ -31,7 +31,7 @@ class TypeTests: XCTestCase {
         invalidSamples.forEach({ (code, line) in
             var context = ParserContext(file: "test.zolang")
             do {
-                _ = try Type(tokens: Lexer().tokenize(string: code), context: &context)
+                _ = try Type(tokens: Parser(file: "test.zolang").tokenize(string: code), context: &context)
                 XCTFail("Type init should fail")
             } catch {
                 XCTAssert((error as! ZolangError).line == line)
@@ -41,16 +41,16 @@ class TypeTests: XCTestCase {
     
     func testInit() {
         let validSamples: [(String, Type, Int)] = [
-            ("\nnumber", .primitive(.number), 1),
+            ("\nnumber\n", .primitive(.number), 2),
             ("\nlist of number", .list(.primitive(.number)), 1),
-            ("list of list of text", .list(.list(.primitive(.text))), 0),
+            ("list of list of text\n", .list(.list(.primitive(.text))), 1),
             ("\n\ntext", .primitive(.text), 2)
         ]
         
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Lexer().tokenize(string: code)
+            let tokens = Parser(file: "test.zolang").tokenize(string: code)
 
             do {
                 let type = try Type(tokens: tokens, context: &context)

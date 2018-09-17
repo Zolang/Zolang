@@ -32,7 +32,7 @@ class VariableMutationTests: XCTestCase {
         ]
         
         let tokens = invalidSamples
-            .map(Lexer().tokenize(string:))
+            .map(Parser(file: "test.zolang").tokenize(string:))
         
         for tokenList in tokens {
             do {
@@ -54,7 +54,7 @@ class VariableMutationTests: XCTestCase {
             let (code, expectedIdentifiers, expectedResult, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Lexer().tokenize(string: code)
+            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
             
             do {
                 let mutation = try VariableMutation(tokens: tokenList, context: &context)

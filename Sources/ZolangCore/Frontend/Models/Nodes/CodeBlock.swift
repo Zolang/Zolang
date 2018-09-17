@@ -15,9 +15,10 @@ public indirect enum CodeBlock: Node {
     case functionDeclaration(FunctionDeclaration)
     case functionMutation(FunctionMutation)
     case ifStatement(IfStatement)
+    case returnStatement(Expression)
     case whileLoop(Expression, CodeBlock)
     case combination(CodeBlock, CodeBlock)
-    
+
     public init(tokens: [Token], context: inout ParserContext) throws {
         var workingTokens = tokens
         context.line += workingTokens.trimLeadingNewlines()
@@ -130,6 +131,23 @@ public indirect enum CodeBlock: Node {
             }
             
             leftEndIndex = curlyRange.upperBound + 1
+        case .returnStatement:
+            let returnIndex = workingTokens.index(of: [ .return ])!
+            
+            guard returnIndex + 1 < workingTokens.count,
+                let range = workingTokens.rangeOfExpression(),
+                let expectedStartOfExpression = workingTokens.index(ofFirstThatIsNot: .newline,
+                                                                    startingAt: returnIndex + 1),
+                    expectedStartOfExpression == range.lowerBound else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.returnStatement),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            leftEndIndex = range.upperBound + 1
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
+            
+            left = .returnStatement(try Expression(tokens: Array(workingTokens[range]), context: &context))
         }
         
         guard leftEndIndex < workingTokens.count else {
