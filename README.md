@@ -81,26 +81,12 @@ describe Person {
 }
 ```
 
-Alternatively address could be defined at init
-
-```
-describe Person {
-	name as text
-	street as text
-	number as integer
-	address as text from ()
-}
-```
-
-This version of Person would now be initialized:
+Person could then be initialized:
 
 ```
 let person be Person(name: "John Doe",
 					 street: "John's Street",
-					 number: 8,
-					 address: text from () {
-						return "717 John's Street"
-					 })
+					 number: 8)
 ```
 
 Of course the problem with this is that now if we mutate street or number, the address will not update automatically. We can manually update the person's address by using `make`.

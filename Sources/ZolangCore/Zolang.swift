@@ -8,6 +8,6 @@ public final class Zolang {
     }
 
     public func run() throws {
-        print("Hello world")
+        try CodeGenerator(configPath: "./config.zolang").build()
     }
 }

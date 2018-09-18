@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import Stencil
+import PathKit
 
 public indirect enum CodeBlock: Node {
     case empty
@@ -161,6 +163,51 @@ public indirect enum CodeBlock: Node {
             self = .combination(left, right)
         } catch {
             throw error
+        }
+    }
+    
+    public func compile(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> String {
+        switch self {
+        case .empty:
+            return ""
+        case .combination(let code1, let code2):
+            let compiled1 = try code1.compile(buildSetting: buildSetting, fileManager: fm)
+            let compiled2 = try code2.compile(buildSetting: buildSetting, fileManager: fm)
+            
+            guard let separator = buildSetting.separators[CodeBlock.stencilName] else {
+                throw ConfigError.missingSeparator(CodeBlock.stencilName)
+            }
+
+            return [ compiled1, compiled2 ]
+                .joined(separator: separator)
+
+        case .expression(let expression):
+            return try expression.compile(buildSetting: buildSetting, fileManager: fm)
+        case .functionDeclaration(let decl):
+            return try decl.compile(buildSetting: buildSetting, fileManager: fm)
+        case .ifStatement(let statement):
+            return try statement.compile(buildSetting: buildSetting, fileManager: fm)
+        case .returnStatement(let expr):
+            let loader = FileSystemLoader(paths: [ Path(buildSetting.stencilPath) ])
+            let environment = Environment(loader: loader)
+            let context = [
+                "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+            return try environment.renderTemplate(name: "ReturnStatement.stencil", context: context)
+        case .variableDeclaration(let decl):
+            return try decl.compile(buildSetting: buildSetting, fileManager: fm)
+        case .functionMutation(let mut):
+            return try mut.compile(buildSetting: buildSetting, fileManager: fm)
+        case .variableMutation(let mut):
+            return try mut.compile(buildSetting: buildSetting, fileManager: fm)
+        case .whileLoop(let expr, let codeBlock):
+            let loader = FileSystemLoader(paths: [ Path(buildSetting.stencilPath) ])
+            let environment = Environment(loader: loader)
+            let context = [
+                "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm),
+                "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+            return try environment.renderTemplate(name: "WhileLoop.stencil", context: context)
         }
     }
 }

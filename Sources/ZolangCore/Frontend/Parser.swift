@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct Parser {
+public class Parser {
 
     var context: ParserContext
 
-    public init(file: String) {
-        self.context = ParserContext(file: file)
+    public init(file: URL) {
+        self.context = ParserContext(file: file.path)
     }
 
-    public mutating func parse(tokens: [Token]) throws -> CodeBlock {
+    public func parse() throws -> CodeBlock {
         do {
             let code = try String(contentsOfFile: self.context.file)
             
