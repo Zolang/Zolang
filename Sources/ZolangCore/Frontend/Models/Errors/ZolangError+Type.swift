@@ -55,9 +55,9 @@ extension ZolangError {
                 case .functionMutation:
                     return "Unexpected start of \(statementType.description) - expected \"make <identifier> return <type> from (<params>) { <code> }\""
                 case .variableDeclaration:
-                    return "Unexpected start of \(statementType.description) - expected: \"let <variable> be <expression>\""
+                    return "Unexpected start of \(statementType.description) - expected: \"let <variable> as <type> be <expression>\""
                 case .variableMutation:
-                    return "Unexpected start of \(statementType.description) - expected either: \"make <name> be <expression>\" or: \"make <name> return <type> from (<parameters>) { <code> }\""
+                    return "Unexpected start of \(statementType.description) - expected: \"make <name> be <expression>\""
                 case .whileLoop:
                     return "Unexpected start of while loop - expected: \"while (<expression>) { <code> }\""
                 case .returnStatement:
