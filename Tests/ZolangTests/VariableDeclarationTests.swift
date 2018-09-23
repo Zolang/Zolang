@@ -46,8 +46,8 @@ class VariableDeclarationTests: XCTestCase {
     func testVariableDeclaration() {
         
         let samples: [(String, Int)] = [
-            ("let some be \n something", 2),
-            ("let some be \n\nsomething", 3)
+            ("let some as text be \n something", 2),
+            ("let some as number be \n\nsomething", 3)
         ]
         
         samples

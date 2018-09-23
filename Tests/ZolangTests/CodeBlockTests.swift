@@ -17,14 +17,14 @@ extension URL {
 class CodeBlockTests: XCTestCase {
     
     let declarationExpressionMutation = """
-    let some be "text"
+    let some as text be "text"
     println(some)
     make some.property be "something else"
     print(some)
     """
     
     let whileLoop = """
-    let i be 0
+    let i as number be 0
     
     while (i < 10) {
         make i be i plus 1
@@ -49,7 +49,7 @@ class CodeBlockTests: XCTestCase {
             some as text
         }
 
-        let i be 0
+        let i as number be 0
 
         while (i < 10) {
             make i be i plus 1
@@ -62,7 +62,8 @@ class CodeBlockTests: XCTestCase {
         
         let invalidCode = "make some as bla"
         let invalidSamples: [(String, Int)] = [
-            ("let some be \n\n\"test\" \n\n\(invalidCode)", 5),
+            ("let some be \n\n\"test\"", 1),
+            ("let some as text be \n\n\"test\" \n\n\(invalidCode)", 5),
             ("make some be \n\"test\" \n\n\(invalidCode)", 4),
             (invalidCodeBlock, 13)
         ]

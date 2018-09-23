@@ -120,7 +120,7 @@ public struct DescriptionList: Node {
         context.line += trailingLines
     }
     
-    private static func endOfTypePrefix(tokens: [Token], startingAt: Int) -> Int? {
+    static func endOfTypePrefix(tokens: [Token], startingAt: Int) -> Int? {
 
         guard let firstIndex = tokens.index(ofFirstThatIsNot: .newline, startingAt: startingAt),
             tokens[firstIndex].type == .identifier else {
