@@ -55,7 +55,12 @@ public struct FunctionMutation: Node {
         let rest = Array(newTokens.suffix(from: 1))
 
         self.newFunction = try Function(tokens: rest, context: &context)
-        
-        
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        return [
+            "identifiers": self.identifiers,
+            "function": try self.newFunction.compile(buildSetting: buildSetting, fileManager: fm)
+        ]
     }
 }

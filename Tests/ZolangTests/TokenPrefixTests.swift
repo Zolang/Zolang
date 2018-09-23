@@ -87,7 +87,7 @@ class TokenPrefixTests: XCTestCase {
     
     func testExpressionPrefix() {
 
-        print(Parser(file: "test.zolang").tokenize(string: "yey == bla"))
+        print("yey == bla".zo.tokenize())
         
         var expectedToBeExpression: [Token] = [
             .identifier("someFunc"), .parensOpen, .parensClose

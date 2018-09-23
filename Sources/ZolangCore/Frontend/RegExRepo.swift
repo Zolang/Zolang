@@ -32,8 +32,8 @@ public enum RegExRepo {
     public static let inlineWhitespaceCharacter = "[\\s\\t]"
     public static let newline = "\n"
     
-    public static let `operator` = "(\\|\\|)|(\\&\\&)|(===)|(==)|(<=)|(>=)|<|>|\\+|-|\\*|\\/"
-    
+    public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
+
     public static let boolean = "true|false"
     public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else"
 }

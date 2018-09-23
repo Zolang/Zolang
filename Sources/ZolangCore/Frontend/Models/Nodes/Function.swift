@@ -89,4 +89,15 @@ public struct Function: Node {
         
         context.line += tokens.trimTrailingNewlines()
     }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        var ctx = [
+            "returnType": try returnType.compile(buildSetting: buildSetting, fileManager: fm),
+            "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm),
+        ]
+        if let paramList = params {
+            ctx["params"] = try paramList.compile(buildSetting: buildSetting, fileManager: fm)
+        }
+        return ctx
+    }
 }

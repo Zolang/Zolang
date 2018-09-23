@@ -12,7 +12,7 @@ public struct ZolangError: Error {
     public let file: String
     public let line: Int
     
-    public var localizedDescription: String {
-        return "Error in file: \(file) - line: \(line) - message: \(type.localizedDescription)"
+    public func dump() {
+        print("Error in file: \(file) - line: \(line) - message: \(type.localizedDescription)")
     }
 }

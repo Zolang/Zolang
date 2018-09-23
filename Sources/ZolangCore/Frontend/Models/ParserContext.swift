@@ -14,7 +14,7 @@ public final class ParserContext {
     private(set) var scope: Scope
     private(set) var errorStack: [ZolangError]
     
-    public init(file: String, line: Int = 0, scope: Scope = Scope(), errorStack: [ZolangError] = []) {
+    public init(file: String, line: Int = 1, scope: Scope = Scope(), errorStack: [ZolangError] = []) {
         self.file = file
         self.line = line
         self.scope = scope
@@ -27,7 +27,7 @@ public final class ParserContext {
     
     func dumpErrorStack() {
         errorStack.forEach { err in
-            print()
+            //print()
         }
     }
 }

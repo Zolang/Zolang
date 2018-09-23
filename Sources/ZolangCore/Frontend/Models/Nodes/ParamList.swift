@@ -58,4 +58,17 @@ public struct ParamList: Node {
                 return (name, type)
             }
     }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        let params = try self.params.map { (name, type) -> [String: Any] in
+            return [
+                "name": name,
+                "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
+        
+        return [
+            "params": params
+        ]
+    }
 }

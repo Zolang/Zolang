@@ -28,7 +28,7 @@ class ExpressionTests: XCTestCase {
         ]
 
         samples
-            .map(Parser(file: "test.zolang").tokenize)
+            .map { $0.zo.tokenize() }
             .forEach { tokens in
                 do {
                     _ = try Expression(tokens: tokens, context: &context)
@@ -49,15 +49,15 @@ class ExpressionTests: XCTestCase {
     
     func testMissingMatchingBracket() {
         let samples: [(code: String, expectedLine: Int)] = [
-            ("55 * array[1", 0),
-            ("55 * \narray[", 1),
-            ("array\n[\na[]", 1)
+            ("55 times array[1", 1),
+            ("55 times \narray[", 2),
+            ("array\n[\na[]", 2)
         ]
         
         samples
             .map { args -> ([Token], Int) in
                 let (code, line) = args
-                return (Parser(file: "test.zolang").tokenize(string: code), line)
+                return (code.zo.tokenize(), line)
             }
             .forEach { (tokens, line) in
                 var context = ParserContext(file: "test.zolang")
@@ -83,16 +83,16 @@ class ExpressionTests: XCTestCase {
     func testMissingMatchingParens() {
         
         let samples: [(code: String, expectedLine: Int)] = [
-            ("55 * (x + y", 0),
-            ("55\n*\n\n(x + y", 3),
-            ("(\n(5 + 4) + 3) * (2 + 1", 1),
-            ("(\n(5 + 4) + 3) * \n(2 + 1", 2)
+            ("55 times (x plus y", 1),
+            ("55\ntimes\n\n(x plus y", 4),
+            ("(\n(5 plus 4) plus 3) times (2 plus 1", 2),
+            ("(\n(5 plus 4) plus 3) times \n(2 plus 1", 3)
         ]
 
         samples
             .map { args -> ([Token], Int) in
                 let (code, line) = args
-                return (Parser(file: "test.zolang").tokenize(string: code), line)
+                return (code.zo.tokenize(), line)
             }
             .forEach { (tokens, line) in
                 var context = ParserContext(file: "test.zolang")
@@ -119,12 +119,11 @@ class ExpressionTests: XCTestCase {
         var context = ParserContext(file: "test.zolang")
         
         do {
-            let tokens = Parser(file: "test.zolang")
-                .tokenize(string: "some[\nfake\n]")
+            let tokens = "some[\nfake\n]".zo.tokenize()
 
             let expression = try Expression(tokens: tokens, context: &context)
             
-            XCTAssert(context.line == 2)
+            XCTAssert(context.line == 3)
             
             guard case let .listAccess(identifier, innerExpression) = expression else {
                 XCTFail("expression should return operation")
@@ -153,7 +152,7 @@ class ExpressionTests: XCTestCase {
         
             let expression = try Expression(tokens: tokens, context: &context)
 
-            XCTAssert(context.line == 1)
+            XCTAssert(context.line == 2)
 
             guard case let .operation(exprL, op, exprR) = expression else {
                 XCTFail("expression should return operation")
@@ -209,12 +208,13 @@ class ExpressionTests: XCTestCase {
             let paramInt = "55"
             let paramFloat = "46.1"
 
-            let tokens = Parser(file: "test.zolang")
-                .tokenize(string: "\(funcIdentifier)\n(\(paramIdentifier), \"\(paramString)\", \(paramInt), \(paramFloat))")
+            let tokens = "\(funcIdentifier)\n(\(paramIdentifier), \"\(paramString)\", \(paramInt), \(paramFloat))"
+                .zo
+                .tokenize()
             
             let expression = try Expression(tokens: tokens, context: &context)
             
-            XCTAssert(context.line == 1)
+            XCTAssert(context.line == 2)
             
             guard case let .functionCall(identifier, innerExpressions) = expression else {
                 XCTFail("expression should return functionCall")
@@ -267,12 +267,13 @@ class ExpressionTests: XCTestCase {
             let paramString = "string"
             let paramInt = "55"
 
-            let tokens = Parser(file: "test.zolang")
-                .tokenize(string: "[\n\(paramIdentifier), \"\(paramString)\", \n\t\(paramInt), [ \(funcIdentifier)([\(paramInt)]) ]]")
+            let tokens = "[\n\(paramIdentifier), \"\(paramString)\", \n\t\(paramInt), [ \(funcIdentifier)([\(paramInt)]) ]]"
+                .zo
+                .tokenize()
             
             let expression = try Expression(tokens: tokens, context: &context)
             
-            XCTAssert(context.line == 2)
+            XCTAssert(context.line == 3)
             
             guard case let .listLiteral(innerExpressions) = expression else {
                 XCTFail("expression should return arrayLiteral")

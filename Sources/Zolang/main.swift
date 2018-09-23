@@ -1,3 +1,4 @@
+import Foundation
 import ZolangCore
 
 let zolang = Zolang()
@@ -5,5 +6,11 @@ let zolang = Zolang()
 do {
     try zolang.run()
 } catch {
-    print("Whoops! An error occurred: \(error)")
+    
+    if let zError = error as? ZolangError {
+        zError.dump()
+    } else {
+        print("Error: \(error.localizedDescription)")
+    }
+    
 }

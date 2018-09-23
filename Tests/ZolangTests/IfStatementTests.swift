@@ -71,15 +71,15 @@ class IfStatementTests: XCTestCase {
         super.setUp()
         
         self.validIfStatementTestTuples = [
-            (validIfStatement1, 2, 6, false),
-            (validIfStatement2, 2, 4, true),
-            (validIfStatement3, 1, 2, true)
+            (validIfStatement1, 2, 7, false),
+            (validIfStatement2, 2, 5, true),
+            (validIfStatement3, 1, 3, true)
         ]
         
         self.invalidIfStatementTestTuples = [
-            0: (invalidIfStatement1, 4),
-            1: (invalidIfStatement2, 2),
-            2: (invalidIfStatement3, 4)
+            0: (invalidIfStatement1, 5),
+            1: (invalidIfStatement2, 3),
+            2: (invalidIfStatement3, 5)
         ]
     }
     
@@ -93,7 +93,7 @@ class IfStatementTests: XCTestCase {
             
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
             
             do {
                 _ = try IfStatement(tokens: tokens, context: &context)
@@ -109,7 +109,7 @@ class IfStatementTests: XCTestCase {
         self.validIfStatementTestTuples.forEach { (code, expectedIfListCount, lineIdxAfterInit, elseIsNil) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
             
             do {
                 let ifStmt = try IfStatement(tokens: tokens, context: &context)

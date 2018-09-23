@@ -8,6 +8,12 @@
 import XCTest
 import ZolangCore
 
+extension URL {
+    static var dummy: URL {
+        return URL(string: "file://some")!
+    }
+}
+
 class CodeBlockTests: XCTestCase {
     
     let declarationExpressionMutation = """
@@ -21,7 +27,7 @@ class CodeBlockTests: XCTestCase {
     let i be 0
     
     while (i < 10) {
-        make i be i + 1
+        make i be i plus 1
     }
 
     """
@@ -37,10 +43,16 @@ class CodeBlockTests: XCTestCase {
     func testFailure() {
         
         let invalidCodeBlock = """
+
+
+        describe Some {
+            some as text
+        }
+
         let i be 0
 
         while (i < 10) {
-            make i be i + 1
+            make i be i plus 1
         }
 
         something(
@@ -50,16 +62,16 @@ class CodeBlockTests: XCTestCase {
         
         let invalidCode = "make some as bla"
         let invalidSamples: [(String, Int)] = [
-            ("let some be \n\n\"test\" \n\n\(invalidCode)", 4),
-            ("make some be \n\"test\" \n\n\(invalidCode)", 3),
-            (invalidCodeBlock, 6)
+            ("let some be \n\n\"test\" \n\n\(invalidCode)", 5),
+            ("make some be \n\"test\" \n\n\(invalidCode)", 4),
+            (invalidCodeBlock, 13)
         ]
         
         for codeLineTuple in invalidSamples {
             var context = ParserContext(file: "test.zolang")
 
             let (code, line) = codeLineTuple
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
 
             do {
                 _ = try CodeBlock(tokens: tokenList, context: &context)
@@ -71,14 +83,13 @@ class CodeBlockTests: XCTestCase {
     }
     
     func testDeclarationExpressionMutation() {
-        let dummyFile = "test.zolang"
-        var context = ParserContext(file: dummyFile)
-        
-        let tokens = Parser(file: dummyFile).tokenize(string: declarationExpressionMutation)
+        var context = ParserContext(file: "dummy")
+    
+        let tokens = declarationExpressionMutation.zo.tokenize()
         do {
             let codeBlock = try CodeBlock(tokens: tokens,
                                           context: &context)
-            XCTAssert(context.line == 3)
+            XCTAssert(context.line == 4)
 
             
             guard case let .combination(firstL, firstR) = codeBlock else {
@@ -173,7 +184,7 @@ class CodeBlockTests: XCTestCase {
     func testWhileLoop() {
         var context = ParserContext(file: "test.zolang")
         
-        let tokens = Parser(file: "test.zolang").tokenize(string: whileLoop)
+        let tokens = whileLoop.zo.tokenize()
         
         do {
             let codeBlock = try CodeBlock(tokens: tokens, context: &context)
@@ -255,7 +266,7 @@ class CodeBlockTests: XCTestCase {
                 return
             }
             
-            XCTAssert(op2 == "+")
+            XCTAssert(op2 == "plus")
             
             guard case let .identifier(identifier2) = lExpr2 else {
                 XCTFail()

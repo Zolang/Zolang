@@ -63,4 +63,11 @@ public struct VariableMutation: Node {
         let expressionTokens = Array(rest[range])
         self.expression = try Expression(tokens: expressionTokens, context: &context)
     }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        return [
+            "identifiers": self.identifiers,
+            "expression": try self.expression.compile(buildSetting: buildSetting, fileManager: fm)
+        ]
+    }
 }

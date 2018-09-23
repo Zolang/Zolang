@@ -22,17 +22,17 @@ class FunctionDeclarationTests: XCTestCase {
     func testFailure() {
         
         let invalidSamples: [(String, Int)] = [
-            ("let some \n be something", 0),
-            ("let \n some return something", 1),
-            ("let some. return\n Some from (t as text) {}", 0),
-            ("let some.some\n return Some from (t as text) {}", 0),
-            ("\n make some return text from (n as number) {}", 1),
-            ("\nlet \nsome return \ntext from (\nn\n as ) \n{}", 5)
+            ("let some \n be something", 1),
+            ("let \n some return something", 2),
+            ("let some. return\n Some from (t as text) {}", 1),
+            ("let some.some\n return Some from (t as text) {}", 1),
+            ("\n make some return text from (n as number) {}", 2),
+            ("\nlet \nsome return \ntext from (\nn\n as ) \n{}", 6)
         ]
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             do {
                 _ = try FunctionDeclaration(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -46,16 +46,16 @@ class FunctionDeclarationTests: XCTestCase {
     func testInit() {
         
         let samples: [(String, String, Type, Int)] = [
-            ("let some return Some from () {}", "some", .custom("Some"), 0),
-            ("\nlet some return \ntext from () {}", "some", .primitive(.text), 2),
-            ("let some return list of number from \n\n() {}", "some", .list(.primitive(.number)), 2)
+            ("let some return Some from () {}", "some", .custom("Some"), 1),
+            ("\nlet some return \ntext from () {}", "some", .primitive(.text), 3),
+            ("let some return list of number from \n\n() {}", "some", .list(.primitive(.number)), 3)
         ]
         
         for testTuple in samples {
             let (code, expectedIdentifier, expectedType, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             
             do {
                 let declaration = try FunctionDeclaration(tokens: tokenList, context: &context)

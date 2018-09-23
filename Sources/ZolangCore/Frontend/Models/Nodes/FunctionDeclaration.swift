@@ -37,4 +37,11 @@ public struct FunctionDeclaration: Node {
         let rest = Array(tokens.suffix(from: returnIndex + 1))
         self.function = try Function(tokens: rest, context: &context)
     }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        return [
+            "identifier": identifier,
+            "function": try self.function.compile(buildSetting: buildSetting, fileManager: fm)
+        ]
+    }
 }

@@ -143,14 +143,13 @@ class StringLexerTests: XCTestCase {
         XCTAssertNil(invalid.zo.getPrefix(regex: regex))
         
         let validStrings = [
-            "+",
-            "-",
-            "*",
-            "/",
-            "&&",
-            "||",
-            "===",
-            "==",
+            "plus",
+            "minus",
+            "times",
+            "over",
+            "and",
+            "or",
+            "equals",
             "<=",
             ">=",
             "<",

@@ -24,7 +24,7 @@ class LexerTests: XCTestCase {
             variable as text
             function return text from () {
                 if (x < 123.456) {
-                    print(x + y)
+                    print(x plus y)
                 }
             }
         }
@@ -35,12 +35,12 @@ class LexerTests: XCTestCase {
             .identifier("variable"), .`as`, .identifier("text"), .newline,
             .identifier("function"), .`return`, .identifier("text"), .from, .parensOpen, .parensClose, .curlyOpen, .newline,
             .`if`, .parensOpen, .identifier("x"), .operator("<"), .floatingPoint("123.456"), .parensClose, .curlyOpen, .newline,
-            .identifier("print"), .parensOpen, .identifier("x"), .operator("+"), .identifier("y"), .parensClose, .newline,
+            .identifier("print"), .parensOpen, .identifier("x"), .operator("plus"), .identifier("y"), .parensClose, .newline,
             .curlyClose, .newline,
             .curlyClose, .newline,
         ]
         
-        let tokens = Parser(file: "test.zolang").tokenize(string: code)
+        let tokens = code.zo.tokenize()
         
         XCTAssertFalse(tokens == expected)
         

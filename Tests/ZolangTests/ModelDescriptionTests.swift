@@ -80,13 +80,13 @@ class ModelDescriptionTests: XCTestCase {
     func testFailure() {
         
         let invalidSamples: [(String, Int)] = [
-            (failMock1, 4),
-            (failMock2, 6)
+            (failMock1, 5),
+            (failMock2, 7)
         ]
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             do {
                 _ = try ModelDescription(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -100,13 +100,13 @@ class ModelDescriptionTests: XCTestCase {
     func testInit() {
         
         let validSamples: [(String, (name: String, properties: [(String, Type)], functionReturnTypes: [(String, Type)]), Int)] = [
-            (mock1, expected1, 11)
+            (mock1, expected1, 12)
         ]
         
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
             
             do {
                 let md = try ModelDescription(tokens: tokens, context: &context)

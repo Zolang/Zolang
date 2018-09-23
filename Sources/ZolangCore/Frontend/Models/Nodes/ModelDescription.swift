@@ -11,7 +11,6 @@ public struct ModelDescription: Node {
     public let name: String
     public let descriptionList: DescriptionList?
     
-    
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
@@ -50,5 +49,17 @@ public struct ModelDescription: Node {
         }
         
         context.line += tokens.trimTrailingNewlines()
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        var ctx = [
+            "name": self.name,
+        ]
+        
+        if let descriptionList = self.descriptionList {
+            ctx["descriptionList"] = try descriptionList.compile(buildSetting: buildSetting, fileManager: fm)
+        }
+        
+        return ctx
     }
 }

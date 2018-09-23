@@ -31,4 +31,65 @@ extension ZolangExtensions where Base == String {
         }
         return nil
     }
+    
+    public func tokenize() -> [Token] {
+        var tokens = [Token]()
+        var content = base
+        
+        while (content.count > 0) {
+            let matched = RegExRepo.tokenizers.first(where: { args -> Bool in
+                let (regEx, _) = args
+                return content.zo.getPrefix(regex: regEx) != nil
+            })
+            
+            if let tokenBuilder = matched {
+                if let tokenStr = content.zo.getPrefix(regex: tokenBuilder.key) {
+                    content = content.zo.offsetted(by: tokenStr.count)
+                    
+                    if let token = tokenBuilder.value(tokenStr) {
+                        tokens.append(token)
+                    }
+                }
+            } else {
+                let index = content.index(content.startIndex, offsetBy: 1)
+                tokens.append(Token(type: .other, payload: "\(content[..<index])"))
+                content = "\(content[index...])"
+            }
+        }
+        return tokens
+    }
+    
+    public func getScope(open: String, close: String, start: Int) -> ClosedRange<Int>? {
+        guard start < base.count else { return nil }
+        
+        var index = start
+        var start = index
+        var end = index
+        
+        var startCount = 0
+        var closeCount = 0
+        
+        while index < base.count {
+            let token = String(base[base.index(base.startIndex, offsetBy: index)])
+            if token == open {
+                if startCount == 0 {
+                    start = index
+                }
+                startCount += 1
+            } else if token == close {
+                closeCount += 1
+            }
+            
+            if startCount != 0 && startCount == closeCount {
+                end = index
+                break
+            }
+            
+            index += 1
+        }
+        
+        guard closeCount == startCount else { return nil }
+
+        return start...end
+    }
 }

@@ -45,6 +45,10 @@ class DescriptionListTests: XCTestCase {
         return "${street} ${house_number}"
     }
 
+    yell return text from () {
+        return "YELLING!"
+    }
+
     is_gamer as boolean
     """
     
@@ -57,7 +61,8 @@ class DescriptionListTests: XCTestCase {
             ("is_gamer", .primitive(.boolean)),
         ],
         [
-            ("address", .primitive(.text))
+            ("address", .primitive(.text)),
+            ("yell", .primitive(.text))
         ]
     )
 
@@ -72,13 +77,13 @@ class DescriptionListTests: XCTestCase {
     func testFailure() {
         
         let invalidSamples: [(String, Int)] = [
-            (failMock1, 3),
-            (failMock2, 6)
+            (failMock1, 4),
+            (failMock2, 7)
         ]
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             do {
                 _ = try DescriptionList(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -92,13 +97,13 @@ class DescriptionListTests: XCTestCase {
     func testInit() {
         
         let validSamples: [(String, (properties: [(String, Type)], functionReturnTypes: [(String, Type)]), Int)] = [
-            (mock1, expected1, 9)
+            (mock1, expected1, 14)
         ]
         
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
             
             do {
                 let dlist = try DescriptionList(tokens: tokens, context: &context)

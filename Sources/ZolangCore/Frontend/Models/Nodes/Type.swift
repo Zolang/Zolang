@@ -13,7 +13,7 @@ public enum PrimitiveType: String {
     case boolean
 }
 
-public indirect enum Type {
+public indirect enum Type: Node {
     case primitive(PrimitiveType)
     case list(Type)
     case custom(String)
@@ -63,6 +63,26 @@ public indirect enum Type {
         let rest = Array(tokens.suffix(from: ofIndex + 1))
 
         self = .list(try Type(tokens: rest, context: &context))
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        switch self {
+        case .custom(let str):
+            return [
+                "type": "custom",
+                "stringValue": str
+            ]
+        case .primitive(let prim):
+            return [
+                "type": "primitive",
+                "primitiveType": prim.rawValue
+            ]
+        case .list(let inner):
+            return [
+                "type": "list",
+                "innerType": try inner.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
     }
 }
 

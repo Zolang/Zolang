@@ -32,7 +32,7 @@ class VariableMutationTests: XCTestCase {
         ]
         
         let tokens = invalidSamples
-            .map(Parser(file: "test.zolang").tokenize(string:))
+            .map { $0.zo.tokenize() }
         
         for tokenList in tokens {
             do {
@@ -45,16 +45,16 @@ class VariableMutationTests: XCTestCase {
     func testVariableMutation() {
         
         let samples: [(String, [String], String, Int)] = [
-            ("make some be something", ["some"], "something", 0),
-            ("make some.someOther be \nsomething", ["some", "someOther"], "something", 1),
-            ("make some\n.\nanother.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother", 4)
+            ("make some be something", ["some"], "something", 1),
+            ("make some.someOther be \nsomething", ["some", "someOther"], "something", 2),
+            ("make some\n.\nanother.another be \n\nyetAnother", ["some", "another", "another"], "yetAnother", 5)
         ]
 
         for testTuple in samples {
             let (code, expectedIdentifiers, expectedResult, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             
             do {
                 let mutation = try VariableMutation(tokens: tokenList, context: &context)

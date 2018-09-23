@@ -87,7 +87,7 @@ public struct DescriptionList: Node {
                 
                 i = nextI
             } else {
-                let asOrReturnIndex = tokens.index(of: [ .return ])!
+                let asOrReturnIndex = tokens.index(of: [ .return ], startingAt: i)!
                 
                 let indexOfCurly = tokens.index(of: [ .curlyOpen ],
                                                 skipping: [ .newline ],
@@ -137,5 +137,26 @@ public struct DescriptionList: Node {
         }
         
         return firstIndex + 1
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        let props = try properties.map { (arg) -> [String: Any] in
+            let (name, type) = arg
+            return [
+                "name": name,
+                "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
+        
+        let funcs = try functions.map { (name, function) -> [String: Any] in
+            return [
+                "name": name,
+                "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
+        return [
+            "properties": props,
+            "functions": funcs
+        ]
     }
 }

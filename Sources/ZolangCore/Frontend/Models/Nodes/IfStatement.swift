@@ -180,4 +180,24 @@ public struct IfStatement: Node {
         return tuplesToAdd + (try parseElseIfs(tokens: Array(tokens.suffix(from: codeBlockEndIndex + 1)),
                                                context: &context))
     }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String: Any] {
+        let ifList = try self.ifList.map { arg -> [String: Any] in
+            let (expression, block) = arg
+
+            return [
+                "expression": try expression.compile(buildSetting: buildSetting, fileManager: fm),
+                "codeBlock": try block.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
+        
+        var ctx: [String: Any] = [
+            "ifList": ifList,
+        ]
+        
+        if let elseBlock = self.elseBlock {
+            ctx["elseBlock"] = elseBlock
+        }
+        return ctx
+    }
 }

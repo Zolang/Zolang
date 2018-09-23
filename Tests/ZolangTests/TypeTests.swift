@@ -21,17 +21,17 @@ class TypeTests: XCTestCase {
     
     func testFailure() {
         let invalidSamples: [(String, Int)] = [
-            ("list of", 0),
-            ("some of number", 0),
-            ("list of \nsome of text", 1),
-            ("\nlist\n\n of", 3),
-            ("make some.another be something", 0)
+            ("list of", 1),
+            ("some of number", 1),
+            ("list of \nsome of text", 2),
+            ("\nlist\n\n of", 4),
+            ("make some.another be something", 1)
         ]
         
         invalidSamples.forEach({ (code, line) in
             var context = ParserContext(file: "test.zolang")
             do {
-                _ = try Type(tokens: Parser(file: "test.zolang").tokenize(string: code), context: &context)
+                _ = try Type(tokens: code.zo.tokenize(), context: &context)
                 XCTFail("Type init should fail")
             } catch {
                 XCTAssert((error as! ZolangError).line == line)
@@ -41,16 +41,16 @@ class TypeTests: XCTestCase {
     
     func testInit() {
         let validSamples: [(String, Type, Int)] = [
-            ("\nnumber\n", .primitive(.number), 2),
-            ("\nlist of number", .list(.primitive(.number)), 1),
-            ("list of list of text\n", .list(.list(.primitive(.text))), 1),
-            ("\n\ntext", .primitive(.text), 2)
+            ("\nnumber\n", .primitive(.number), 3),
+            ("\nlist of number", .list(.primitive(.number)), 2),
+            ("list of list of text\n", .list(.list(.primitive(.text))), 2),
+            ("\n\ntext", .primitive(.text), 3)
         ]
         
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
 
             do {
                 let type = try Type(tokens: tokens, context: &context)

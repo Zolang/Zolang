@@ -39,4 +39,10 @@ public struct VariableDeclaration: Node {
         self.expression = try Expression(tokens: expressionTokens, context: &context)
     }
     
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        return [
+            "identifier": self.identifier,
+            "expression": try self.expression.compile(buildSetting: buildSetting, fileManager: fm)
+        ]
+    }
 }

@@ -35,7 +35,9 @@ public struct CodeGenerator {
                 do {
                     let generated = try ast.compile(buildSetting: setting, fileManager: self.fileManager)
 
+                    print("---$$$---GEN:")
                     print(generated)
+                    print("---$$$---END")
                 } catch {
                     errors.append(error)
                 }

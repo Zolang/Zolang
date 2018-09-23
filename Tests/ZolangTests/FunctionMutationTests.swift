@@ -22,17 +22,17 @@ class FunctionMutationTests: XCTestCase {
     func testFailure() {
         
         let invalidSamples: [(String, Int)] = [
-            ("make some \n be something", 1),
-            ("make \n some return something", 1),
-            ("make some. return\n Some from (t as text) {}", 0),
-            ("let\n some.some\n return Some from (t as text) {}", 0),
-            ("\nmake \nsome.some. return text from (n as number)", 2),
-            ("\nmake \nsome return \ntext from (\nn\n as )", 5)
+            ("make some \n be something", 2),
+            ("make \n some return something", 2),
+            ("make some. return\n Some from (t as text) {}", 1),
+            ("let\n some.some\n return Some from (t as text) {}", 1),
+            ("\nmake \nsome.some. return text from (n as number)", 3),
+            ("\nmake \nsome return \ntext from (\nn\n as )", 6)
         ]
         
         invalidSamples.forEach { (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             do {
                 _ = try FunctionMutation(tokens: tokenList, context: &context)
                 XCTFail("Mutation should fail - \(tokenList)")
@@ -46,16 +46,16 @@ class FunctionMutationTests: XCTestCase {
     func testInit() {
         
         let samples: [(String, [String], Type, Int)] = [
-            ("make some return Some from () {}", ["some"], .custom("Some"), 0),
-            ("make some.someOther return \ntext from () {}", ["some", "someOther"], .primitive(.text), 1),
-            ("make some\n.\nanother.another return list of number from \n\n() {}", ["some", "another", "another"], .list(.primitive(.number)), 4)
+            ("make some return Some from () {}", ["some"], .custom("Some"), 1),
+            ("make some.someOther return \ntext from () {}", ["some", "someOther"], .primitive(.text), 2),
+            ("make some\n.\nanother.another return list of number from \n\n() {}", ["some", "another", "another"], .list(.primitive(.number)), 5)
         ]
         
         for testTuple in samples {
             let (code, expectedIdentifiers, expectedType, endOfLine) = testTuple
             
             var context = ParserContext(file: "test.zolang")
-            let tokenList = Parser(file: "test.zolang").tokenize(string: code)
+            let tokenList = code.zo.tokenize()
             
             do {
                 let mutation = try FunctionMutation(tokens: tokenList, context: &context)

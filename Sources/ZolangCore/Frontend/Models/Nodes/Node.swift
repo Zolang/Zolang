@@ -11,9 +11,10 @@ import PathKit
 
 public protocol Node {
     static var stencilName: String { get }
-    var context: [String: Any] { get }
+
     init(tokens: [Token], context: inout ParserContext) throws
     
+    func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String: Any]
     func compile(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> String
 }
 
@@ -22,22 +23,22 @@ extension Node {
         return String(describing: Self.self)
     }
 
-    public var context: [String: Any] {
-        let firstChar = String(Self.stencilName.first!)
-        let suffixIndex = Self.stencilName.index(after: Self.stencilName.startIndex)
-        let key = firstChar + String(Self.stencilName.suffix(from: suffixIndex))
-        return [
-            key: self
-        ]
-    }
-
     public func compile(buildSetting: Config.BuildSetting, fileManager fm: FileManager = .default) throws -> String {
 
-        let loader = FileSystemLoader(paths: [ Path(buildSetting.stencilPath) ])
-        let environment = Environment(loader: loader)
+        let url = URL(fileURLWithPath: buildSetting.stencilPath)
+            .appendingPathComponent("\(Self.stencilName).stencil")
 
-        let rendered = try environment.renderTemplate(name: "\(Self.stencilName).stencil", context: context)
+        let environment = Environment()
+        do {
+            let templateString = try String(contentsOf: url, encoding: .utf8)
+            let rendered = try environment.renderTemplate(string: templateString,
+                                                          context: try getContext(buildSetting: buildSetting, fileManager: fm))
+            return rendered.zo.trimmed()
+        } catch {
+            print("Error in node: \(String(describing: Self.self))")
+            throw error
+        }
 
-        return rendered
+        
     }
 }

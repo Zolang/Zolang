@@ -21,14 +21,14 @@ class ParamListTests: XCTestCase {
     
     func testFailure() {
         let invalidSamples: [(String, Int)] = [
-            ("list \nof, num as number, t as text", 0),
-            ("l\n as list \nof, \nnumber, text", 2),
-            ("num as number, some as \nlist of number\n, game as \n.", 3)
+            ("list \nof, num as number, t as text", 1),
+            ("l\n as list \nof, \nnumber, text", 3),
+            ("num as number, some as \nlist of number\n, game as \n.", 4)
         ]
         
         invalidSamples.forEach({ (code, line) in
             var context = ParserContext(file: "test.zolang")
-            let tokens: [Token] = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens: [Token] = code.zo.tokenize()
             do {
                 
                 _ = try ParamList(tokens: tokens, context: &context)
@@ -56,15 +56,15 @@ class ParamListTests: XCTestCase {
         ]
 
         let validSamples: [(String, [(String, Type)], Int)] = [
-            ("num as number, name as SomeType, l as list of SomeType", expected1, 0),
-            ("\nl as list \nof\n text, t as text", expected2, 3),
-            ("l as\n list of list of\n text", expected3, 2)
+            ("num as number, name as SomeType, l as list of SomeType", expected1, 1),
+            ("\nl as list \nof\n text, t as text", expected2, 4),
+            ("l as\n list of list of\n text", expected3, 3)
         ]
         
         validSamples.forEach { (code, expected, lineAtEnd) in
             var context = ParserContext(file: "test.zolang")
             
-            let tokens = Parser(file: "test.zolang").tokenize(string: code)
+            let tokens = code.zo.tokenize()
             
             do {
                 let paramList = try ParamList(tokens: tokens, context: &context)

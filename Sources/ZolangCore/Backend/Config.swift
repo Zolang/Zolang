@@ -12,7 +12,7 @@ public struct Config: Codable {
         let sourcePath: String
         let stencilPath: String
         let buildPath: String
-        let separators: [String:String]
+        let separators: [String: String]
     }
 
     let buildSettings: [BuildSetting]

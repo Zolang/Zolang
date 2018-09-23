@@ -14,6 +14,7 @@ public indirect enum CodeBlock: Node {
     case expression(Expression)
     case variableDeclaration(VariableDeclaration)
     case variableMutation(VariableMutation)
+    case modelDescription(ModelDescription)
     case functionDeclaration(FunctionDeclaration)
     case functionMutation(FunctionMutation)
     case ifStatement(IfStatement)
@@ -63,9 +64,25 @@ public indirect enum CodeBlock: Node {
             
             left = .ifStatement(try IfStatement(tokens: Array(workingTokens[range]), context: &context))
         case .modelDescription:
-            throw ZolangError(type: .unexpectedToken(.describe, nil),
-                              file: context.file,
-                              line: context.line)
+            guard workingTokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline]) else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.modelDescription),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            let curlyIndex = workingTokens.index(ofAnyIn: [ .curlyOpen ])!
+            context.line += workingTokens.newLineCount(to: curlyIndex)
+            guard let blockRange = workingTokens.rangeOfScope(open: .curlyOpen, close: .curlyClose) else {
+                throw ZolangError(type: .missingMatchingCurlyBracket,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            leftEndIndex = blockRange.upperBound + 1
+            
+            let descr = try ModelDescription(tokens: Array(workingTokens[0...blockRange.upperBound]), context: &context)
+            left = .modelDescription(descr)
+            
         case .variableDeclaration:
             guard let range = workingTokens.rangeOfVariableDeclarationOrMutation() else {
                 throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
@@ -180,7 +197,8 @@ public indirect enum CodeBlock: Node {
 
             return [ compiled1, compiled2 ]
                 .joined(separator: separator)
-
+        case .modelDescription(let modelDescription):
+            return try modelDescription.compile(buildSetting: buildSetting, fileManager: fm)
         case .expression(let expression):
             return try expression.compile(buildSetting: buildSetting, fileManager: fm)
         case .functionDeclaration(let decl):
@@ -188,12 +206,18 @@ public indirect enum CodeBlock: Node {
         case .ifStatement(let statement):
             return try statement.compile(buildSetting: buildSetting, fileManager: fm)
         case .returnStatement(let expr):
-            let loader = FileSystemLoader(paths: [ Path(buildSetting.stencilPath) ])
-            let environment = Environment(loader: loader)
+            let url = URL(fileURLWithPath: buildSetting.stencilPath)
+                .appendingPathComponent("ReturnStatement.stencil")
+            
+            let environment = Environment()
+            let templateString = try String(contentsOf: url, encoding: .utf8)
+            
             let context = [
                 "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm)
             ]
-            return try environment.renderTemplate(name: "ReturnStatement.stencil", context: context)
+            return try environment.renderTemplate(string: templateString,
+                                                  context: context)
+                .zo.trimmed()
         case .variableDeclaration(let decl):
             return try decl.compile(buildSetting: buildSetting, fileManager: fm)
         case .functionMutation(let mut):
@@ -201,13 +225,24 @@ public indirect enum CodeBlock: Node {
         case .variableMutation(let mut):
             return try mut.compile(buildSetting: buildSetting, fileManager: fm)
         case .whileLoop(let expr, let codeBlock):
-            let loader = FileSystemLoader(paths: [ Path(buildSetting.stencilPath) ])
-            let environment = Environment(loader: loader)
             let context = [
                 "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm),
                 "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm)
             ]
-            return try environment.renderTemplate(name: "WhileLoop.stencil", context: context)
+            
+            let url = URL(fileURLWithPath: buildSetting.stencilPath)
+                .appendingPathComponent("WhileLoop.stencil")
+            
+            let environment = Environment()
+            let templateString = try String(contentsOf: url, encoding: .utf8)
+
+            return try environment.renderTemplate(string: templateString,
+                                                  context: context)
         }
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        assertionFailure("CodeBlock has its own version of compile and should not need a getContext implementation")
+        return [:]
     }
 }

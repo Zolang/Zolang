@@ -8,9 +8,11 @@
 import Foundation
 
 public indirect enum Expression: Node {
+    
     case integerLiteral(String)
     case floatLiteral(String)
     case stringLiteral(String)
+    case templatedString([Expression])
     case booleanLiteral(String)
     case identifier(String)
     case listAccess(String, Expression)
@@ -192,7 +194,55 @@ public indirect enum Expression: Node {
                                       line: context.line)
                 }
                 
-                self = .stringLiteral(tokens.first!.payload!)
+                let str = tokens.first!.payload!
+                var templateRanges: [ClosedRange<Int>] = []
+                var i = 0
+                while i < str.count {
+                    let working = String(str.suffix(from: str.index(str.startIndex, offsetBy: i)))
+                    if working.zo.getPrefix(regex: "(^\\{)|([^\\\\]\\$\\{)") != nil,
+                        let range = str.zo.getScope(open: "{", close: "}", start: i) {
+                        i = range.upperBound + 1
+                        templateRanges.append(range)
+                    } else {
+                        i += 1
+                    }
+                }
+                
+                guard templateRanges.isEmpty == false else {
+                    self = .stringLiteral(str)
+                    return
+                }
+                
+                var expressions: [Expression] = []
+                var lastEndIndex: String.Index = str.startIndex
+                try templateRanges.forEach { range in
+                    
+                    guard range.count > 2 else {
+                        throw ZolangError.ErrorType.unknown
+                    }
+
+                    let rangeLower = str.index(str.startIndex, offsetBy: range.lowerBound)
+                    let rangeUpper = str.index(str.startIndex, offsetBy: range.lowerBound)
+                    
+                    if lastEndIndex != rangeLower {
+                        let range = lastEndIndex..<str.index(str.startIndex, offsetBy: range.lowerBound)
+                        
+                        
+                        expressions.append(.stringLiteral(String(str[range])))
+                    }
+
+                    let lower = str.index(str.startIndex, offsetBy: range.lowerBound + 1)
+                    let upper = str.index(str.startIndex, offsetBy: range.upperBound - 1)
+                    
+                    let expressionRange = lower...upper
+                    
+                    expressions.append(try Expression(tokens: String(str[expressionRange]).zo.tokenize(),
+                                                      context: &context))
+                    
+                    lastEndIndex = str.index(rangeUpper, offsetBy: 1)
+                }
+
+                self = .templatedString(expressions)
             }
         case .booleanLiteral:
             if let operatorExpression = try Expression.parseOperator(index: 1,
@@ -240,6 +290,75 @@ public indirect enum Expression: Node {
         return .operation(firstExpression,
                           tokens[operatorIndex + trailing].payload!,
                           secondExpression)
+    }
+    
+    public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
+        switch self {
+        case .booleanLiteral(let str):
+            return [
+                "expressionType": "booleanLiteral",
+                "value": str
+            ]
+        case .floatLiteral(let str):
+            return [
+                "expressionType": "floatLiteral",
+                "value": str
+            ]
+        case .integerLiteral(let str):
+            return [
+                "expressionType": "integerLiteral",
+                "value": str
+            ]
+        case .stringLiteral(let str):
+            return [
+                "expressionType": "stringLiteral",
+                "value": str
+            ]
+        case .templatedString(let expressions):
+            let expressionStrings = try expressions
+                .map { expr in
+                    try expr.compile(buildSetting: buildSetting,
+                                     fileManager: fm)
+                }
+            return [
+                "expressionType": "templatedString",
+                "expressions": expressionStrings
+            ]
+        case .identifier(let str):
+            return [
+                "expressionType": "identifier",
+                "value": str
+            ]
+        case .functionCall(let name, let expressions):
+            return [
+                "expressionType": "functionCall",
+                "name": name,
+                "expressions": try expressions.map { try $0.compile(buildSetting: buildSetting, fileManager: fm) }
+            ]
+        case .listAccess(let identifier, let expression):
+            return [
+                "expressionType": "listAccess",
+                "identifier": identifier,
+                "expression": try expression.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        case .listLiteral(let expressions):
+            return [
+                "expressionType": "listLiteral",
+                "expressions": try expressions.map { try $0.compile(buildSetting: buildSetting, fileManager: fm) }
+            ]
+        case .parentheses(let expression):
+            return [
+                "expressionType": "parentheses",
+                "expression": try expression.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        case .operation(let lExpr, let op, let rExpr):
+            return [
+                "expressionType": "operation",
+                "leftExpression": try lExpr.compile(buildSetting: buildSetting, fileManager: fm),
+                "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm),
+                "operator": op
+            ]
+        }
     }
 }
 
@@ -308,7 +427,7 @@ extension Array where Element == Expression {
 
             let expressionTokens = [Token](tokens[range])
             
-            context.line = oldLineCount + (newlineCount - oldLineCount)
+            context.line = oldLineCount + newlineCount
             let expression = try Expression(tokens: expressionTokens, context: &context)
             return expression
         }
