@@ -59,7 +59,7 @@ cp -f Zolang /usr/local/bin/zolang
 
 #### Setting up development environment
 
-Zolang is best with Visual Studio Code using the [zolan-ide](https://marketplace.visualstudio.com/items?itemName=valdirunars.zolang-ide) extension
+Zolang is best with Visual Studio Code using the [zolang-ide](https://marketplace.visualstudio.com/items?itemName=valdirunars.zolang-ide) extension
 
 #### Initializing Project
 
