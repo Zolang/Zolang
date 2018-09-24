@@ -47,7 +47,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
-#### Xcode is not Installed
+#### If Xcode 9.2 is not Installed
 
 [Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.3/zolang)
 
