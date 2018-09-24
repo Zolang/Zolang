@@ -75,7 +75,7 @@ describe Person {
 #### Variable Declaration
 
 ```zolang
-let person as Person be Person("John Doe", "John's Street", 8)
+let person as Person be Person("John Doe", "John's Street", 8, [ "Todd" ])
 ```
 
 #### Mutation
@@ -121,7 +121,7 @@ class Person: Codable {
 	}
 }
 
-var person = Person("John Doe", "John's Street", 8)
+var person = Person("John Doe", "John's Street", 8, [ "Todd" ])
 
 person.name = "Jane Doe"
 
