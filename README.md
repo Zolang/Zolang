@@ -9,12 +9,24 @@ Zolang is a programming language theoretically transpilable to virtually any oth
 
 Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/).
 
-> Zolang is a lightweight front end for virtually any general purpose programming language.
+> Zolang is a lightweight frontend for virtually any general purpose programming language.
 
 Theoretically though, these specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
 
+## Use Cases
+
+Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
+
+### The Story Behind Zolang
+
+The idea for Zolang came from within a fast moving startup. It was moving fast in the sense that the tech stack was rapidly changing every now and then, the product had projects in 4 languages, Swift, TypeScript, JavaScript and Ruby. All of which had duplications in definitions of models.
+
+So every time the tech stack changed drastically, changes had to be made in many of the (if not all four) implementations. So we wanted a language where we could write the model layer of our application with a single source of truth, generating code for all of our programming languages.
+
+
 ## Name
-I'm a Star Wars fan and In the Star Wars world Zolan is the home planet of a species called clawdites, who are known for their ability to transform their appearance to be the one of virtually any other creature.
+
+I'm a Star Wars fan and in the Star Wars world Zolan is the home planet of a species called clawdites, who are known for their ability to transform their appearance to look like virtually any other creature.
 
 As the language aims to be transpilable to virtually any other programming language the clawdites came quickly to mind. Sadly the species doesn't have a catchy name, so I found myself falling back to their planet Zolan. And since this is a language and lang is often used as an abbreviation for language the "g" was soon to follow.
 
@@ -24,6 +36,9 @@ As the language aims to be transpilable to virtually any other programming langu
 - Default Values
 - Type checking
 - For loop
+- Colored terminal output
+- Hot reload (compilation)
+- Function mutation
 
 ## Documentation
 
@@ -67,7 +82,7 @@ Notice the `./templates/swift`. This is the location of the `.stencil` files tha
 > 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
 #### Defining Models
-We could create a file `.build/swift/Person.zolang`
+We could create a file `./src/Person.zolang`
 
 ```zolang
 describe Person {
@@ -131,7 +146,7 @@ while (i < person.friendNames.count) {
 #### Building
 
 ```
-zolang build --swift
+zolang build
 ```
 
 Now `./build/swift/Person.swift` would now contain the following:
