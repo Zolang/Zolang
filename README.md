@@ -92,6 +92,7 @@ A typical zolang.json project compiling to Swift would look something like this:
       "sourcePath": "./zolang/src",
       "stencilPath": "./zolang/templates/swift",
       "buildPath": "./zolang/build/swift",
+			"fileExtension": "swift",
       "separators": {
         "CodeBlock": "\n"
       }

@@ -9,6 +9,7 @@ public final class Zolang {
           "sourcePath": "./zolang/src",
           "stencilPath": "./zolang/templates/mylang",
           "buildPath": "./zolang/build/mylang",
+          "fileExtension": "swift",
           "separators": {
             "CodeBlock": "\\n"
           }
