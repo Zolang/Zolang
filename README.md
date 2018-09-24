@@ -18,7 +18,7 @@ I'm a Star Wars fan and In the Star Wars world Zolan is the home planet of a spe
 
 As the language aims to be transpilable to virtually any other programming language the clawdites came quickly to mind. Sadly the species doesn't have a catchy name, so I found myself falling back to their planet Zolan. And since this is a language and lang is often used as an abbreviation for language the "g" was soon to follow.
 
-## Roadmap
+## Roadmap / Upcoming Features
 
 - Comments
 - Default Values
@@ -32,6 +32,12 @@ As the language aims to be transpilable to virtually any other programming langu
 See [releases](https://github.com/Zolang/Zolang/releases)
 
 ### Getting Started
+
+#### Setting up development environment
+
+Zolang is best with Visual Studio Code using the [zolan-ide](https://marketplace.visualstudio.com/items?itemName=valdirunars.zolang-ide) extension
+
+#### Initializing Project
 
 In your project, create a zolang folder 
 
