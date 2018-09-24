@@ -35,10 +35,6 @@ extension Node {
                                                           context: try getContext(buildSetting: buildSetting, fileManager: fm))
             return rendered.zo.trimmed()
         } catch {
-            print("Error in node: \(String(describing: Self.self))")
             throw error
-        }
-
-        
-    }
+        }    }
 }

@@ -13,6 +13,6 @@ public struct ZolangError: Error {
     public let line: Int
     
     public func dump() {
-        print("Error in file: \(file) - line: \(line) - message: \(type.localizedDescription)")
+        Log.error("Error in file: \(file) - line: \(line) - message: \(type.localizedDescription)")
     }
 }

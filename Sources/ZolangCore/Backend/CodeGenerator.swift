@@ -18,6 +18,10 @@ public struct CodeGenerator {
     }
     
     func build() throws {
+        Log.info("Compiling Zolang...")
+
+        var hasErrors = false
+
         let parsed = try self.config.buildSettings
             .map { setting -> (setting: Config.BuildSetting, syntaxTrees: [(String, CodeBlock)]) in
                 let syntaxTrees = try fileManager
@@ -33,8 +37,8 @@ public struct CodeGenerator {
         parsed.forEach { arg in
             let (setting, syntaxTrees) = arg
 
-            var errors: [Error] = []
             syntaxTrees.forEach { fileName, ast in
+                Log.plain("Compiling \(fileName)")
                 do {
                     let generated = try ast.compile(buildSetting: setting, fileManager: self.fileManager)
 
@@ -42,24 +46,18 @@ public struct CodeGenerator {
                         .appendingPathComponent(fileName)
                         .deletingPathExtension()
                         .appendingPathExtension(setting.fileExtension)
-                    print("URL: \(url.absoluteString)")
+
                     try generated.write(to: url, atomically: true, encoding: .utf8)
 
                 } catch {
-                    errors.append(error)
+                    hasErrors = true
+                    Log.error("\n------------------\nError: \(error.localizedDescription)\n")
                 }
             }
-            
-            if errors.isEmpty == false {
-                let error = errors
-                    .map {
-                        "Error: \($0.localizedDescription)"
-                    }
-                    .joined(separator: "\n--------------------------------------\n")
-                print(error)
-                exit(1)
-            }
-            
         }
+        
+        guard !hasErrors else { exit(1) }
+        Log.info("Done!")
+        
     }
 }

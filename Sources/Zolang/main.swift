@@ -10,7 +10,7 @@ do {
     if let zError = error as? ZolangError {
         zError.dump()
     } else {
-        print("Error: \(error.localizedDescription)")
+        Log.error("Error: \(error.localizedDescription)")
     }
     
 }
