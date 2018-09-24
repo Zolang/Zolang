@@ -247,7 +247,9 @@ while (i < person.friendNames.count) {
 }
 ```
 
-### Types
+### The Language
+
+#### Types
 
 Zolang has 4 primitive types
 
@@ -256,13 +258,13 @@ Zolang has 4 primitive types
 - number
 - list
 
-#### boolean
+##### boolean
 
 Values are either ```true``` or ```false```
 
 See section below on operators for further information
 
-#### text
+##### text
 
 Defined within double quotes
 
@@ -280,7 +282,7 @@ The limitation when it comes to ```text``` in Zolang is that the language doesn'
 
 The text: ```"this is a text \n"``` would remain unchanged when compiling to other languages which might become a problem if `\n` is handled differently in the other languages the Zolang code is being compiled to. Thankfully languages seem to handle character escaping in a somewhat similar fassion so most of the time this does not make a difference.
 
-#### number
+##### number
 
 Zolang currently only has one type to represent numbers.
 
@@ -292,7 +294,7 @@ let num1 as number be 0.12345
 let num2 as number be 5
 ```
 
-#### list
+##### list
 
 The same goes for lists they represent ... you guessed it, lists of data; and are declared by using the ```list``` keyword followed by a ```of``` keyword and the type of the element you want to represent.
 
@@ -302,7 +304,7 @@ List literals are defined with a comma separated sequence of expressions wrapped
 let myList as list of text be [ "1", "2", "3" ]
 ```
 
-### Operators
+#### Operators
 
 There are 4 boolean operators ```or```, ```and``` and ```not``` 
 
