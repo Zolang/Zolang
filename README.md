@@ -44,7 +44,18 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
+#### Download Release
 See [releases](https://github.com/Zolang/Zolang/releases)
+
+#### Build From Source
+
+```
+g clone https://github.com/Zolang/Zolang
+cd Zolang
+swift build -c release -Xswiftc -static-stdlib
+cd .build/release
+cp -f Zolang /usr/local/bin/zolang
+```
 
 ### Getting Started
 
@@ -138,7 +149,7 @@ print("${1 plus 2 plus (3 times 4) over 5}")
 let i as number be 1
 
 while (i < person.friendNames.count) {
-	print(i)
+	print(person.friendNames[i])
 	make i be i plus 1
 }
 ```
