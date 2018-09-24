@@ -47,8 +47,24 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
-#### Download Release
-See [releases](https://github.com/Zolang/Zolang/releases)
+#### Using Mint (Recommended)
+If you don't have mint:
+
+```
+brew install mint
+```
+
+Then install this Zolang:
+
+```
+mint install Zolang/Zolang
+```
+
+Verify installation
+
+```
+zolang
+```
 
 #### Build From Source
 
@@ -58,6 +74,12 @@ cd Zolang
 swift build -c release -Xswiftc -static-stdlib
 cd .build/release
 cp -f Zolang /usr/local/bin/zolang
+```
+
+Verify installation
+
+```
+zolang
 ```
 
 ### Getting Started
