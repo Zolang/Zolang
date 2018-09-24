@@ -7,11 +7,11 @@
 
 Zolang is a programming language theoretically transpilable to virtually any other programming language.
 
-Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) files.
+Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) specification files.
 
 > Zolang is a lightweight frontend for virtually any general purpose programming language.
 
-Theoretically though, these specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
+Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
 
 ## Use Cases
 
@@ -22,7 +22,6 @@ Zolang doesn't try to be a general purpose programming language, it is limited i
 The idea for Zolang came from within a fast moving startup. It was moving fast in the sense that the tech stack was rapidly changing every now and then, the product had projects in 4 languages, Swift, TypeScript, JavaScript and Ruby. All of which had duplications in definitions of models.
 
 So every time the tech stack changed drastically, changes had to be made in many of the (if not all four) implementations. So we wanted a language where we could write the model layer of our application with a single source of truth, generating code for all of our programming languages.
-
 
 ## Name
 
@@ -65,9 +64,17 @@ Zolang is best with Visual Studio Code using the [zolan-ide](https://marketplace
 
 #### Initializing Project
 
-In your project, create a zolang folder 
+If you don't have an existing project start by creating a project folder and navigate to it
 
 ```
+mkdir  MyZolangProject
+cd MyZolangProject
+```
+
+Then initialize the project
+
+```
+cd MyZolangProject
 zolang init
 ```
 
@@ -101,7 +108,7 @@ Notice the `./templates/swift`. This is the location of the `.stencil` files tha
 > 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
 #### Defining Models
-We could create a file `./src/Person.zolang`
+We could create a file `./zolang/src/Person.zolang`
 
 ```zolang
 describe Person {
@@ -168,7 +175,7 @@ while (i < person.friendNames.count) {
 zolang build
 ```
 
-Now `./build/swift/Person.swift` would now contain the following:
+Now `./zolang/build/swift/Person.swift` would now contain the following:
 
 ```swift
 class Person: Codable {
