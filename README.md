@@ -48,12 +48,7 @@ As the language aims to be transpilable to virtually any other programming langu
 ### Installation
 
 #### Using Mint (Recommended)
-If you don't have mint:
-
-```
-brew install mint
-```
-
+If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint)
 Then install this Zolang:
 
 ```
