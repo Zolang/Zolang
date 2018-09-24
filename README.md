@@ -1,6 +1,6 @@
 
 
-![alt text](./images/zolang-banner.png "Zolang logo")
+![alt text](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
 # Zolang
 
 ## What is it?
