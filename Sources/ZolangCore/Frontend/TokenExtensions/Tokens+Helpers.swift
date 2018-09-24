@@ -231,7 +231,19 @@ extension Array where Element == Token {
             
             
             return start...(rangeOfReturnExpression.upperBound + start + 1)
-        default:
+        case .prefixOperator:
+            guard let rangeOfPrefixed = Array(self.suffix(from: 1)).rangeOfExpression() else {
+                return nil
+            }
+            return start...(start + 1 + rangeOfPrefixed.count)
+        case .as, .be, .colon,
+             .comma, .curlyClose,
+             .curlyOpen, .dot, .else,
+             .if, .while, .from,
+             .equals, .make, .parensClose,
+             .bracketOpen, .bracketClose,
+             .newline, .describe, .of, .let,
+             .operator, .other:
             return nil
         }
         

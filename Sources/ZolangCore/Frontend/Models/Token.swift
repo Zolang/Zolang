@@ -36,6 +36,7 @@ public enum TokenType: String {
     case make
     
     case `operator`
+    case prefixOperator
     
     case stringLiteral
     case booleanLiteral

@@ -49,6 +49,10 @@ extension Token {
         return Token(type: .booleanLiteral, payload: value)
     }
     
+    public static func prefixOperator(_ raw: String) -> Token {
+        return Token(type: .prefixOperator, payload: raw)
+    }
+    
     public static func `operator`(_ raw: String) -> Token {
         return Token(type: .operator, payload: raw)
     }

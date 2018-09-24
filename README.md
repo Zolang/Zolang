@@ -306,9 +306,18 @@ let myList as list of text be [ "1", "2", "3" ]
 
 #### Operators
 
-There are 3 boolean operators ```or```, ```and``` and ```not``` 
+##### Prefix Operators
+
+There are 2 supported prefix operators in Zolang
+
+```-``` and ```not```, the former is meant to be used for numbers and latter for boolean types
+
+##### Infix Operators
+
+Besides ```not``` there are 3 boolean infix operators ```or```, ```and```, ```not``` and ```equals```
 
 Other operators are ```<```, ```>```, ```<=```, ```>=```, ```plus```, ```minus```, ```times``` and ```over```, representing, less-than, greater-than, lesser-than-or-equal, greater-than-or-equal, addition, subtraction, multiplication and division respectively
+
 
 NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
 

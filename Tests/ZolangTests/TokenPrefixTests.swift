@@ -87,7 +87,7 @@ class TokenPrefixTests: XCTestCase {
     
     func testExpressionPrefix() {
 
-        print("yey == bla".zo.tokenize())
+        print("yey equals bla".zo.tokenize())
         
         var expectedToBeExpression: [Token] = [
             .identifier("someFunc"), .parensOpen, .parensClose
@@ -96,19 +96,19 @@ class TokenPrefixTests: XCTestCase {
         XCTAssert(expectedToBeExpression.prefixType() == .expression)
         
         expectedToBeExpression = [
-            .stringLiteral("some"), .operator("=="), .identifier("someStr")
+            .stringLiteral("some"), .operator("equals"), .identifier("someStr")
         ]
         
         XCTAssert(expectedToBeExpression.prefixType() == .expression)
         
         expectedToBeExpression = [
-            .parensOpen, .floatingPoint("1000.1"), .operator("=="), .identifier("someFloat"), .parensClose
+            .parensOpen, .floatingPoint("1000.1"), .operator("equals"), .identifier("someFloat"), .parensClose
         ]
         
         XCTAssert(expectedToBeExpression.prefixType() == .expression)
         
         expectedToBeExpression = [
-            .operator("-"), .identifier("someNegativeValue"), .operator("+"), .operator("-"), .identifier("anotherNegativeValue")
+            .prefixOperator("-"), .identifier("someNegativeValue"), .operator("plus"), .operator("minus"), .identifier("anotherNegativeValue")
         ]
         
         XCTAssert(expectedToBeExpression.prefixType() == .expression)

@@ -32,6 +32,7 @@ public enum RegExRepo {
     public static let inlineWhitespaceCharacter = "[\\s\\t]"
     public static let newline = "\n"
     
+    public static let prefixOperator = "not|-"
     public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
 
     public static let boolean = "true|false"
@@ -43,6 +44,7 @@ extension RegExRepo {
         RegExRepo.inlineWhitespaceCharacter: { _ in nil },
         RegExRepo.newline: { _ in Token(type: .newline) },
         
+        RegExRepo.prefixOperator: { return Token(type: .prefixOperator, payload: $0) },
         RegExRepo.`operator`: { return Token(type: .`operator`, payload: $0) },
         
         RegExRepo.label: {

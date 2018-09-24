@@ -18,6 +18,7 @@ public indirect enum Expression: Node {
     case listAccess(String, Expression)
     case listLiteral([Expression])
     case functionCall(String, [Expression])
+    case prefix(String, Expression)
     case parentheses(Expression)
     case operation(Expression, String, Expression)
     
@@ -27,6 +28,7 @@ public indirect enum Expression: Node {
 
         let validValuePrefix: [(key: ValueType, value: [TokenType])] = [
             (.parentheses, [ .parensOpen ]),
+            (.prefixOperated, [ .prefixOperator ]),
             (.listLiteral, [ .bracketOpen ]),
             (.functionCall, [ .identifier, .parensOpen ]),
             (.listAccess, [ .identifier, .bracketOpen ]),
@@ -78,6 +80,16 @@ public indirect enum Expression: Node {
 
                 self = .listAccess(identifier, try Expression(tokens: innerTokens, context: &context))
             }
+        case .prefixOperated:
+            let prefix = tokens.first!.payload!
+            guard tokens.count > 1 else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            let rest = Array(tokens.suffix(from: 1))
+            let expression = try Expression(tokens: rest, context: &context)
+            self = .prefix(prefix, expression)
         case .parentheses:
             guard let parensRange = tokens.rangeOfScope(open: .parensOpen, close: .parensClose) else {
                 throw ZolangError(type: .missingMatchingParens, file: context.file, line: context.line)
@@ -299,6 +311,12 @@ public indirect enum Expression: Node {
                 "expressionType": "booleanLiteral",
                 "value": str
             ]
+        case .prefix(let prefix, let expression):
+            return [
+                "expressionType": "prefix",
+                "prefix": prefix,
+                "expression": try expression.compile(buildSetting: buildSetting)
+            ]
         case .floatLiteral(let str):
             return [
                 "expressionType": "floatLiteral",
@@ -365,6 +383,7 @@ public indirect enum Expression: Node {
 extension Expression {
     private enum ValueType: String {
         case functionCall
+        case prefixOperated
         case parentheses
         case listAccess
         case listLiteral

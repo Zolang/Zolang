@@ -63,11 +63,12 @@ extension Array where Element == Token {
              .parensClose,
              .other,
              .dot,
-             .return:
+             .return,
+             .operator:
             return false
-        case .operator:
+        case .prefixOperator:
             guard self.count > 1 else { return false }
-            return (first.payload == "-" || first.payload == "!") && Array(self[1...]).isPrefixExpression()
+            return Array(self[1...]).isPrefixExpression()
         case .identifier,
              .floatingPoint,
              .decimal,
