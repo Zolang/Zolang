@@ -18,6 +18,13 @@ I'm a Star Wars fan and In the Star Wars world Zolan is the home planet of a spe
 
 As the language aims to be transpilable to virtually any other programming language the clawdites came quickly to mind. Sadly the species doesn't have a catchy name, so I found myself falling back to their planet Zolan. And since this is a language and lang is often used as an abbreviation for language the "g" was soon to follow.
 
+## Roadmap
+
+- Comments
+- Default Values
+- Type checking
+- For loop
+
 ## Documentation
 
 ### Installation
@@ -90,6 +97,27 @@ make person.name be "Jane Doe"
 person.speak("My address is ${person.address()}")
 ```
 
+#### Arithmetic
+
+Lets say we wanted to print something like `1 + 2 + (3 * 4) / 5`
+
+In Zolang this would be written:
+
+```zolang
+print("${1 plus 2 plus (3 times 4) over 5}")
+```
+
+#### Looping through Lists
+
+```zolang
+let i as number be 1
+
+while (i < person.friendNames.count) {
+	print(i)
+	make i be i plus 1
+}
+```
+
 #### Building
 
 ```
@@ -126,4 +154,13 @@ var person = Person("John Doe", "John's Street", 8, [ "Todd" ])
 person.name = "Jane Doe"
 
 person.speak("My address is " + "\(person.address())")
+
+print("\(1 + 2 + (3 * 4) / 5)")
+
+var i: Double = 1
+
+while (i < person.friendNames.count) {
+	print(i)
+	i = i + 1
+}
 ```
