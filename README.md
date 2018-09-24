@@ -31,6 +31,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ## Roadmap / Upcoming Features
 
+- Access Levels
 - Comments
 - Default Values
 - Type checking
