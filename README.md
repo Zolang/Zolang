@@ -29,6 +29,8 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
+See downloads for versions of Zolang
+
 ### Getting Started
 
 In your project, create a zolang folder 
@@ -54,7 +56,9 @@ This will create a zolang.json file that will be used to specify build settings 
 }
 ```
 
-Notice the `./templates/swift`. This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates)
+Notice the `./templates/swift`. This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates).
+
+> 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
 #### Defining Models
 We could create a file `.build/swift/Person.zolang`
@@ -123,6 +127,7 @@ while (i < person.friendNames.count) {
 ```
 zolang build --swift
 ```
+
 Now `./build/swift/Person.swift` would now contain the following:
 
 ```swift
