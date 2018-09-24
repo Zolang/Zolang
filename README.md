@@ -294,6 +294,14 @@ let num2 as number be 5
 
 #### list
 
+The same goes for lists they represent ... you guessed it, lists of data; and are declared by using the ```list``` keyword followed by a ```of``` keyword and the type of the element you want to represent.
+
+List literals are defined with a comma separated sequence of expressions wrapped inside enclosing brackets ```[...]``` 
+
+```
+let myList as list of text be [ "1", "2", "3" ]
+```
+
 ### Operators
 
 There are 4 boolean operators ```or```, ```and``` and ```not``` 
