@@ -95,7 +95,7 @@ person.speak("My address is ${person.address()}")
 ```
 zolang build --swift
 ```
-Now `./build/swift/Person.zolang` would contain the following:
+Now `./build/swift/Person.swift` would now contain the following:
 
 ```swift
 class Person: Codable {
