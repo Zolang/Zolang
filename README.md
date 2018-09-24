@@ -7,7 +7,7 @@
 
 Zolang is a programming language theoretically transpilable to virtually any other programming language.
 
-Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/).
+Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) files.
 
 > Zolang is a lightweight frontend for virtually any general purpose programming language.
 
