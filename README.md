@@ -13,7 +13,7 @@ Zolang does this by offloading code generation to its users through [Stencil (te
 
 Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
 
-## Use Cases
+## Why Zolang?
 
 Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
 
