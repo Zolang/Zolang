@@ -25,7 +25,8 @@ public final class Zolang {
 
     public func run() throws {
         guard arguments.count > 1 else {
-            Log.plain("Thanks for using Zolang, available actions are:\n\n- init\n- build")
+            Log.ascii()
+            Log.info("Thanks for using Zolang, available actions are:\n\n- init\n- build")
             exit(0)
         }
         
