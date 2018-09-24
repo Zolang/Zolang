@@ -55,7 +55,7 @@ Then setup Zolang as a command line tool locally
 
 ```
 chmod +x $HOME/Downloads/Zolang
-cp -f $HOME/Downloads/Zolang /usr/local/bin/zolang
+mv $HOME/Downloads/Zolang /usr/local/bin
 ```
 
 #### Xcode 9.2 is Installed
