@@ -137,6 +137,7 @@ Notice the `./templates/swift`. This is the location of the `.stencil` files tha
 > 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
 #### Defining Models
+
 We could create a file `./zolang/src/Person.zolang`
 
 ```zolang
@@ -245,6 +246,62 @@ while (i < person.friendNames.count) {
 	i = i + 1
 }
 ```
+
+### Types
+
+Zolang has 4 primitive types
+
+- boolean
+- text
+- number
+- list
+
+#### boolean
+
+Values are either ```true``` or ```false```
+
+See section below on operators for further information
+
+#### text
+
+Defined within double quotes
+
+```
+"a piece of text"
+```
+
+You can format a piece of text usign ```${...}```
+
+```
+"this is a string with an embedded variable: ${someVar}"
+```
+
+The limitation when it comes to ```text``` in Zolang is that the language doesn't care for characters that need to be escaped.
+
+The text: ```"this is a text \n"``` would remain unchanged when compiling to other languages which might become a problem if `\n` is handled differently in the other languages the Zolang code is being compiled to. Thankfully languages seem to handle character escaping in a somewhat similar fassion so most of the time this does not make a difference.
+
+#### number
+
+Zolang currently only has one type to represent numbers.
+
+Numbers work just as you expect:
+
+```
+let num1 as number be 0.12345
+
+let num2 as number be 5
+```
+
+#### list
+
+### Operators
+
+There are 4 boolean operators ```or```, ```and``` and ```not``` 
+
+Other operators are ```plus```, ```minus```, ```times``` and ```over```, representing addition, subtraction, multiplication and division respectively
+
+NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
+
 
 ## License
 
