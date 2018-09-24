@@ -104,7 +104,8 @@ extension Array where Element == Token {
         guard let end = index(ofFirstThatIsNot: .newline, startingAt: start + 1) else { return false }
         
         let array = self[start...end].map { $0.type }
-        return array[start] == .identifier && array[end] == .parensOpen
+            .filter { $0 != .newline }
+        return array[0] == .identifier && array[1] == .parensOpen
     }
     
     public func isPrefixLiteral() -> Bool {

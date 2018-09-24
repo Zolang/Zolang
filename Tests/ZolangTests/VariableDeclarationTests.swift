@@ -47,7 +47,8 @@ class VariableDeclarationTests: XCTestCase {
         
         let samples: [(String, Int)] = [
             ("let some as text be \n something", 2),
-            ("let some as number be \n\nsomething", 3)
+            ("let some as number be \n\nsomething", 3),
+            ("let some as Person be Person(\"John\")", 1)
         ]
         
         samples

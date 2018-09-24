@@ -42,8 +42,7 @@ public struct CodeGenerator {
                         .appendingPathComponent(fileName)
                         .deletingPathExtension()
                         .appendingPathExtension(setting.fileExtension)
-                    
-                    
+                    print("URL: \(url.absoluteString)")
                     try generated.write(to: url, atomically: true, encoding: .utf8)
 
                 } catch {
