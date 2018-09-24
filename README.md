@@ -1,4 +1,8 @@
-
+<p align="center">
+  <b> Zolang </b> &bull;
+  <a href="https://github.com/Zolang/ZolangTemplates">ZolangTemplates</a> &bull;
+    <a href="https://github.com/Zolang/ZolangIDE">ZolangIDE</a>
+</p>
 
 ![alt text](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
 # Zolang
