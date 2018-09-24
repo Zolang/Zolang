@@ -71,15 +71,21 @@ In your project, create a zolang folder
 zolang init
 ```
 
-This will create a zolang.json file that will be used to specify build settings for your Zolang code. For example a typical Zolang project compiling to Swift would look something like this:
+This will create a zolang.json file that will be used to specify build settings for your Zolang and setup the project's file structure.
+
+### Example
+
+#### The Config File
+
+A typical zolang.json project compiling to Swift would look something like this:
 
 ```JSON
 {
   "buildSettings": [
     {
-      "sourcePath": "./src",
-      "stencilPath": "./templates/swift",
-      "buildPath": "./build/swift",
+      "sourcePath": "./zolang/src",
+      "stencilPath": "./zolang/templates/swift",
+      "buildPath": "./zolang/build/swift",
       "separators": {
         "CodeBlock": "\n"
       }
@@ -89,6 +95,8 @@ This will create a zolang.json file that will be used to specify build settings 
 ```
 
 Notice the `./templates/swift`. This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates).
+
+`./zolang/src` is where all the Zolang code is stored.
 
 > 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
@@ -201,3 +209,27 @@ while (i < person.friendNames.count) {
 	i = i + 1
 }
 ```
+
+## License
+
+MIT License
+
+Copyright (c) 2018 Thorvaldur Runarsson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
