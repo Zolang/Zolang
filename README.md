@@ -35,7 +35,6 @@ As the language aims to be transpilable to virtually any other programming langu
 - Default Values
 - Type checking
 - For loop
-- Colored terminal output
 - Hot reload (compilation)
 - Function mutation
 
