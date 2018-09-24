@@ -49,16 +49,11 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### Using Mint (Recommended)
 If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint)
-Then install this Zolang:
+
+Then install Zolang:
 
 ```
 mint install Zolang/Zolang
-```
-
-Verify installation
-
-```
-zolang
 ```
 
 #### Build From Source
@@ -71,7 +66,7 @@ cd .build/release
 cp -f Zolang /usr/local/bin/zolang
 ```
 
-Verify installation
+#### Verify installation
 
 ```
 zolang
