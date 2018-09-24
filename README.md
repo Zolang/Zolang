@@ -29,7 +29,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
-See downloads for versions of Zolang
+See [releases](https://github.com/Zolang/Zolang/releases)
 
 ### Getting Started
 
