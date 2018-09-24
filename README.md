@@ -306,7 +306,7 @@ let myList as list of text be [ "1", "2", "3" ]
 
 #### Operators
 
-There are 4 boolean operators ```or```, ```and``` and ```not``` 
+There are 3 boolean operators ```or```, ```and``` and ```not``` 
 
 Other operators are ```plus```, ```minus```, ```times``` and ```over```, representing addition, subtraction, multiplication and division respectively
 
