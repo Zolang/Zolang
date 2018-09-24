@@ -116,7 +116,8 @@ class Person: Codable {
 		return addr
 	}
 
-	func speak(message: S says " + "\(message)")
+	func speak(message: String) {
+		print("\(name)" + " says " + "\(message)")
 	}
 }
 
