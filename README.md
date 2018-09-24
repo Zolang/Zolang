@@ -74,7 +74,6 @@ cd MyZolangProject
 Then initialize the project
 
 ```
-cd MyZolangProject
 zolang init
 ```
 
