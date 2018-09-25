@@ -38,16 +38,22 @@ public struct CodeGenerator {
             let (setting, syntaxTrees) = arg
 
             syntaxTrees.forEach { fileName, ast in
-                Log.plain("Compiling \(fileName)")
+                let url = URL(fileURLWithPath: setting.buildPath)
+
+                let toURL = url.appendingPathComponent(fileName)
+                    .deletingPathExtension()
+                    .appendingPathExtension(setting.fileExtension)
+                
+                Log.plain("Compiling \(fileName) to \(toURL.path)")
+                
                 do {
                     let generated = try ast.compile(buildSetting: setting, fileManager: self.fileManager)
-
-                    let url = URL(fileURLWithPath: setting.buildPath)
-                        .appendingPathComponent(fileName)
-                        .deletingPathExtension()
-                        .appendingPathExtension(setting.fileExtension)
-
-                    try generated.write(to: url, atomically: true, encoding: .utf8)
+                    
+                    do {
+                        try fileManager.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
+                    } catch {}
+                    
+                    try generated.write(to: toURL, atomically: true, encoding: .utf8)
 
                 } catch {
                     hasErrors = true
