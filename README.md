@@ -121,7 +121,7 @@ A typical zolang.json project compiling to Swift and Kotlin would look something
       "sourcePath": "./zolang/src",
       "stencilPath": "./zolang/templates/swift",
       "buildPath": "./zolang/build/swift",
-			"fileExtension": "swift",
+      "fileExtension": "swift",
       "separators": {
         "CodeBlock": "\n"
       }
@@ -130,7 +130,7 @@ A typical zolang.json project compiling to Swift and Kotlin would look something
       "sourcePath": "./zolang/src",
       "stencilPath": "./zolang/templates/kotlin",
       "buildPath": "./zolang/build/kotlin",
-			"fileExtension": "kt",
+      "fileExtension": "kt",
       "separators": {
         "CodeBlock": "\n"
       }
