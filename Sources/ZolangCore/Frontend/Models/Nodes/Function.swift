@@ -9,7 +9,7 @@ import Foundation
 
 public struct Function: Node {
 
-    public let returnType: Type
+    public let returnType: Type?
     public let params: ParamList?
     public let codeBlock: CodeBlock
 
@@ -26,7 +26,11 @@ public struct Function: Node {
         }
         
         let typeTokens = Array(tokens.prefix(upTo: fromIndex))
-        self.returnType = try Type(tokens: typeTokens, context: &context)
+        if typeTokens.filter({ $0.type != .newline }).isEmpty == false {
+            self.returnType = try Type(tokens: typeTokens, context: &context)
+        } else {
+            self.returnType = nil
+        }
 
         guard tokens.count > fromIndex + 1 else {
             throw ZolangError(type: .missingToken("("),
@@ -92,9 +96,11 @@ public struct Function: Node {
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
         var ctx = [
-            "returnType": try returnType.compile(buildSetting: buildSetting, fileManager: fm),
-            "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm),
+            "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm)
         ]
+        if let rType = returnType {
+            ctx["returnType"] = try rType.compile(buildSetting: buildSetting, fileManager: fm)
+        }
         if let paramList = params {
             ctx["params"] = try paramList.compile(buildSetting: buildSetting, fileManager: fm)
         }

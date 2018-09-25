@@ -112,7 +112,7 @@ This will create a zolang.json file that will be used to specify build settings 
 
 #### The Config File
 
-A typical zolang.json project compiling to Swift would look something like this:
+A typical zolang.json project compiling to Swift and Kotlin would look something like this:
 
 ```JSON
 {
@@ -125,16 +125,26 @@ A typical zolang.json project compiling to Swift would look something like this:
       "separators": {
         "CodeBlock": "\n"
       }
+    },
+		{
+      "sourcePath": "./zolang/src",
+      "stencilPath": "./zolang/templates/kotlin",
+      "buildPath": "./zolang/build/kotlin",
+			"fileExtension": "kt",
+      "separators": {
+        "CodeBlock": "\n"
+      }
     }
   ]
 }
 ```
 
-Notice the `./templates/swift`. This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates).
+Notice the `./templates/swift` and `./templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates).
 
 `./zolang/src` is where all the Zolang code is stored.
 
-> 😇 P.S. It only took around 30 minutes to add the templates needed to be able to compile Zolang to the Swift (programming language)! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
+
+> 😇 P.S. It only took around an hour to add the templates needed to be able to compile Zolang to both Kotlin and Swift! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
 #### Defining Models
 
@@ -201,53 +211,15 @@ while (i < person.friendNames.count) {
 
 #### Building
 
+Just ...
+
 ```
 zolang build
 ```
 
-Now `./zolang/build/swift/Person.swift` would now contain the following:
+... and enjoy checking out the readable code generated to `./zolang/build/swift/Person.swift` and `./zolang/build/kotlin/Person.kt`
 
-```swift
-class Person: Codable {
-	var name: String
-	var street: String
-	var number: Double
-	var friendNames: [String]
-
-	init(_ name: String, _ street: String, number: Double) {
-		self.name = name
-		self.street = street
-		self.number = number
-	}
-
-	func address() -> String {
-		let addr = "\(street) \(number)"
-		print("fetching address \(addr)")
-		return addr
-	}
-
-	func speak(message: String) {
-		print("\(name)" + " says " + "\(message)")
-	}
-}
-
-var person = Person("John Doe", "John's Street", 8, [ "Todd" ])
-
-person.name = "Jane Doe"
-
-person.speak("My address is " + "\(person.address())")
-
-print("\(1 + 2 + (3 * 4) / 5)")
-
-var i: Double = 1
-
-while (i < person.friendNames.count) {
-	print(i)
-	i = i + 1
-}
-```
-
-### The Language
+### Further Overview
 
 #### Types
 
