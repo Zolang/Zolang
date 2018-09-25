@@ -139,7 +139,7 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
 }
 ```
 
-Notice the `./templates/swift` and `./templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates).
+Notice the `./templates/swift` and `./templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). Copy the `swift` and `kotlin` folders from the repo to these locations.
 
 `./zolang/src` is where all the Zolang code is stored.
 
