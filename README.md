@@ -49,7 +49,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### If Xcode 9.2 is not Installed
 
-[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.3/zolang)
+[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.7/zolang)
 
 Then setup Zolang as a command line tool locally
 
