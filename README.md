@@ -9,7 +9,7 @@
 
 ## What is it?
 
-Zolang is a programming language theoretically transpilable to virtually any other programming language.
+Zolang is a programming language that serves as a code generation DSL and is as such theoretically transpilable to virtually any other programming language.
 
 Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) specification files.
 
