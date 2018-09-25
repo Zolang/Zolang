@@ -126,7 +126,7 @@ A typical zolang.json project compiling to Swift and Kotlin would look something
         "CodeBlock": "\n"
       }
     },
-		{
+    {
       "sourcePath": "./zolang/src",
       "stencilPath": "./zolang/templates/kotlin",
       "buildPath": "./zolang/build/kotlin",
