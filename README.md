@@ -286,9 +286,9 @@ There are 2 supported prefix operators in Zolang
 
 ##### Infix Operators
 
-Besides ```not``` there are 3 boolean infix operators ```or```, ```and```, ```not``` and ```equals```
+Besides ```not``` there are 2 infix operators strictly meant for comparing boolean values ```or``` and ```and```
 
-Other operators are ```<```, ```>```, ```<=```, ```>=```, ```plus```, ```minus```, ```times``` and ```over```, representing, less-than, greater-than, lesser-than-or-equal, greater-than-or-equal, addition, subtraction, multiplication and division respectively
+Other operators are ```<```, ```>```, ```<=```, ```>=```, ```equals```, ```plus```, ```minus```, ```times``` and ```over```, representing, less-than, greater-than, lesser-than-or-equal, greater-than-or-equal, equality, addition, subtraction, multiplication and division respectively
 
 
 NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
