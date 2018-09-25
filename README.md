@@ -112,7 +112,7 @@ This will create a zolang.json file that will be used to specify build settings 
 
 #### The Config File
 
-A typical zolang.json project compiling to Swift and Kotlin would look something like this:
+A typical ```zolang.json``` project file compiling to Swift and Kotlin would look something like this:
 
 ```JSON
 {
