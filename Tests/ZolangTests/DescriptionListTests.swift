@@ -39,9 +39,9 @@ class DescriptionListTests: XCTestCase {
     name as text
     friends as list of Person
     street as text
-    house_number as number
+    static house_number privately as number
     
-    address return text from () {
+    address privately return text from () {
         return "${street} ${house_number}"
     }
 

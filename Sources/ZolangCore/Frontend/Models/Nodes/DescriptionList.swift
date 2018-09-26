@@ -15,13 +15,7 @@ public struct DescriptionList: Node {
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
-        
-        guard tokens.first?.type == .identifier else {
-            throw ZolangError(type: .missingIdentifier,
-                              file: context.file,
-                              line: context.line)
-        }
-        
+
         var properties: [(Bool, String, String?, Type)] = []
         var functions: [(Bool, String, String?, Function)] = []
 
@@ -35,7 +29,7 @@ public struct DescriptionList: Node {
                                      skipping: [ .newline ],
                                      startingAt: i) {
                 isStatic = true
-                tokens.removeFirst()
+                i = tokens.index(of: [ .static ], startingAt: i)! + 1
             }
             
             context.line += tokens.trimLeadingNewlines()
