@@ -39,6 +39,8 @@ As the language aims to be transpilable to virtually any other programming langu
 - Comments (Scheduled v0.0.8 - Implemented)
 - Default Values (Scheduled v0.0.8 - Implemented)
 - Hot reload (compilation) - (Scheduled v0.1.x)
+- Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
+- Update Zolang from the Zolang CLI
 - Type checking
 - For loop
 - Function mutation
