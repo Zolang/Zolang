@@ -237,7 +237,8 @@ public indirect enum Expression: Node {
                     let rangeUpper = str.index(str.startIndex, offsetBy: range.lowerBound)
                     
                     if lastEndIndex != rangeLower {
-                        let range = lastEndIndex..<str.index(str.startIndex, offsetBy: range.lowerBound)
+                        let startOfTemplate = str.index(str.startIndex, offsetBy: range.lowerBound - 1
+                        let range = lastEndIndex..<startOfTemplate)
                         
                         
                         expressions.append(.stringLiteral(String(str[range])))
