@@ -9,15 +9,21 @@ import Foundation
 
 public struct DescriptionList: Node {
     
-    public let properties: [(isStatic: Bool, name: String, accessLimitation: String?, type: Type)]
-    public let functions: [(isStatic: Bool, name: String, accessLimitation: String?, function: Function)]
+    public let properties: [(isStatic: Bool, accessLimitation: String?, name: String, type: Type)]
+    public let functions: [(isStatic: Bool, accessLimitation: String?, name: String, function: Function)]
     
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
-
-        var properties: [(Bool, String, String?, Type)] = []
-        var functions: [(Bool, String, String?, Function)] = []
+        
+        guard tokens.first?.type == .identifier else {
+            throw ZolangError(type: .missingIdentifier,
+                              file: context.file,
+                              line: context.line)
+        }
+        
+        var properties: [(Bool, String?, String, Type)] = []
+        var functions: [(Bool, String?, String, Function)] = []
 
         var i = 0
         
@@ -25,37 +31,57 @@ public struct DescriptionList: Node {
         
         while i < tokens.count {
             var isStatic = false
+            let oldI = i
+            var accessLimitation: String? = nil
+            if tokens.hasPrefixTypes(types: [ .accessLimitation ],
+                                     skipping: [ .newline ],
+                                     startingAt: i) {
+                let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
+                                                         startingAt: i)!
+                accessLimitation = tokens[accessLimitationIndex].payload!
+                i = accessLimitationIndex + 1
+            }
+            
             if tokens.hasPrefixTypes(types: [ .static ],
                                      skipping: [ .newline ],
                                      startingAt: i) {
                 isStatic = true
-                i = tokens.index(of: [ .static ], startingAt: i)! + 1
+                i = tokens.index(of: [ .static ],
+                                 startingAt: i)! + 1
             }
             
-            context.line += tokens.trimLeadingNewlines()
-            
-            let isPublicPropertyDeclaration = tokens
-                .hasPrefixTypes(types: [ .identifier, .as ],
-                                skipping: [ .newline ],
-                                startingAt: i)
+            // Validate...
+            // Prevent further attributes (accessLimitations or static keyword)
 
-            let isLimitedPropertyDeclaration = tokens
-                .hasPrefixTypes(types: [ .identifier, .accessLimitation, .as ],
-                                skipping: [ .newline ],
-                                startingAt: i)
+            guard tokens.hasPrefixTypes(types: [ .accessLimitation ],
+                                        skipping: [ .newline ],
+                                        startingAt: i) == false else {
+                let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
+                                                         startingAt: i)!
+                context.line += tokens.newLineCount(to: accessLimitationIndex, startingAt: oldI)
+                throw ZolangError(type: .unexpectedToken(tokens[accessLimitationIndex], .identifier),
+                                  file: context.file,
+                                  line: context.line)
+            }
             
-            let isPropertyDeclaration = isPublicPropertyDeclaration || isLimitedPropertyDeclaration
+            guard tokens.hasPrefixTypes(types: [ .static ],
+                                        skipping: [ .newline ],
+                                        startingAt: i) == false else {
+                let staticIndex = tokens.index(of: [ .static ],
+                                                         startingAt: i)!
+                context.line += tokens.newLineCount(to: staticIndex, startingAt: oldI)
+                throw ZolangError(type: .unexpectedToken(tokens[staticIndex], .identifier),
+                                  file: context.file,
+                                  line: context.line)
+            }
             
-            let isPublicFunctionDeclaration = tokens
-                .hasPrefixTypes(types: [ .identifier, .return ],
-                                skipping: [ .newline ],
-                                startingAt: i)
-            let isLimitedFunctionDeclaration = tokens
-                .hasPrefixTypes(types: [ .identifier, .accessLimitation, .return ],
-                                skipping: [ .newline ],
-                                startingAt: i)
+            context.line += tokens.newLineCount(to: i, startingAt: oldI)
             
-            let isFunctionDeclaration = isPublicFunctionDeclaration || isLimitedFunctionDeclaration
+            let isPropertyDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .as ],
+                                                              skipping: [ .newline ],
+                                                              startingAt: i)
+            
+            let isFunctionDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .return ], skipping: [ .newline ], startingAt: i)
             
             guard isPropertyDeclaration
                 || isFunctionDeclaration else {
@@ -66,44 +92,22 @@ public struct DescriptionList: Node {
             
             let identifierIndex = tokens.index(of: [ .identifier], startingAt: i)!
             
-            let accessLimitationIndex = tokens.index(ofAnyIn: [.accessLimitation],
-                                                     skippingOnly: [ .newline, .identifier ],
-                                                     startingAt: identifierIndex)
             
-            let asOrReturnIndex = tokens.index(ofAnyIn: [.as, .return],
-                                               skippingOnly: [ .newline, .identifier, .accessLimitation ],
-                                               startingAt: identifierIndex)!
-
             // For validation purposes
-            // - check for invalid number of identifiers and accessLimitations
-            
-            let accessLimitations = tokens[i...asOrReturnIndex].filter({
-                $0.type == .accessLimitation
-            })
-
+            let asOrReturnIndex = tokens.index(ofAnyIn: [.as, .return],
+                                               skippingOnly: [ .newline, .identifier ],
+                                               startingAt: identifierIndex)!
             let nameTokens = tokens[i...asOrReturnIndex].filter({
-                $0.type == .identifier
+                $0.type != .newline && $0.type == .identifier
             })
             
-            let lineCountToIdentifierIndex = tokens.newLineCount(to: identifierIndex, startingAt: i)
+            context.line += tokens.newLineCount(to: identifierIndex, startingAt: i)
             
             guard nameTokens.count == 1 else {
                 throw ZolangError(type: nameTokens.isEmpty ? .missingIdentifier : .unexpectedToken(nameTokens[1], nil),
                                   file: context.file,
-                                  line: context.line + lineCountToIdentifierIndex)
+                                  line: context.line)
             }
-            
-            let lineCountToAccessLimitation = tokens
-                .newLineCount(to: accessLimitationIndex != nil ? accessLimitationIndex! : i,
-                              startingAt: i)
-
-            guard accessLimitations.count <= 1 else {
-                throw ZolangError(type: nameTokens.isEmpty ? .missingIdentifier : .unexpectedToken(accessLimitations[1], nil),
-                                  file: context.file,
-                                  line: context.line + lineCountToAccessLimitation)
-            }
-            
-            context.line += tokens.newLineCount(to: asOrReturnIndex, startingAt: i)
             
             if isPropertyDeclaration {
 
@@ -115,24 +119,23 @@ public struct DescriptionList: Node {
                                       line: context.line)
                 }
 
+
                 let typeTokens = Array(tokens[(asOrReturnIndex + 1)..<endOfType])
+                
+                context.line += tokens.newLineCount(to: asOrReturnIndex + 1,
+                                                    startingAt: identifierIndex)
 
                 let type = try Type(tokens: typeTokens, context: &context)
                 
                 let nextI = endOfType + 1
                 context.line += tokens.newLineCount(to: nextI, startingAt: endOfType)
                 
-                let tupleToAppend: (isStatic: Bool, name: String, accessLimitation: String?, type: Type) = (
-                    isStatic,
-                    tokens[identifierIndex].payload!,
-                    accessLimitationIndex != nil ? tokens[accessLimitationIndex!].payload! : nil,
-                    type
-                )
-
-                properties.append(tupleToAppend)
+                properties.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, type))
                 
                 i = nextI
             } else {
+                let asOrReturnIndex = tokens.index(of: [ .return ], startingAt: i)!
+                
                 let indexOfCurly = tokens.index(of: [ .curlyOpen ],
                                                 skipping: [ .newline ],
                                                 startingAt: asOrReturnIndex)
@@ -152,14 +155,7 @@ public struct DescriptionList: Node {
                 let function = try Function(tokens: Array(tokens[(asOrReturnIndex + 1)...range.upperBound]),
                                             context: &context)
                 
-                let tupleToAppend: (isStatic: Bool, name: String, accessLimitation: String?, function: Function) = (
-                    isStatic,
-                    tokens[identifierIndex].payload!,
-                    accessLimitationIndex != nil ? tokens[accessLimitationIndex!].payload! : nil,
-                    function
-                )
-
-                functions.append(tupleToAppend)
+                functions.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, function))
                 
                 i = range.upperBound + 1
             }
@@ -192,32 +188,31 @@ public struct DescriptionList: Node {
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
         let props = try properties.map { (arg) -> [String: Any] in
-            let (isStatic, name, accessLimitation, type) = arg
-
+            let (isStatic, accessLimitation, name, type) = arg
             var ctx: [String: Any] = [
-                "name": name,
                 "isStatic": isStatic,
+                "name": name,
                 "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
             ]
             
             if let accessLimitation = accessLimitation {
                 ctx["accessLimitation"] = accessLimitation
             }
-
+            
             return ctx
         }
         
-        let funcs = try functions.map { (isStatic, name, accessLimitation, function) -> [String: Any] in
+        let funcs = try functions.map { (isStatic, accessLimitation, name, function) -> [String: Any] in
             var ctx: [String: Any] = [
-                "name": name,
                 "isStatic": isStatic,
+                "name": name,
                 "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
             ]
             
             if let accessLimitation = accessLimitation {
                 ctx["accessLimitation"] = accessLimitation
             }
-
+            
             return ctx
         }
         return [

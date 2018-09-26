@@ -35,7 +35,7 @@ public enum RegExRepo {
     public static let prefixOperator = "not|-"
     public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
     
-    public static let accessLimitation = "privately"
+    public static let accessLimitation = "private"
 
     public static let boolean = "true|false"
     public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else|static"
