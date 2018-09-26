@@ -35,12 +35,12 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ## Roadmap / Upcoming Features
 
-- Access Levels
-- Comments
-- Default Values
+- Access Levels (Scheduled v0.0.8 - Implemented)
+- Comments (Scheduled v0.0.8 - Implemented)
+- Default Values (Scheduled v0.0.8 - Implemented)
+- Hot reload (compilation) - (Scheduled v0.1.x)
 - Type checking
 - For loop
-- Hot reload (compilation)
 - Function mutation
 
 ## Documentation
