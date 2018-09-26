@@ -54,16 +54,18 @@ public struct CodeGenerator {
                     } catch {}
                     
                     try generated.write(to: toURL, atomically: true, encoding: .utf8)
+                    
+                    Log.plain("Finished compiling to \(toURL.path)")
 
                 } catch {
                     hasErrors = true
-                    Log.error("\n------------------\nError: \(error.localizedDescription)\n")
+                    Log.error("Error: \(error.localizedDescription)")
                 }
             }
         }
         
         guard !hasErrors else { exit(1) }
-        Log.info("Done!")
+        Log.info("Success!")
         
     }
 }

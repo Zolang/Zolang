@@ -34,15 +34,19 @@ public enum RegExRepo {
     
     public static let prefixOperator = "not|-"
     public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
+    
+    public static let accessLimitation = "private"
 
     public static let boolean = "true|false"
-    public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else"
+    public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else|static"
 }
 
 extension RegExRepo {
     public static let tokenizers: [RegEx: Tokenizer] = [
         RegExRepo.inlineWhitespaceCharacter: { _ in nil },
         RegExRepo.newline: { _ in Token(type: .newline) },
+        
+        RegExRepo.accessLimitation: { return Token(type: .accessLimitation, payload: $0) },
         
         RegExRepo.prefixOperator: { return Token(type: .prefixOperator, payload: $0) },
         RegExRepo.`operator`: { return Token(type: .`operator`, payload: $0) },

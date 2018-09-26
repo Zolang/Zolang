@@ -34,14 +34,38 @@ class DescriptionListTests: XCTestCase {
         \(functionFailure)
         """
     }
+
+    var failMock3: String {
+        return """
+        some as number
+        
+        static private name as text
+        """
+    }
+    
+    var failMock4: String {
+        return """
+        private static private some as number
+        
+        static name as text
+        """
+    }
+    
+    var failMock5: String {
+        return """
+        private static static some as number
+        
+        static name as text
+        """
+    }
     
     let mock1 = """
     name as text
     friends as list of Person
     street as text
-    house_number as number
-    
-    address return text from () {
+    private static house_number as number
+
+    private address return text from () {
         return "${street} ${house_number}"
     }
 
@@ -52,17 +76,17 @@ class DescriptionListTests: XCTestCase {
     is_gamer as boolean
     """
     
-    let expected1: (properties: [(String, Type)], functionReturnTypes: [(String, Type)]) = (
+    let expected1: (properties: [(Bool, String?, String, Type)], functionReturnTypes: [(Bool, String?, String, Type)]) = (
         [
-            ("name", .primitive(.text)),
-            ("friends", .list(.custom("Person"))),
-            ("street", .primitive(.text)),
-            ("house_number", .primitive(.number)),
-            ("is_gamer", .primitive(.boolean)),
+            (false, nil, "name", .primitive(.text)),
+            (false, nil, "friends", .list(.custom("Person"))),
+            (false, nil, "street", .primitive(.text)),
+            (true, "private", "house_number", .primitive(.number)),
+            (false, nil, "is_gamer", .primitive(.boolean)),
         ],
         [
-            ("address", .primitive(.text)),
-            ("yell", .primitive(.text))
+            (false, "private", "address", .primitive(.text)),
+            (false, nil, "yell", .primitive(.text))
         ]
     )
 
@@ -78,7 +102,10 @@ class DescriptionListTests: XCTestCase {
         
         let invalidSamples: [(String, Int)] = [
             (failMock1, 4),
-            (failMock2, 7)
+            (failMock2, 7),
+            (failMock3, 3),
+            (failMock4, 1),
+            (failMock5, 1)
         ]
         
         invalidSamples.forEach { (code, line) in
@@ -95,8 +122,8 @@ class DescriptionListTests: XCTestCase {
     }
     
     func testInit() {
-        
-        let validSamples: [(String, (properties: [(String, Type)], functionReturnTypes: [(String, Type)]), Int)] = [
+        typealias Property = (Bool, String?, String, Type)
+        let validSamples: [(String, (properties: [Property], functionReturnTypes: [Property]), Int)] = [
             (mock1, expected1, 14)
         ]
         
@@ -108,13 +135,17 @@ class DescriptionListTests: XCTestCase {
             do {
                 let dlist = try DescriptionList(tokens: tokens, context: &context)
                 zip(dlist.properties, expected1.properties).forEach({ first, second in
-                    XCTAssert(first.name == second.0)
-                    XCTAssert(first.type == second.1)
+                    XCTAssert(first.isStatic == second.0)
+                    XCTAssert(first.accessLimitation == second.1)
+                    XCTAssert(first.name == second.2)
+                    XCTAssert(first.type == second.3)
                 })
                 
                 zip(dlist.functions, expected1.functionReturnTypes).forEach({ first, second in
-                    XCTAssert(first.name == second.0)
-                    XCTAssert(first.function.returnType == second.1)
+                    XCTAssert(first.isStatic == second.0)
+                    XCTAssert(first.accessLimitation == second.1)
+                    XCTAssert(first.name == second.2)
+                    XCTAssert(first.function.returnType == second.3)
                 })
                 
                 XCTAssert(context.line == lineAtEnd)

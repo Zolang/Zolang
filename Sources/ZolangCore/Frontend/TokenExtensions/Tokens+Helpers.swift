@@ -243,7 +243,8 @@ extension Array where Element == Token {
              .equals, .make, .parensClose,
              .bracketOpen, .bracketClose,
              .newline, .describe, .of, .let,
-             .operator, .other:
+             .operator, .other, .accessLimitation,
+             .static:
             return nil
         }
         

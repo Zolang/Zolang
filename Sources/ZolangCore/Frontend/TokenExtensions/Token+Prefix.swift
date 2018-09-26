@@ -64,7 +64,9 @@ extension Array where Element == Token {
              .other,
              .dot,
              .return,
-             .operator:
+             .operator,
+             .accessLimitation,
+             .static:
             return false
         case .prefixOperator:
             guard self.count > 1 else { return false }

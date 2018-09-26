@@ -9,8 +9,8 @@ import Foundation
 
 public struct DescriptionList: Node {
     
-    public let properties: [(name: String, type: Type)]
-    public let functions: [(name: String, function: Function)]
+    public let properties: [(isStatic: Bool, accessLimitation: String?, name: String, type: Type)]
+    public let functions: [(isStatic: Bool, accessLimitation: String?, name: String, function: Function)]
     
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
@@ -22,14 +22,61 @@ public struct DescriptionList: Node {
                               line: context.line)
         }
         
-        var properties: [(String, Type)] = []
-        var functions: [(String, Function)] = []
+        var properties: [(Bool, String?, String, Type)] = []
+        var functions: [(Bool, String?, String, Function)] = []
 
         var i = 0
         
         let trailingLines = tokens.trimTrailingNewlines()
         
         while i < tokens.count {
+            var isStatic = false
+            let oldI = i
+            var accessLimitation: String? = nil
+            if tokens.hasPrefixTypes(types: [ .accessLimitation ],
+                                     skipping: [ .newline ],
+                                     startingAt: i) {
+                let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
+                                                         startingAt: i)!
+                accessLimitation = tokens[accessLimitationIndex].payload!
+                i = accessLimitationIndex + 1
+            }
+            
+            if tokens.hasPrefixTypes(types: [ .static ],
+                                     skipping: [ .newline ],
+                                     startingAt: i) {
+                isStatic = true
+                i = tokens.index(of: [ .static ],
+                                 startingAt: i)! + 1
+            }
+            
+            // Validate...
+            // Prevent further attributes (accessLimitations or static keyword)
+
+            guard tokens.hasPrefixTypes(types: [ .accessLimitation ],
+                                        skipping: [ .newline ],
+                                        startingAt: i) == false else {
+                let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
+                                                         startingAt: i)!
+                context.line += tokens.newLineCount(to: accessLimitationIndex, startingAt: oldI)
+                throw ZolangError(type: .unexpectedToken(tokens[accessLimitationIndex], .identifier),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            guard tokens.hasPrefixTypes(types: [ .static ],
+                                        skipping: [ .newline ],
+                                        startingAt: i) == false else {
+                let staticIndex = tokens.index(of: [ .static ],
+                                                         startingAt: i)!
+                context.line += tokens.newLineCount(to: staticIndex, startingAt: oldI)
+                throw ZolangError(type: .unexpectedToken(tokens[staticIndex], .identifier),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            context.line += tokens.newLineCount(to: i, startingAt: oldI)
+            
             let isPropertyDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .as ],
                                                               skipping: [ .newline ],
                                                               startingAt: i)
@@ -83,7 +130,7 @@ public struct DescriptionList: Node {
                 let nextI = endOfType + 1
                 context.line += tokens.newLineCount(to: nextI, startingAt: endOfType)
                 
-                properties.append((tokens[identifierIndex].payload!, type))
+                properties.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, type))
                 
                 i = nextI
             } else {
@@ -108,7 +155,7 @@ public struct DescriptionList: Node {
                 let function = try Function(tokens: Array(tokens[(asOrReturnIndex + 1)...range.upperBound]),
                                             context: &context)
                 
-                functions.append((tokens[identifierIndex].payload!, function))
+                functions.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, function))
                 
                 i = range.upperBound + 1
             }
@@ -141,18 +188,32 @@ public struct DescriptionList: Node {
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
         let props = try properties.map { (arg) -> [String: Any] in
-            let (name, type) = arg
-            return [
+            let (isStatic, accessLimitation, name, type) = arg
+            var ctx: [String: Any] = [
+                "isStatic": isStatic,
                 "name": name,
                 "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
             ]
+            
+            if let accessLimitation = accessLimitation {
+                ctx["accessLimitation"] = accessLimitation
+            }
+            
+            return ctx
         }
         
-        let funcs = try functions.map { (name, function) -> [String: Any] in
-            return [
+        let funcs = try functions.map { (isStatic, accessLimitation, name, function) -> [String: Any] in
+            var ctx: [String: Any] = [
+                "isStatic": isStatic,
                 "name": name,
                 "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
             ]
+            
+            if let accessLimitation = accessLimitation {
+                ctx["accessLimitation"] = accessLimitation
+            }
+            
+            return ctx
         }
         return [
             "properties": props,
