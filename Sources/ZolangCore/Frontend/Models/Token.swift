@@ -34,9 +34,12 @@ public enum TokenType: String {
     case `if`
     case `else`
     case make
+    case `static`
     
     case `operator`
     case prefixOperator
+    
+    case accessLimitation
     
     case stringLiteral
     case booleanLiteral
@@ -84,7 +87,10 @@ public struct Token: Equatable {
              (.booleanLiteral, .booleanLiteral),
              (.floatingPoint, .floatingPoint),
              (.decimal, .decimal),
-             (.other, .other):
+             (.other, .other),
+             (.prefixOperator, .prefixOperator),
+             (.accessLimitation, .accessLimitation),
+             (.static, .static):
             return lhs.payload == rhs.payload
         default:
             return false
