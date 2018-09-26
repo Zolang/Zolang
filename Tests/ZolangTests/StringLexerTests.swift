@@ -178,7 +178,8 @@ class StringLexerTests: XCTestCase {
             "be",
             "of",
             "if",
-            "else"
+            "else",
+            "static"
         ]
         
         XCTAssert(validStrings.joined(separator: "|").sorted() == regex.sorted())
