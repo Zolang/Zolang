@@ -41,6 +41,8 @@ public enum TokenType: String {
     
     case accessLimitation
     
+    case comment
+
     case textLiteral
     case booleanLiteral
     case floatingPoint
@@ -60,6 +62,7 @@ public struct Token: Equatable {
     public static func == (lhs: Token, rhs: Token) -> Bool {
         switch (lhs.type, rhs.type) {
         case (.parensOpen, .parensOpen),
+             (.comment, .comment),
              (.parensClose, .parensClose),
              (.bracketOpen, .bracketOpen),
              (.bracketClose, .bracketClose),

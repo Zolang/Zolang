@@ -36,6 +36,8 @@ public enum RegExRepo {
     public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
     
     public static let accessLimitation = "private"
+    
+    public static let comment = "\\#.*"
 
     public static let boolean = "true|false"
     public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else|static"
@@ -46,6 +48,10 @@ extension RegExRepo {
         RegExRepo.inlineWhitespaceCharacter: { _ in nil },
         RegExRepo.newline: { _ in Token(type: .newline) },
         
+        RegExRepo.comment: {
+            return Token(type: .comment,
+                         payload: String($0.suffix(from: $0.index($0.startIndex, offsetBy: 1))))
+        },
         RegExRepo.accessLimitation: { return Token(type: .accessLimitation, payload: $0) },
         
         RegExRepo.prefixOperator: { return Token(type: .prefixOperator, payload: $0) },

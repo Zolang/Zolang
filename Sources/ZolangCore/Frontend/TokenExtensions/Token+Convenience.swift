@@ -47,6 +47,10 @@ extension Token {
         return Token(type: .textLiteral, payload: text)
     }
     
+    public static func comment(_ text: String) -> Token {
+        return Token(type: .comment, payload: text)
+    }
+    
     public static func booleanLiteral(_ value: String) -> Token {
         return Token(type: .booleanLiteral, payload: value)
     }
