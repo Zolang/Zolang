@@ -187,36 +187,70 @@ public struct DescriptionList: Node {
     }
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
-        let props = try properties.map { (arg) -> [String: Any] in
-            let (isStatic, accessLimitation, name, type) = arg
-            var ctx: [String: Any] = [
-                "isStatic": isStatic,
-                "name": name,
-                "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
-            ]
-            
-            if let accessLimitation = accessLimitation {
-                ctx["accessLimitation"] = accessLimitation
+        
+        
+        let staticProps = try properties
+            .filter { $0.isStatic }
+            .map { (arg) -> [String: Any] in
+                let (isStatic, accessLimitation, name, type) = arg
+                var ctx: [String: Any] = [
+                    "name": name,
+                    "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
+                ]
+                
+                if let accessLimitation = accessLimitation {
+                    ctx["accessLimitation"] = accessLimitation
+                }
+                
+                return ctx
             }
-            
-            return ctx
+        
+        let props = try properties
+            .map { (arg) -> [String: Any] in
+                let (_, accessLimitation, name, type) = arg
+                var ctx: [String: Any] = [
+                    "name": name,
+                    "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
+                ]
+                
+                if let accessLimitation = accessLimitation {
+                    ctx["accessLimitation"] = accessLimitation
+                }
+                
+                return ctx
         }
         
-        let funcs = try functions.map { (isStatic, accessLimitation, name, function) -> [String: Any] in
-            var ctx: [String: Any] = [
-                "isStatic": isStatic,
-                "name": name,
-                "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
-            ]
-            
-            if let accessLimitation = accessLimitation {
-                ctx["accessLimitation"] = accessLimitation
+        let funcs = try functions
+            .map { (_, accessLimitation, name, function) -> [String: Any] in
+                var ctx: [String: Any] = [
+                    "name": name,
+                    "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
+                ]
+                
+                if let accessLimitation = accessLimitation {
+                    ctx["accessLimitation"] = accessLimitation
+                }
+                
+                return ctx
             }
-            
-            return ctx
-        }
+        let staticFuncs = try functions
+            .filter { $0.isStatic }
+            .map { (_, accessLimitation, name, function) -> [String: Any] in
+                var ctx: [String: Any] = [
+                    "name": name,
+                    "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
+                ]
+                
+                if let accessLimitation = accessLimitation {
+                    ctx["accessLimitation"] = accessLimitation
+                }
+                
+                return ctx
+            }
         return [
+            "staticProperties": staticProps,
             "properties": props,
+            "staticFunctions": staticFuncs,
             "functions": funcs
         ]
     }
