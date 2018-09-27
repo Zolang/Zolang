@@ -44,8 +44,8 @@ extension ZolangError {
                 return "\(unexpectedTypeStr) \(expectedStr)"
             case .unexpectedStartOfStatement(let statementType):
                 switch statementType {
-                case .expression:
-                    return "Unexpected start of expression"
+                case .comment, .expression:
+                    return "Unexpected start of \(statementType.description)"
                 case .ifStatement:
                     return "Unexpected start of \(statementType.description) - expected: if (<expression>) { <code> }"
                 case .modelDescription:

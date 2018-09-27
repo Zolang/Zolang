@@ -43,6 +43,9 @@ public indirect enum CodeBlock: Node {
         var leftEndIndex: Int
 
         switch prefixType {
+        case .comment:
+            left = .comment(workingTokens.first!.payload!)
+            leftEndIndex = 1
         case .expression:
             guard let range = workingTokens.rangeOfExpression() else {
                 throw ZolangError(type: .invalidExpression,

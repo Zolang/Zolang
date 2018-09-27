@@ -17,35 +17,13 @@ public enum StatementType {
     case whileLoop
     case ifStatement
     case returnStatement
-}
-
-extension StatementType {
-    var nodeType: Node.Type {
-        switch self {
-        case .modelDescription:
-            return ModelDescription.self
-        case .variableDeclaration:
-            return VariableDeclaration.self
-        case .functionDeclaration:
-            return FunctionDeclaration.self
-        case .functionMutation:
-            return FunctionMutation.self
-        case .variableMutation:
-            return VariableMutation.self
-        case .whileLoop,
-             .returnStatement:
-            return CodeBlock.self//return WhileLoop.self
-        case .ifStatement:
-            return IfStatement.self
-        case .expression:
-            return Expression.self
-        }
-    }
+    case comment
 }
 
 extension StatementType: CustomStringConvertible {
     public var description: String {
         switch self {
+        case .comment: return "comment"
         case .ifStatement: return "if statement"
         case .modelDescription: return "model description"
         case .functionDeclaration: return "function declaration"

@@ -192,7 +192,7 @@ public struct DescriptionList: Node {
         let staticProps = try properties
             .filter { $0.isStatic }
             .map { (arg) -> [String: Any] in
-                let (isStatic, accessLimitation, name, type) = arg
+                let (_, accessLimitation, name, type) = arg
                 var ctx: [String: Any] = [
                     "name": name,
                     "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
