@@ -24,7 +24,7 @@ class ExpressionTests: XCTestCase {
         let samples: [String] = [
             "let some be\nsome",
             "make person.name be \"valdi\"",
-            "describe Person as {\nname as text }"
+            "describe Person as {\nname as text }",
         ]
 
         samples

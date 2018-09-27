@@ -20,6 +20,7 @@ public indirect enum Expression: Node {
     case functionCall(String, [Expression])
     case prefix(String, Expression)
     case parentheses(Expression)
+    case dot(Expression, Expression)
     case operation(Expression, String, Expression)
     
     public init(tokens: [Token], context: inout ParserContext) throws {
@@ -58,6 +59,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: range.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard let identifier = tokens.first(where: { $0.type == .identifier })?.payload else {
                     throw ZolangError(type: .missingIdentifier, file: context.file, line: context.line)
@@ -104,6 +109,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: parensRange.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 let innerTokenRange: CountableRange<Int> = (parensRange.lowerBound + 1)..<parensRange.upperBound
                 let innerTokens = Array(tokens[innerTokenRange])
@@ -125,7 +134,11 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
-            } else {
+            } else if let dotExpression = try Expression.parseDotSeparated(index: parensRange.upperBound + 1,
+                                                                            tokens: tokens,
+                                                                            context: &context) {
+                self = dotExpression
+            }  else {
                 self = .functionCall(identifier, try .parseExpressionList(tokens: tokens,
                                                                           scopeDef: (.parensOpen, .parensClose),
                                                                           seperators: [ .comma ],
@@ -142,6 +155,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: rangeOfBrackets.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 self = .listLiteral(try .parseExpressionList(tokens: tokens,
                                                              scopeDef: (.bracketOpen, .bracketClose),
@@ -154,6 +171,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -169,6 +190,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                            tokens: tokens,
+                                                                            context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -184,6 +209,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -199,6 +228,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -263,6 +296,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -303,6 +340,35 @@ public indirect enum Expression: Node {
         return .operation(firstExpression,
                           tokens[operatorIndex + trailing].payload!,
                           secondExpression)
+    }
+    
+    static func parseDotSeparated(index: Int, tokens: [Token], context: inout ParserContext) throws -> Expression? {
+        var tokens = tokens
+        
+        guard index < tokens.count,
+            let nextIndex = tokens.index(ofFirstThatIsNot: .newline, startingAt: index),
+            nextIndex != tokens.count - 1,
+            tokens[nextIndex].type == .dot else {
+                return nil
+        }
+        
+        let newlinesToAdd = tokens.trimNewlines(to: nextIndex)
+        let operatorIndex = nextIndex - newlinesToAdd
+        
+        let leftTokens = Array(tokens[..<operatorIndex])
+        let rightTokens = Array(tokens[operatorIndex+1..<tokens.count])
+        
+        var leftExpressionTokens = leftTokens
+        let trailing = leftExpressionTokens.trimTrailingNewlines()
+        
+        let firstExpression = try Expression(tokens: leftExpressionTokens, context: &context)
+        
+        context.line += newlinesToAdd + trailing
+        
+        let secondExpression = try Expression(tokens: rightTokens, context: &context)
+        
+        return .dot(firstExpression,
+                    secondExpression)
     }
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
@@ -376,6 +442,12 @@ public indirect enum Expression: Node {
                 "leftExpression": try lExpr.compile(buildSetting: buildSetting, fileManager: fm),
                 "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm),
                 "operator": op
+            ]
+        case .dot(let lExpr, let rExpr):
+            return [
+                "expressionType": "operation",
+                "leftExpression": try lExpr.compile(buildSetting: buildSetting, fileManager: fm),
+                "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm)
             ]
         }
     }
