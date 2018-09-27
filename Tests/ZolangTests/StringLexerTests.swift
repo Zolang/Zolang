@@ -124,7 +124,7 @@ class StringLexerTests: XCTestCase {
         let expected = [
             (regex: RegExRepo.decimal, valid: "12394", invalid: "bla"),
             (regex: RegExRepo.floatingPoint, valid: "555.555", invalid: "123"),
-            (regex: RegExRepo.string, valid: "\"12\\\\394\"", invalid: "\"12\\394\""),
+            (regex: RegExRepo.string, valid: "\"12\\\\394\"", invalid: "\"12394\\\""),
             (regex: RegExRepo.boolean, valid: "true", invalid: "blatrue"),
             (regex: RegExRepo.boolean, valid: "false", invalid: "bla")
         ]

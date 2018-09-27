@@ -25,7 +25,7 @@ public enum RegExRepo {
     public static let curlyOpen = "\\{"
     public static let curlyClose = "\\}"
     
-    public static let string = "\\\"([^\\\\\\\"]|\\\\\\\"|\\\\\\\\)*\\\""
+    public static let string = "\\\"(\\$\\{.*\\}|(\\\\.|[^\\\"\\\\]))*\\\""//"\\\"([^\\\\\\\"]|\\\\\\\"|\\\\\\\\)*\\\""
     public static let decimal = "\\d+"
     public static let floatingPoint = "\(decimal)\(dot)\(decimal)"
     
@@ -65,7 +65,7 @@ extension RegExRepo {
             let start = payload.index(after: payload.startIndex)
             let end = payload.index(before: payload.endIndex)
 
-            return Token(type: .stringLiteral, payload: String(payload[start..<end]))
+            return Token(type: .textLiteral, payload: String(payload[start..<end]))
         },
         RegExRepo.floatingPoint: { Token(type: .floatingPoint, payload: $0) },
         RegExRepo.decimal: { Token(type: .decimal, payload: $0) },

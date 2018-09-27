@@ -231,8 +231,8 @@ class ExpressionTests: XCTestCase {
             
             XCTAssert(paramStr == paramIdentifier)
             
-            guard case let .stringLiteral(strLit) = innerExpressions[1] else {
-                XCTFail("expression should return stringLiteral")
+            guard case let .textLiteral(strLit) = innerExpressions[1] else {
+                XCTFail("expression should return textLiteral")
                 fatalError()
             }
             
@@ -289,8 +289,8 @@ class ExpressionTests: XCTestCase {
             
             XCTAssert(paramStr == paramIdentifier)
             
-            guard case let .stringLiteral(strLit) = innerExpressions[1] else {
-                XCTFail("expression should return stringLiteral")
+            guard case let .textLiteral(strLit) = innerExpressions[1] else {
+                XCTFail("expression should return textLiteral")
                 fatalError()
             }
             
@@ -334,6 +334,61 @@ class ExpressionTests: XCTestCase {
 
         } catch {
             XCTFail("Should not fail: \(error.localizedDescription)")
+        }
+    }
+    
+    func testTemplatedText() {
+        
+        let valid: [(String, ([Expression]) -> Int)] = [
+            ("\"Hello ${\"world\"}\"", { expr in
+                guard expr.count == 2 else { return -1 }
+                guard case let .textLiteral(str1) = expr[0] else { return -2 }
+                let check1 = str1 == "Hello "
+                
+                guard case let .textLiteral(str2) = expr[1] else { return -2 }
+                let check2 = str2 == "world"
+                return check1 && check2 ? 0 : 1
+            }),
+            ("\"Hello ${getString()}\"", { expr in
+                guard expr.count == 2 else { return -3 }
+                guard case let .textLiteral(str1) = expr[0] else { return -4 }
+                let check1 = str1 == "Hello "
+                
+                guard case let .functionCall(identifier, _) = expr[1] else { return -4 }
+                let check2 = identifier == "getString"
+                return check1 && check2 ? 0 : 2
+            }),
+            ("\"What's up ${homie} hundred $ bill y'all. Hello ${a[2]}\"", { expr in
+                guard expr.count == 4 else { return -5 }
+                guard case let .textLiteral(str1) = expr[0] else { return -6 }
+                let check1 = str1 == "What's up "
+
+                guard case let .identifier(str2) = expr[1] else { return -7 }
+                let check2 = str2 == "homie"
+                
+                guard case let .textLiteral(str3) = expr[2] else { return -8 }
+                let check3 = str3 == " hundred $ bill y'all. Hello "
+
+                guard case let .listAccess(identifier, inner) = expr[3] else { return -9 }
+                guard case let .integerLiteral(num) = inner else { return -10 }
+                let check4 = num == "2" && identifier == "a"
+                return check1 && check2 && check3 && check4 ? 0 : 3
+            })
+        ]
+        
+        valid.forEach { (code, validate) in
+            var context = ParserContext(file: "test.zolang")
+            XCTAssert(code.zo.getPrefix(regex: RegExRepo.string) == code)
+            do {
+                let expression = try Expression(tokens: code.zo.tokenize(), context: &context)
+                guard case let .templatedText(expressions) = expression else {
+                    return XCTFail()
+                }
+                let validation = validate(expressions)
+                XCTAssert(validation == 0, "\(validation)")
+            } catch {
+                XCTFail(error.localizedDescription)
+            }
         }
     }
 }

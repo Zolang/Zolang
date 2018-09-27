@@ -41,7 +41,7 @@ public enum TokenType: String {
     
     case accessLimitation
     
-    case stringLiteral
+    case textLiteral
     case booleanLiteral
     case floatingPoint
     case decimal
@@ -83,7 +83,7 @@ public struct Token: Equatable {
              (.return, .return),
              (.let, .let),
              (.`operator`, .`operator`),
-             (.stringLiteral, .stringLiteral),
+             (.textLiteral, .textLiteral),
              (.booleanLiteral, .booleanLiteral),
              (.floatingPoint, .floatingPoint),
              (.decimal, .decimal),

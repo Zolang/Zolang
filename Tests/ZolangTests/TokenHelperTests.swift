@@ -111,7 +111,7 @@ class TokenHelperTests: XCTestCase {
             .identifier("name"), .as, .identifier("text"), .newline,
             .newline,
             .identifier("speak"), .return, .from, .parensOpen, .parensClose, .curlyOpen, .newline,
-            .identifier("print"), .parensOpen, .stringLiteral("Woof: ${name}"), .parensClose, .newline,
+            .identifier("print"), .parensOpen, .textLiteral("Woof: ${name}"), .parensClose, .newline,
             .curlyClose, .newline,
             .curlyClose
         ]

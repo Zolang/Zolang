@@ -43,8 +43,8 @@ extension Token {
         return Token(type: .identifier, payload: label)
     }
     
-    public static func stringLiteral(_ text: String) -> Token {
-        return Token(type: .stringLiteral, payload: text)
+    public static func textLiteral(_ text: String) -> Token {
+        return Token(type: .textLiteral, payload: text)
     }
     
     public static func booleanLiteral(_ value: String) -> Token {

@@ -74,7 +74,7 @@ extension Array where Element == Token {
         case .identifier,
              .floatingPoint,
              .decimal,
-             .stringLiteral,
+             .textLiteral,
              .booleanLiteral,
              .parensOpen:
             return true
@@ -114,7 +114,7 @@ extension Array where Element == Token {
     public func isPrefixLiteral() -> Bool {
         guard !isEmpty else { return false }
         let valid: [TokenType] = [
-            .stringLiteral,
+            .textLiteral,
             .floatingPoint,
             .decimal
         ]

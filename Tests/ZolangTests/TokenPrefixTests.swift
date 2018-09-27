@@ -36,7 +36,7 @@ class TokenPrefixTests: XCTestCase {
         ]
         
         let variableDeclaration: [Token] = [
-            .let, .identifier("someVar"), .be, .stringLiteral("someVal")
+            .let, .identifier("someVar"), .be, .textLiteral("someVal")
         ]
         
         let notZolang: [Token] = [
@@ -96,7 +96,7 @@ class TokenPrefixTests: XCTestCase {
         XCTAssert(expectedToBeExpression.prefixType() == .expression)
         
         expectedToBeExpression = [
-            .stringLiteral("some"), .operator("equals"), .identifier("someStr")
+            .textLiteral("some"), .operator("equals"), .identifier("someStr")
         ]
         
         XCTAssert(expectedToBeExpression.prefixType() == .expression)

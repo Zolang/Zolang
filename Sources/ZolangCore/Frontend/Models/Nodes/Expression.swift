@@ -11,8 +11,8 @@ public indirect enum Expression: Node {
     
     case integerLiteral(String)
     case floatLiteral(String)
-    case stringLiteral(String)
-    case templatedString([Expression])
+    case textLiteral(String)
+    case templatedText([Expression])
     case booleanLiteral(String)
     case identifier(String)
     case listAccess(String, Expression)
@@ -35,7 +35,7 @@ public indirect enum Expression: Node {
             (.identifier, [ .identifier ]),
             (.integerLiteral, [ .decimal ]),
             (.floatLiteral, [ .floatingPoint ]),
-            (.stringLiteral, [ .stringLiteral ]),
+            (.textLiteral, [ .textLiteral ]),
             (.booleanLiteral, [ .booleanLiteral ])
         ]
         
@@ -193,7 +193,7 @@ public indirect enum Expression: Node {
                 
                 self = .integerLiteral(tokens.first!.payload!)
             }
-        case .stringLiteral:
+        case .textLiteral:
             if let operatorExpression = try Expression.parseOperator(index: 1,
                                                                      tokens: tokens,
                                                                      context: &context) {
@@ -211,7 +211,7 @@ public indirect enum Expression: Node {
                 var i = 0
                 while i < str.count {
                     let working = String(str.suffix(from: str.index(str.startIndex, offsetBy: i)))
-                    if working.zo.getPrefix(regex: "(^\\{)|([^\\\\]\\$\\{)") != nil,
+                    if working.zo.getPrefix(regex: "[^\\\\]\\$\\{") != nil,
                         let range = str.zo.getScope(open: "{", close: "}", start: i) {
                         i = range.upperBound + 1
                         templateRanges.append(range)
@@ -221,7 +221,7 @@ public indirect enum Expression: Node {
                 }
                 
                 guard templateRanges.isEmpty == false else {
-                    self = .stringLiteral(str)
+                    self = .textLiteral(str)
                     return
                 }
                 
@@ -234,28 +234,28 @@ public indirect enum Expression: Node {
                     }
 
                     let rangeLower = str.index(str.startIndex, offsetBy: range.lowerBound)
-                    let rangeUpper = str.index(str.startIndex, offsetBy: range.lowerBound)
+                    let rangeUpper = str.index(str.startIndex, offsetBy: range.upperBound)
                     
                     if lastEndIndex != rangeLower {
-                        let startOfTemplate = str.index(str.startIndex, offsetBy: range.lowerBound - 1
-                        let range = lastEndIndex..<startOfTemplate)
+                        let startOfTemplate = str.index(str.startIndex, offsetBy: range.lowerBound - 1)
+                        let range = lastEndIndex..<startOfTemplate
                         
                         
-                        expressions.append(.stringLiteral(String(str[range])))
+                        expressions.append(.textLiteral(String(str[range])))
                     }
 
                     let lower = str.index(str.startIndex, offsetBy: range.lowerBound + 1)
                     let upper = str.index(str.startIndex, offsetBy: range.upperBound - 1)
                     
                     let expressionRange = lower...upper
-                    
-                    expressions.append(try Expression(tokens: String(str[expressionRange]).zo.tokenize(),
-                                                      context: &context))
+                    let expression = try Expression(tokens: String(str[expressionRange]).zo.tokenize(),
+                                                    context: &context)
+                    expressions.append(expression)
                     
                     lastEndIndex = str.index(rangeUpper, offsetBy: 1)
                 }
 
-                self = .templatedString(expressions)
+                self = .templatedText(expressions)
             }
         case .booleanLiteral:
             if let operatorExpression = try Expression.parseOperator(index: 1,
@@ -328,19 +328,19 @@ public indirect enum Expression: Node {
                 "expressionType": "integerLiteral",
                 "value": str
             ]
-        case .stringLiteral(let str):
+        case .textLiteral(let str):
             return [
-                "expressionType": "stringLiteral",
+                "expressionType": "textLiteral",
                 "value": str
             ]
-        case .templatedString(let expressions):
+        case .templatedText(let expressions):
             let expressionStrings = try expressions
                 .map { expr in
                     try expr.compile(buildSetting: buildSetting,
                                      fileManager: fm)
                 }
             return [
-                "expressionType": "templatedString",
+                "expressionType": "templatedText",
                 "expressions": expressionStrings
             ]
         case .identifier(let str):
@@ -391,7 +391,7 @@ extension Expression {
         case identifier
         case integerLiteral
         case floatLiteral
-        case stringLiteral
+        case textLiteral
         case booleanLiteral
     }
 }
