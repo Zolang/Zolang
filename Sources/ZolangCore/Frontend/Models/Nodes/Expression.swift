@@ -366,7 +366,11 @@ public indirect enum Expression: Node {
         context.line += newlinesToAdd + trailing
         
         let secondExpression = try Expression(tokens: rightTokens, context: &context)
-        
+        guard secondExpression.canDotSyntax() == false else {
+            throw ZolangError(type: .invalidExpression,
+                              file: context.file,
+                              line: context.line)
+        }
         return .dot(firstExpression,
                     secondExpression)
     }
@@ -449,6 +453,15 @@ public indirect enum Expression: Node {
                 "leftExpression": try lExpr.compile(buildSetting: buildSetting, fileManager: fm),
                 "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm)
             ]
+        }
+    }
+    
+    func canDotSyntax() -> Bool {
+        switch self {
+        case .booleanLiteral(_), .floatLiteral(_), .listLiteral(_), .integerLiteral(_), .operation(_, _, _), .parentheses(_), .templatedText(_), .textLiteral(_), .prefix(_, _):
+            return false
+        case .dot(_, _), .functionCall(_, _), .identifier(_), .listAccess(_, _):
+            return true
         }
     }
 }
