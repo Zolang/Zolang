@@ -43,10 +43,10 @@ extension ZolangExtensions where Base == String {
             })
             
             if let tokenBuilder = matched {
-                if let tokenStr = content.zo.getPrefix(regex: tokenBuilder.key) {
+                if let tokenStr = content.zo.getPrefix(regex: tokenBuilder.regEx) {
                     content = content.zo.offsetted(by: tokenStr.count)
                     
-                    if let token = tokenBuilder.value(tokenStr) {
+                    if let token = tokenBuilder.tokenizer(tokenStr) {
                         tokens.append(token)
                     }
                 }
