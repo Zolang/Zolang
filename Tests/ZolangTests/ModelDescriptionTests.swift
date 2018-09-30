@@ -44,7 +44,7 @@ class ModelDescriptionTests: XCTestCase {
         name as text
         friends as list of Person
         street as text
-        house_number as number
+        house_number as number default 5.0
         
         address return text from () {
             return "${street} ${house_number}"
@@ -54,14 +54,14 @@ class ModelDescriptionTests: XCTestCase {
     }
     """
     
-    let expected1: (name: String, properties: [(String, Type)], functionReturnTypes: [(String, Type)]) = (
+    let expected1: (name: String, properties: [(String, Type, Expression?)], functionReturnTypes: [(String, Type)]) = (
         "Person",
         [
-            ("name", .primitive(.text)),
-            ("friends", .list(.custom("Person"))),
-            ("street", .primitive(.text)),
-            ("house_number", .primitive(.number)),
-            ("is_gamer", .primitive(.boolean)),
+            ("name", .primitive(.text), nil),
+            ("friends", .list(.custom("Person")), nil),
+            ("street", .primitive(.text), nil),
+            ("house_number", .primitive(.number), .floatLiteral("5.0")),
+            ("is_gamer", .primitive(.boolean), nil),
         ],
         [
             ("address", .primitive(.text))
@@ -99,7 +99,7 @@ class ModelDescriptionTests: XCTestCase {
     
     func testInit() {
         
-        let validSamples: [(String, (name: String, properties: [(String, Type)], functionReturnTypes: [(String, Type)]), Int)] = [
+        let validSamples: [(String, (name: String, properties: [(String, Type, Expression?)], functionReturnTypes: [(String, Type)]), Int)] = [
             (mock1, expected1, 12)
         ]
         
@@ -116,6 +116,12 @@ class ModelDescriptionTests: XCTestCase {
                 zip(md.descriptionList!.properties, expected1.properties).forEach({ first, second in
                     XCTAssert(first.name == second.0)
                     XCTAssert(first.type == second.1)
+                    
+                    if let defaultValue = first.defaultValue {
+                        XCTAssert(defaultValue ~= second.2!)
+                    } else {
+                        XCTAssertNil(second.2)
+                    }
                 })
                 
                 zip(md.descriptionList!.functions, expected1.functionReturnTypes).forEach({ first, second in

@@ -10,7 +10,8 @@ import XCTest
 import ZolangCore
 
 class DescriptionListTests: XCTestCase {
-    
+    typealias Property = (Bool, String?, String, Type, Expression?)
+
     let propertyFailure = "house_number number"
     let functionFailure = "some return text from {}"
     
@@ -60,7 +61,7 @@ class DescriptionListTests: XCTestCase {
     }
     
     let mock1 = """
-    name as text
+    name as text default "yey"
     friends as list of Person
     street as text
     private static house_number as number
@@ -76,17 +77,17 @@ class DescriptionListTests: XCTestCase {
     is_gamer as boolean
     """
     
-    let expected1: (properties: [(Bool, String?, String, Type)], functionReturnTypes: [(Bool, String?, String, Type)]) = (
+    let expected1: (properties: [Property], functionReturnTypes: [Property]) = (
         [
-            (false, nil, "name", .primitive(.text)),
-            (false, nil, "friends", .list(.custom("Person"))),
-            (false, nil, "street", .primitive(.text)),
-            (true, "private", "house_number", .primitive(.number)),
-            (false, nil, "is_gamer", .primitive(.boolean)),
+            (false, nil, "name", .primitive(.text), .textLiteral("yey")),
+            (false, nil, "friends", .list(.custom("Person")), nil),
+            (false, nil, "street", .primitive(.text), nil),
+            (true, "private", "house_number", .primitive(.number), nil),
+            (false, nil, "is_gamer", .primitive(.boolean), nil),
         ],
         [
-            (false, "private", "address", .primitive(.text)),
-            (false, nil, "yell", .primitive(.text))
+            (false, "private", "address", .primitive(.text), nil),
+            (false, nil, "yell", .primitive(.text), nil)
         ]
     )
 
@@ -122,7 +123,6 @@ class DescriptionListTests: XCTestCase {
     }
     
     func testInit() {
-        typealias Property = (Bool, String?, String, Type)
         let validSamples: [(String, (properties: [Property], functionReturnTypes: [Property]), Int)] = [
             (mock1, expected1, 14)
         ]
