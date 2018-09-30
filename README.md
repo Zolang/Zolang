@@ -60,7 +60,7 @@ mv $HOME/Downloads/Zolang /usr/local/bin
 #### Using Mint (Recommended)
 
 
-If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint). You'll need a Mac with the xcode 9.2 or above
+If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint). You'll need a Mac with the Xcode 9.2 or above
 
 When you've installed mint you can
 
