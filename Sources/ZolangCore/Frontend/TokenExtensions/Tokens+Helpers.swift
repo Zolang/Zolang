@@ -244,7 +244,7 @@ extension Array where Element == Token {
              .bracketOpen, .bracketClose,
              .newline, .describe, .of, .let,
              .operator, .other, .accessLimitation,
-             .static, .comment:
+             .static, .comment, .default:
             return nil
         }
         

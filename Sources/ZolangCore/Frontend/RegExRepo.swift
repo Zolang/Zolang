@@ -40,7 +40,7 @@ public enum RegExRepo {
     public static let comment = "\\#.*"
 
     public static let boolean = "true|false"
-    public static let keyword = "describe|make|return|while|from|let|as|be|of|if|else|static"
+    public static let keyword = "default|describe|make|return|while|from|let|as|be|of|if|else|static"
 }
 
 extension RegExRepo {

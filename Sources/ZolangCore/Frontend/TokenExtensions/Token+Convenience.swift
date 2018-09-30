@@ -34,6 +34,8 @@ extension Token {
             return Token(type: .make)
         case Token.static.type.rawValue:
             return Token(type: .static)
+        case Token.default.type.rawValue:
+            return Token(type: .default)
         default:
             return nil
         }
@@ -121,6 +123,10 @@ extension Token {
     
     public static var describe: Token {
         return Token(type: .describe)
+    }
+    
+    public static var `default`: Token {
+        return Token(type: .default)
     }
     
     public static var `as`: Token {

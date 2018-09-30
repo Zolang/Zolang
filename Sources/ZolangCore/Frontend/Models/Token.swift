@@ -24,6 +24,7 @@ public enum TokenType: String {
     case identifier
     
     case describe
+    case `default`
     case `as`
     case be
     case of
@@ -93,7 +94,8 @@ public struct Token: Equatable {
              (.other, .other),
              (.prefixOperator, .prefixOperator),
              (.accessLimitation, .accessLimitation),
-             (.static, .static):
+             (.static, .static),
+             (.default, .default):
             return lhs.payload == rhs.payload
         default:
             return false

@@ -9,7 +9,7 @@ import Foundation
 
 public struct DescriptionList: Node {
     
-    public let properties: [(isStatic: Bool, accessLimitation: String?, name: String, type: Type)]
+    public let properties: [(isStatic: Bool, accessLimitation: String?, name: String, type: Type, defaultValue: Expression?)]
     public let functions: [(isStatic: Bool, accessLimitation: String?, name: String, function: Function)]
     
     public init(tokens: [Token], context: inout ParserContext) throws {
@@ -22,7 +22,7 @@ public struct DescriptionList: Node {
                               line: context.line)
         }
         
-        var properties: [(Bool, String?, String, Type)] = []
+        var properties: [(Bool, String?, String, Type, Expression?)] = []
         var functions: [(Bool, String?, String, Function)] = []
 
         var i = 0
@@ -30,9 +30,15 @@ public struct DescriptionList: Node {
         let trailingLines = tokens.trimTrailingNewlines()
         
         while i < tokens.count {
+            guard tokens[i].type != .newline else {
+                i += 1
+                context.line += 1
+                continue
+            }
             var isStatic = false
             let oldI = i
             var accessLimitation: String? = nil
+
             if tokens.hasPrefixTypes(types: [ .accessLimitation ],
                                      skipping: [ .newline ],
                                      startingAt: i) {
@@ -127,12 +133,32 @@ public struct DescriptionList: Node {
 
                 let type = try Type(tokens: typeTokens, context: &context)
                 
-                let nextI = endOfType + 1
-                context.line += tokens.newLineCount(to: nextI, startingAt: endOfType)
+                var defaultValue: Expression? = nil
+                if endOfType < tokens.count,
+                    tokens.hasPrefixTypes(types: [.default], skipping: [.newline], startingAt: endOfType) {
+
+                    let indexOfDefault = tokens.index(of: [.default], skipping: [.newline], startingAt: endOfType)!
+
+                    context.line += tokens.newLineCount(to: indexOfDefault, startingAt: endOfType)
+
+                    guard indexOfDefault < tokens.count else {
+                        throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
+                    }
+
+                    let tmp = Array(tokens.suffix(from: indexOfDefault))
+
+                    guard let expressionRange = tmp.rangeOfExpression() else {
+                        throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
+                    }
+                    let defaultValueTokens = Array(tmp[expressionRange])
+                    defaultValue = try Expression(tokens: defaultValueTokens, context: &context)
+                    i = indexOfDefault + expressionRange.lowerBound + expressionRange.count
+
+                } else {
+                    i = endOfType
+                }
                 
-                properties.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, type))
-                
-                i = nextI
+                properties.append((isStatic, accessLimitation, tokens[identifierIndex].payload!, type, defaultValue))
             } else {
                 let asOrReturnIndex = tokens.index(of: [ .return ], startingAt: i)!
                 
@@ -192,7 +218,7 @@ public struct DescriptionList: Node {
         let staticProps = try properties
             .filter { $0.isStatic }
             .map { (arg) -> [String: Any] in
-                let (_, accessLimitation, name, type) = arg
+                let (_, accessLimitation, name, type, defaultValue) = arg
                 var ctx: [String: Any] = [
                     "name": name,
                     "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
@@ -202,12 +228,16 @@ public struct DescriptionList: Node {
                     ctx["accessLimitation"] = accessLimitation
                 }
                 
+                if let defaultValue = defaultValue {
+                    ctx["defaultValue"] = try defaultValue.compile(buildSetting: buildSetting, fileManager: fm)
+                }
+                
                 return ctx
             }
         
         let props = try properties
             .map { (arg) -> [String: Any] in
-                let (_, accessLimitation, name, type) = arg
+                let (_, accessLimitation, name, type, defaultValue) = arg
                 var ctx: [String: Any] = [
                     "name": name,
                     "type": try type.compile(buildSetting: buildSetting, fileManager: fm)
@@ -215,6 +245,10 @@ public struct DescriptionList: Node {
                 
                 if let accessLimitation = accessLimitation {
                     ctx["accessLimitation"] = accessLimitation
+                }
+                
+                if let defaultValue = defaultValue {
+                    ctx["defaultValue"] = try defaultValue.compile(buildSetting: buildSetting, fileManager: fm)
                 }
                 
                 return ctx

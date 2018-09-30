@@ -464,6 +464,51 @@ public indirect enum Expression: Node {
             return true
         }
     }
+    
+    public static func ~= (left: Expression, right: Expression) -> Bool {
+        /*
+         case operation(Expression, String, Expression)
+         */
+        switch (left, right) {
+        case (.textLiteral(let l), .textLiteral(let r)),
+             (.integerLiteral(let l), .integerLiteral(let r)),
+             (.floatLiteral(let l), .floatLiteral(let r)),
+             (.booleanLiteral(let l), .booleanLiteral(let r)),
+             (.identifier(let l), .identifier(let r)):
+            return l == r
+        case (.dot(let lExpr1, let lExpr2), .dot(let rExpr1, let rExpr2)):
+            return lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
+        case (.operation(let lExpr1, let lOp, let lExpr2), .operation(let rExpr1, let rOp, let rExpr2)):
+            return lOp == rOp && lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
+        case (.listAccess(let sL, let exprL), .listAccess(let sR, let exprR)),
+             (.prefix(let sL, let exprL), .prefix(let sR, let exprR)):
+            return sL == sR && exprL ~= exprR
+        case (.templatedText(let lExprs), .templatedText(let rExprs)),
+             (.listLiteral(let lExprs), .listLiteral(let rExprs)):
+            guard lExprs.count == rExprs.count else { return false }
+            var i = 0
+            while i < lExprs.count {
+                defer { i += 1 }
+                guard lExprs[i] ~= rExprs[i] else {
+                    return false
+                }
+            }
+            return true
+        case (.parentheses(let lExpr), .parentheses(let rExpr)):
+            return lExpr ~= rExpr
+        case (.functionCall(let lName, let lExprs), .functionCall(let rName, let rExprs)):
+            guard lName == rName,
+                lExprs.count == rExprs.count else { return false }
+            var i = 0
+            while i < lExprs.count {
+                defer { i += 1 }
+                guard lExprs[i] ~= rExprs[i] else {
+                    return false
+                }
+            }
+            return true
+        }
+    }
 }
 
 extension Expression {
