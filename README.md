@@ -9,7 +9,7 @@
 
 ## What is it?
 
-Zolang is a programming language that serves as a code generation DSL and is as such theoretically transpilable to virtually any other programming language.
+Zolang is a programming language that serves as a code generation DSL and is theoretically through its capabilities transpilable to virtually any other programming language.
 
 Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) specification files.
 
@@ -153,7 +153,7 @@ We could create a file `./zolang/src/Person.zolang`
 
 ```zolang
 describe Company {
-	name as text
+  name as text
   revenue as number
 
   employeeNames as list of text default []
@@ -252,57 +252,18 @@ Zolang currently only supports single line comments prefixed by `#`. Currently, 
 # This is a comment
 ```
 
-#### Variable Declaration
-
-```zolang
-let person as Person be Person("John Doe", "John's Street", 8, [ "Todd" ])
-```
-
-#### Mutation
-
-```zolang
-make person.name be "Jane Doe"
-```
-
-#### Invoking Functions
-
-```zolang
-person.speak("My address is ${person.address()}")
-```
-
-#### Arithmetic
-
-Lets say we wanted to print something like `1 + 2 + (3 * 4) / 5`
-
-In Zolang this would be written:
-
-```zolang
-print("${1 plus 2 plus (3 times 4) over 5}")
-```
-
-#### Looping through Lists
-
-```zolang
-let i as number be 1
-
-while (i < person.friendNames.count) {
-	print(person.friendNames[i])
-	make i be i plus 1
-}
-```
-
 #### Describing a Model
 
 ```zolang
 describe Person {
-	name as text 
-	street as text
-	number as number
-	friendNames as list of text
+  name as text 
+  street as text
+  number as number
+  friendNames as list of text
 }
 ```
 
-Now like specified in the section on "Invoking Functions" you can create a `Person` by calling:
+Now like you can create a `Person` by calling:
 
 ```zolang
 let john as Person be Person("John", "Wall Street", 15, [ "Alice", "Bob" ])
@@ -346,6 +307,45 @@ This can then be accessed by calling:
 
 ```zolang
 Person.species
+```
+
+#### Variable Declaration
+
+```zolang
+let person as Person be Person("John Doe", "John's Street", 8, [ "Todd" ])
+```
+
+#### Mutation
+
+```zolang
+make person.name be "Jane Doe"
+```
+
+#### Invoking Functions
+
+```zolang
+person.speak("My address is ${person.address()}")
+```
+
+#### Arithmetic
+
+Lets say we wanted to print something like `1 + 2 + (3 * 4) / 5`
+
+In Zolang this would be written:
+
+```zolang
+print("${1 plus 2 plus (3 times 4) over 5}")
+```
+
+#### Looping through Lists
+
+```zolang
+let i as number be 1
+
+while (i < person.friendNames.count) {
+  print(person.friendNames[i])
+  make i be i plus 1
+}
 ```
 
 ## License
