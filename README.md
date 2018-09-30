@@ -6,14 +6,14 @@
 
 ![alt text](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
 # Zolang
+> A lightweight frontend for virtually any general purpose programming language.
+
 
 ## What is it?
 
 Zolang is a programming language that serves as a code generation DSL and is theoretically through its capabilities transpilable to virtually any other programming language.
 
 Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) specification files.
-
-> Zolang is a lightweight frontend for virtually any general purpose programming language.
 
 Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
 
