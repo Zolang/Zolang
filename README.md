@@ -46,7 +46,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 ### Installation
 
-#### Linux
+#### Manual
 
 [Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.8/zolang)
 
@@ -57,20 +57,18 @@ chmod +x $HOME/Downloads/Zolang
 mv $HOME/Downloads/Zolang /usr/local/bin
 ```
 
-#### Mac
+#### Using Mint (Recommended)
 
-If latest developer tools are not installed you might need to install Zolang like explained above under "Linux."
 
-##### Using Mint (Recommended)
-If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint)
+If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint). You'll need a Mac with the xcode 9.2 or above
 
-Then install Zolang:
+When you've installed mint you can
 
 ```
 mint install Zolang/Zolang
 ```
 
-##### Build From Source
+#### Build From Source
 
 ```
 git clone https://github.com/Zolang/Zolang
