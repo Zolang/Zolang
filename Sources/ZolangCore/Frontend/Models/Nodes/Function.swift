@@ -67,7 +67,7 @@ public struct Function: Node {
         
         guard tokens.count > paramRange.upperBound + 1,
             tokens.hasPrefixTypes(types: [ .curlyOpen ],
-                                  skipping: [ .newline ],
+                                  skipping: [ .newline, .comment ],
                                   startingAt: paramRange.upperBound + 1) else {
             throw ZolangError(type: .missingToken("{"),
                               file: context.file,

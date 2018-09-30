@@ -17,7 +17,7 @@ public struct FunctionDeclaration: Node {
 
         let validPrefix: [TokenType] = [ .let, .identifier, .return ]
         
-        guard tokens.hasPrefixTypes(types: validPrefix, skipping: [ .newline ]) else {
+        guard tokens.hasPrefixTypes(types: validPrefix, skipping: [ .newline, .comment ]) else {
             throw ZolangError(type: .unexpectedStartOfStatement(.functionDeclaration),
                               file: context.file,
                               line: context.line)

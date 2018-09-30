@@ -16,7 +16,7 @@ public struct IfStatement: Node {
         var workingTokens = tokens
         context.line += workingTokens.trimLeadingNewlines()
 
-        guard workingTokens.hasPrefixTypes(types: [.if, .parensOpen], skipping: [.newline]) else {
+        guard workingTokens.hasPrefixTypes(types: [.if, .parensOpen], skipping: [ .newline, .comment ]) else {
             throw ZolangError(type: .unexpectedStartOfStatement(.ifStatement),
                               file: context.file,
                               line: context.line)
@@ -40,7 +40,7 @@ public struct IfStatement: Node {
         var ifTuples: [(Expression, CodeBlock)] = [ (expression, ifCodeBlock) ]
 
         if workingTokens.hasPrefixTypes(types: [ .else ],
-                                        skipping: [.newline, .curlyClose],
+                                        skipping: [.newline, .curlyClose, .comment ],
                                         startingAt: ifCodeEnd + 1) {
 
             let indexOfElse = workingTokens.index(ofNextWithTypeIn: [.else],
@@ -61,7 +61,7 @@ public struct IfStatement: Node {
             }
             
             if let indexOfElseBlock = workingTokens.index(of: [ .else, .curlyOpen ],
-                                                          skipping: [.newline ],
+                                                          skipping: [.newline, .comment ],
                                                           startingAt: startOfElseBlockStatement) {
 
                 let (elseBlock, codeBlockEndIndex) = try IfStatement.parseCodeBlock(tokens: workingTokens,
@@ -73,7 +73,7 @@ public struct IfStatement: Node {
                                                            startingAt: startOfElseBlockStatement)
 
                 if let validationIndex = workingTokens.index(of: [ .curlyOpen ],
-                                                             skipping: [ .newline ],
+                                                             skipping: [ .newline, .comment ],
                                                              startingAt: codeBlockEndIndex) {
                     var rest = Array(workingTokens.suffix(from: validationIndex))
                     

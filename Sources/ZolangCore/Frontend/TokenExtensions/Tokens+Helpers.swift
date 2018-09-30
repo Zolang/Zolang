@@ -182,7 +182,7 @@ extension Array where Element == Token {
         let token = self[start]
         
         switch token.type {
-        case .identifier, .floatingPoint, .decimal, .stringLiteral, .booleanLiteral:
+        case .identifier, .floatingPoint, .decimal, .textLiteral, .booleanLiteral:
             var startOfPeakNext = start + 1
             if isPrefixFunctionCall(startingAt: start) {
                 
@@ -243,7 +243,8 @@ extension Array where Element == Token {
              .equals, .make, .parensClose,
              .bracketOpen, .bracketClose,
              .newline, .describe, .of, .let,
-             .operator, .other:
+             .operator, .other, .accessLimitation,
+             .static, .comment, .default:
             return nil
         }
         

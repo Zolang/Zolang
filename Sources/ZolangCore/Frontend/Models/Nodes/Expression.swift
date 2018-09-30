@@ -11,8 +11,8 @@ public indirect enum Expression: Node {
     
     case integerLiteral(String)
     case floatLiteral(String)
-    case stringLiteral(String)
-    case templatedString([Expression])
+    case textLiteral(String)
+    case templatedText([Expression])
     case booleanLiteral(String)
     case identifier(String)
     case listAccess(String, Expression)
@@ -20,6 +20,7 @@ public indirect enum Expression: Node {
     case functionCall(String, [Expression])
     case prefix(String, Expression)
     case parentheses(Expression)
+    case dot(Expression, Expression)
     case operation(Expression, String, Expression)
     
     public init(tokens: [Token], context: inout ParserContext) throws {
@@ -35,12 +36,12 @@ public indirect enum Expression: Node {
             (.identifier, [ .identifier ]),
             (.integerLiteral, [ .decimal ]),
             (.floatLiteral, [ .floatingPoint ]),
-            (.stringLiteral, [ .stringLiteral ]),
+            (.textLiteral, [ .textLiteral ]),
             (.booleanLiteral, [ .booleanLiteral ])
         ]
         
         guard let valueType = (validValuePrefix.first { (key, types) -> Bool in
-            tokens.hasPrefixTypes(types: types, skipping: [ .newline ])
+            tokens.hasPrefixTypes(types: types, skipping: [ .newline, .comment ])
         })?.key else {
             throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
         }
@@ -58,6 +59,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: range.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard let identifier = tokens.first(where: { $0.type == .identifier })?.payload else {
                     throw ZolangError(type: .missingIdentifier, file: context.file, line: context.line)
@@ -104,6 +109,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: parensRange.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 let innerTokenRange: CountableRange<Int> = (parensRange.lowerBound + 1)..<parensRange.upperBound
                 let innerTokens = Array(tokens[innerTokenRange])
@@ -125,7 +134,11 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
-            } else {
+            } else if let dotExpression = try Expression.parseDotSeparated(index: parensRange.upperBound + 1,
+                                                                            tokens: tokens,
+                                                                            context: &context) {
+                self = dotExpression
+            }  else {
                 self = .functionCall(identifier, try .parseExpressionList(tokens: tokens,
                                                                           scopeDef: (.parensOpen, .parensClose),
                                                                           seperators: [ .comma ],
@@ -142,6 +155,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: rangeOfBrackets.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 self = .listLiteral(try .parseExpressionList(tokens: tokens,
                                                              scopeDef: (.bracketOpen, .bracketClose),
@@ -154,6 +171,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -169,6 +190,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                            tokens: tokens,
+                                                                            context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -184,6 +209,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -193,12 +222,16 @@ public indirect enum Expression: Node {
                 
                 self = .integerLiteral(tokens.first!.payload!)
             }
-        case .stringLiteral:
+        case .textLiteral:
             if let operatorExpression = try Expression.parseOperator(index: 1,
                                                                      tokens: tokens,
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -211,7 +244,7 @@ public indirect enum Expression: Node {
                 var i = 0
                 while i < str.count {
                     let working = String(str.suffix(from: str.index(str.startIndex, offsetBy: i)))
-                    if working.zo.getPrefix(regex: "(^\\{)|([^\\\\]\\$\\{)") != nil,
+                    if working.zo.getPrefix(regex: "[^\\\\]\\$\\{") != nil,
                         let range = str.zo.getScope(open: "{", close: "}", start: i) {
                         i = range.upperBound + 1
                         templateRanges.append(range)
@@ -221,7 +254,7 @@ public indirect enum Expression: Node {
                 }
                 
                 guard templateRanges.isEmpty == false else {
-                    self = .stringLiteral(str)
+                    self = .textLiteral(str)
                     return
                 }
                 
@@ -234,28 +267,28 @@ public indirect enum Expression: Node {
                     }
 
                     let rangeLower = str.index(str.startIndex, offsetBy: range.lowerBound)
-                    let rangeUpper = str.index(str.startIndex, offsetBy: range.lowerBound)
+                    let rangeUpper = str.index(str.startIndex, offsetBy: range.upperBound)
                     
                     if lastEndIndex != rangeLower {
-                        let startOfTemplate = str.index(str.startIndex, offsetBy: range.lowerBound - 1
-                        let range = lastEndIndex..<startOfTemplate)
+                        let startOfTemplate = str.index(str.startIndex, offsetBy: range.lowerBound - 1)
+                        let range = lastEndIndex..<startOfTemplate
                         
                         
-                        expressions.append(.stringLiteral(String(str[range])))
+                        expressions.append(.textLiteral(String(str[range])))
                     }
 
                     let lower = str.index(str.startIndex, offsetBy: range.lowerBound + 1)
                     let upper = str.index(str.startIndex, offsetBy: range.upperBound - 1)
                     
                     let expressionRange = lower...upper
-                    
-                    expressions.append(try Expression(tokens: String(str[expressionRange]).zo.tokenize(),
-                                                      context: &context))
+                    let expression = try Expression(tokens: String(str[expressionRange]).zo.tokenize(),
+                                                    context: &context)
+                    expressions.append(expression)
                     
                     lastEndIndex = str.index(rangeUpper, offsetBy: 1)
                 }
 
-                self = .templatedString(expressions)
+                self = .templatedText(expressions)
             }
         case .booleanLiteral:
             if let operatorExpression = try Expression.parseOperator(index: 1,
@@ -263,6 +296,10 @@ public indirect enum Expression: Node {
                                                                      context: &context) {
                 self = operatorExpression
                 
+            } else if let dotExpression = try Expression.parseDotSeparated(index: 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
             } else {
                 guard tokens.count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
@@ -305,6 +342,39 @@ public indirect enum Expression: Node {
                           secondExpression)
     }
     
+    static func parseDotSeparated(index: Int, tokens: [Token], context: inout ParserContext) throws -> Expression? {
+        var tokens = tokens
+        
+        guard index < tokens.count,
+            let nextIndex = tokens.index(ofFirstThatIsNot: .newline, startingAt: index),
+            nextIndex != tokens.count - 1,
+            tokens[nextIndex].type == .dot else {
+                return nil
+        }
+        
+        let newlinesToAdd = tokens.trimNewlines(to: nextIndex)
+        let operatorIndex = nextIndex - newlinesToAdd
+        
+        let leftTokens = Array(tokens[..<operatorIndex])
+        let rightTokens = Array(tokens[operatorIndex+1..<tokens.count])
+        
+        var leftExpressionTokens = leftTokens
+        let trailing = leftExpressionTokens.trimTrailingNewlines()
+        
+        let firstExpression = try Expression(tokens: leftExpressionTokens, context: &context)
+        
+        context.line += newlinesToAdd + trailing
+        
+        let secondExpression = try Expression(tokens: rightTokens, context: &context)
+        guard secondExpression.canDotSyntax() == false else {
+            throw ZolangError(type: .invalidExpression,
+                              file: context.file,
+                              line: context.line)
+        }
+        return .dot(firstExpression,
+                    secondExpression)
+    }
+    
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
         switch self {
         case .booleanLiteral(let str):
@@ -328,19 +398,19 @@ public indirect enum Expression: Node {
                 "expressionType": "integerLiteral",
                 "value": str
             ]
-        case .stringLiteral(let str):
+        case .textLiteral(let str):
             return [
-                "expressionType": "stringLiteral",
+                "expressionType": "textLiteral",
                 "value": str
             ]
-        case .templatedString(let expressions):
+        case .templatedText(let expressions):
             let expressionStrings = try expressions
                 .map { expr in
                     try expr.compile(buildSetting: buildSetting,
                                      fileManager: fm)
                 }
             return [
-                "expressionType": "templatedString",
+                "expressionType": "templatedText",
                 "expressions": expressionStrings
             ]
         case .identifier(let str):
@@ -377,6 +447,63 @@ public indirect enum Expression: Node {
                 "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm),
                 "operator": op
             ]
+        case .dot(let lExpr, let rExpr):
+            return [
+                "expressionType": "dot",
+                "leftExpression": try lExpr.compile(buildSetting: buildSetting, fileManager: fm),
+                "rightExpression": try rExpr.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
+        }
+    }
+    
+    func canDotSyntax() -> Bool {
+        switch self {
+        case .booleanLiteral(_), .floatLiteral(_), .listLiteral(_), .integerLiteral(_), .operation(_, _, _), .parentheses(_), .templatedText(_), .textLiteral(_), .prefix(_, _):
+            return false
+        case .dot(_, _), .functionCall(_, _), .identifier(_), .listAccess(_, _):
+            return true
+        }
+    }
+    
+    public static func ~= (left: Expression, right: Expression) -> Bool {
+        switch (left, right) {
+        case (.textLiteral(let l), .textLiteral(let r)),
+             (.integerLiteral(let l), .integerLiteral(let r)),
+             (.floatLiteral(let l), .floatLiteral(let r)),
+             (.booleanLiteral(let l), .booleanLiteral(let r)),
+             (.identifier(let l), .identifier(let r)):
+            return l == r
+        case (.dot(let lExpr1, let lExpr2), .dot(let rExpr1, let rExpr2)):
+            return lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
+        case (.operation(let lExpr1, let lOp, let lExpr2), .operation(let rExpr1, let rOp, let rExpr2)):
+            return lOp == rOp && lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
+        case (.listAccess(let sL, let exprL), .listAccess(let sR, let exprR)),
+             (.prefix(let sL, let exprL), .prefix(let sR, let exprR)):
+            return sL == sR && exprL ~= exprR
+        case (.templatedText(let lExprs), .templatedText(let rExprs)),
+             (.listLiteral(let lExprs), .listLiteral(let rExprs)):
+            guard lExprs.count == rExprs.count else { return false }
+            var i = 0
+            while i < lExprs.count {
+                defer { i += 1 }
+                guard lExprs[i] ~= rExprs[i] else {
+                    return false
+                }
+            }
+            return true
+        case (.parentheses(let lExpr), .parentheses(let rExpr)):
+            return lExpr ~= rExpr
+        case (.functionCall(let lName, let lExprs), .functionCall(let rName, let rExprs)):
+            guard lName == rName,
+                lExprs.count == rExprs.count else { return false }
+            var i = 0
+            while i < lExprs.count {
+                defer { i += 1 }
+                guard lExprs[i] ~= rExprs[i] else {
+                    return false
+                }
+            }
+            return true
         }
     }
 }
@@ -391,7 +518,7 @@ extension Expression {
         case identifier
         case integerLiteral
         case floatLiteral
-        case stringLiteral
+        case textLiteral
         case booleanLiteral
     }
 }

@@ -42,6 +42,10 @@ public indirect enum CodeBlock: Node {
         var leftEndIndex: Int
 
         switch prefixType {
+        case .comment:
+            // Comments are skipped for now
+            left = .empty
+            leftEndIndex = 1
         case .expression:
             guard let range = workingTokens.rangeOfExpression() else {
                 throw ZolangError(type: .invalidExpression,
@@ -64,7 +68,7 @@ public indirect enum CodeBlock: Node {
             
             left = .ifStatement(try IfStatement(tokens: Array(workingTokens[range]), context: &context))
         case .modelDescription:
-            guard workingTokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline]) else {
+            guard workingTokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline, .comment ]) else {
                 throw ZolangError(type: .unexpectedStartOfStatement(.modelDescription),
                                   file: context.file,
                                   line: context.line)

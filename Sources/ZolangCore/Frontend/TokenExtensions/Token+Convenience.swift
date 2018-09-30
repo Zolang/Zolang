@@ -32,6 +32,10 @@ extension Token {
             return Token(type: .return)
         case Token.make.type.rawValue:
             return Token(type: .make)
+        case Token.static.type.rawValue:
+            return Token(type: .static)
+        case Token.default.type.rawValue:
+            return Token(type: .default)
         default:
             return nil
         }
@@ -41,8 +45,12 @@ extension Token {
         return Token(type: .identifier, payload: label)
     }
     
-    public static func stringLiteral(_ text: String) -> Token {
-        return Token(type: .stringLiteral, payload: text)
+    public static func textLiteral(_ text: String) -> Token {
+        return Token(type: .textLiteral, payload: text)
+    }
+    
+    public static func comment(_ text: String) -> Token {
+        return Token(type: .comment, payload: text)
     }
     
     public static func booleanLiteral(_ value: String) -> Token {
@@ -117,6 +125,10 @@ extension Token {
         return Token(type: .describe)
     }
     
+    public static var `default`: Token {
+        return Token(type: .default)
+    }
+    
     public static var `as`: Token {
         return Token(type: .as)
     }
@@ -131,6 +143,10 @@ extension Token {
     
     public static var make: Token {
         return Token(type: .make)
+    }
+    
+    public static var `static`: Token {
+        return Token(type: .`static`)
     }
     
     public static var from: Token {

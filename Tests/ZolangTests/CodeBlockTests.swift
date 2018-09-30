@@ -105,7 +105,7 @@ class CodeBlockTests: XCTestCase {
             
             XCTAssert(decl.identifier == "some")
             
-            guard case let .stringLiteral(lit) = decl.expression else {
+            guard case let .textLiteral(lit) = decl.expression else {
                 XCTFail()
                 return
             }
@@ -149,7 +149,7 @@ class CodeBlockTests: XCTestCase {
             
             XCTAssert(mut.identifiers == ["some", "property"])
             
-            guard case let .stringLiteral(literal) = mut.expression else {
+            guard case let .textLiteral(literal) = mut.expression else {
                 XCTFail()
                 return
             }

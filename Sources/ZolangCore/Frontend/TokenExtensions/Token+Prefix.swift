@@ -39,11 +39,17 @@ extension Array where Element == Token {
         return first.type == .return
     }
     
+    public func isPrefixComment() -> Bool {
+        guard let first = self.first else { return false }
+        return first.type == .comment
+    }
+    
     public func isPrefixExpression() -> Bool {
         guard let first = self.first else { return false }
         switch first.type {
         case .as,
              .be,
+             .default,
              .of,
              .bracketClose,
              .bracketOpen,
@@ -64,7 +70,10 @@ extension Array where Element == Token {
              .other,
              .dot,
              .return,
-             .operator:
+             .operator,
+             .accessLimitation,
+             .static,
+             .comment:
             return false
         case .prefixOperator:
             guard self.count > 1 else { return false }
@@ -72,7 +81,7 @@ extension Array where Element == Token {
         case .identifier,
              .floatingPoint,
              .decimal,
-             .stringLiteral,
+             .textLiteral,
              .booleanLiteral,
              .parensOpen:
             return true
@@ -94,6 +103,8 @@ extension Array where Element == Token {
             return .expression
         } else if isPrefixReturnStatement() {
             return .returnStatement
+        } else if isPrefixComment() {
+            return .comment
         } else {
             return nil
         }
@@ -112,7 +123,7 @@ extension Array where Element == Token {
     public func isPrefixLiteral() -> Bool {
         guard !isEmpty else { return false }
         let valid: [TokenType] = [
-            .stringLiteral,
+            .textLiteral,
             .floatingPoint,
             .decimal
         ]

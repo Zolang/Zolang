@@ -24,6 +24,7 @@ public enum TokenType: String {
     case identifier
     
     case describe
+    case `default`
     case `as`
     case be
     case of
@@ -34,11 +35,16 @@ public enum TokenType: String {
     case `if`
     case `else`
     case make
+    case `static`
     
     case `operator`
     case prefixOperator
     
-    case stringLiteral
+    case accessLimitation
+    
+    case comment
+
+    case textLiteral
     case booleanLiteral
     case floatingPoint
     case decimal
@@ -57,6 +63,7 @@ public struct Token: Equatable {
     public static func == (lhs: Token, rhs: Token) -> Bool {
         switch (lhs.type, rhs.type) {
         case (.parensOpen, .parensOpen),
+             (.comment, .comment),
              (.parensClose, .parensClose),
              (.bracketOpen, .bracketOpen),
              (.bracketClose, .bracketClose),
@@ -80,11 +87,15 @@ public struct Token: Equatable {
              (.return, .return),
              (.let, .let),
              (.`operator`, .`operator`),
-             (.stringLiteral, .stringLiteral),
+             (.textLiteral, .textLiteral),
              (.booleanLiteral, .booleanLiteral),
              (.floatingPoint, .floatingPoint),
              (.decimal, .decimal),
-             (.other, .other):
+             (.other, .other),
+             (.prefixOperator, .prefixOperator),
+             (.accessLimitation, .accessLimitation),
+             (.static, .static),
+             (.default, .default):
             return lhs.payload == rhs.payload
         default:
             return false
