@@ -31,12 +31,13 @@ public enum RegExRepo {
     
     public static let inlineWhitespaceCharacter = "[\\s\\t]"
     public static let newline = "\n"
-    
+
     public static let prefixOperator = "not|!"
-    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|divided\\sby|multiplied\\sby|modulus|\\*|/|\\+|-|%"
-    
+    public static let specialOperator = "divided\\sby|multiplied\\sby"
+    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|modulus|\\*|/|\\+|-|%"
+
     public static let accessLimitation = "private"
-    
+
     public static let comment = "\\#.*"
     
     public static let boolean = "true|false"
@@ -92,7 +93,9 @@ extension RegExRepo {
                          payload: String($0.suffix(from: $0.index($0.startIndex, offsetBy: 1))))
         }),
         (RegExRepo.accessLimitation, { return Token(type: .accessLimitation, payload: $0) }),
-        
+        (RegExRepo.specialOperator, {
+           return Token(type: .operator, payload: operatorPayloads[$0])
+        }),
         (RegExRepo.label, {
             if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean),
                 boolean == $0 {

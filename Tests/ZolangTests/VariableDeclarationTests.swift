@@ -48,15 +48,16 @@ class VariableDeclarationTests: XCTestCase {
         let samples: [(String, Int)] = [
             ("let some as text be \n something", 2),
             ("let some as number be \n\nsomething", 3),
-            ("let some as Person be Person(\"John\", 5)", 1)
+            ("let some as Person be Person(\"John\", 5)", 1),
+            ("let num1DivNum2 as number be num1 divided by num2", 1)
         ]
         
         samples
             .forEach { code, lineAtEnd in
                 var context = ParserContext(file: "test.zolang")
                 do {
-                    try VariableDeclaration(tokens: code.zo.tokenize(),
-                                            context: &context)
+                    let dec = try VariableDeclaration(tokens: code.zo.tokenize(),
+                                                      context: &context)
                     XCTAssert(context.line == lineAtEnd)
                     
                 } catch {
