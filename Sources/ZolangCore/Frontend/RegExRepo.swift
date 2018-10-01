@@ -68,6 +68,9 @@ extension RegExRepo {
                 keyword == $0,
                 let token = Token.keyword(keyword){
                 return token
+            } else if let accessLimitation = $0.zo.getPrefix(regex: RegExRepo.accessLimitation),
+                accessLimitation == $0 {
+                return Token(type: .accessLimitation, payload: accessLimitation)
             } else {
                 return Token(type: .identifier, payload: $0)
             }
