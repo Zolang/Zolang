@@ -332,7 +332,7 @@ describe Person {
 
 However this might not be able to be supported in all languages, many languages such as Python rely on an instanced being passed into the scope of the function to be able to read the model's properties. This function would be likely to throw an error in those languages as the function address never receives the instance being called upon.
 
-In that case you would need to declare a function outside the model description:
+If you wanted to transpile Zolang to those types of languages, you would need to declare a function outside the model description:
 
 ```zolang
 let address return text from (person as Person) {
