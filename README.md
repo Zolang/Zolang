@@ -313,6 +313,33 @@ Person.species
 let person as Person be Person("John Doe", "John's Street", 8, [ "Todd" ])
 ```
 
+#### Functions
+
+Functions in Zolang can be declared in a model description, in `Person`, the model we described above we could define a function address which would combine street and number as so:
+
+```zolang
+describe Person {
+  name as text 
+  street as text
+  number as number
+  friendNames as list of text
+  
+  address return text from () {
+    return "${street} ${number}"
+  }
+}
+```
+
+However this might not be able to be supported in all languages, many languages such as Python rely on an instanced being passed into the scope of the function to be able to read the model's properties. This function would be likely to throw an error in those languages as the function address never receives the instance being called upon.
+
+In that case you would need to declare a function outside the model description:
+
+```zolang
+let address return text from (person as Person) {
+  return "${person.street} ${person.number}"
+}
+```
+
 #### Mutation
 
 ```zolang
