@@ -80,8 +80,8 @@ As the language aims to be transpilable to virtually any other programming langu
 Then setup Zolang as a command line tool locally
 
 ```
-chmod +x $HOME/Downloads/Zolang
-mv $HOME/Downloads/Zolang /usr/local/bin
+chmod +x ~/Downloads/Zolang
+mv ~/Downloads/Zolang /usr/local/bin
 ```
 
 #### Using Mint (Recommended)
@@ -146,9 +146,9 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
 {
   "buildSettings": [
     {
-      "sourcePath": "./zolang/src",
-      "stencilPath": "./zolang/templates/swift",
-      "buildPath": "./zolang/build/swift",
+      "sourcePath": "./.zolang/src",
+      "stencilPath": "./.zolang/templates/swift",
+      "buildPath": "./.zolang/build/swift",
       "fileExtension": "swift",
       "separators": {
         "CodeBlock": "\n"
@@ -156,8 +156,8 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
     },
     {
       "sourcePath": "./zolang/src",
-      "stencilPath": "./zolang/templates/kotlin",
-      "buildPath": "./zolang/build/kotlin",
+      "stencilPath": "./.zolang/templates/kotlin",
+      "buildPath": "./.zolang/build/kotlin",
       "fileExtension": "kt",
       "separators": {
         "CodeBlock": "\n"
@@ -167,10 +167,9 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
 }
 ```
 
-Notice the `./templates/swift` and `./templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). Copy the contents of the `swift` and `kotlin` folders from the repo to these locations.
+Notice the `./.zolang/templates/swift` and `./.zolang/templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). But `zolang init` only fetches the two (Swift and Kotlin).
 
 `./zolang/src` is where all the Zolang code is stored.
-
 
 > 😇 P.S. It only took around an hour to add the templates needed to be able to compile Zolang to both Kotlin and Swift! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
@@ -237,7 +236,7 @@ The text: ```"this is a text \n"``` would remain unchanged when compiling to oth
 
 Zolang currently only has one type to represent numbers.
 
-Numbers work just as you expect:
+Numbers work just as you would expect:
 
 ```zolang
 let num1 as number be 0.12345
@@ -247,7 +246,7 @@ let num2 as number be 5
 
 ##### list
 
-The same goes for lists they represent ... you guessed it, lists of data; and are declared by using the ```list``` keyword followed by a ```of``` keyword and the type of the element you want to represent.
+The same goes for lists. They represent ... you guessed it, lists of data; and are declared by using the ```list``` keyword followed by a ```of``` keyword and finally the type of the element you want to represent.
 
 List literals are defined with a comma separated sequence of expressions wrapped inside enclosing brackets ```[...]``` 
 
@@ -270,7 +269,7 @@ Besides ```not``` there are 2 infix operators strictly meant for comparing boole
 Other operators are ```<```, ```>```, ```<=```, ```>=```, ```equals```, ```plus```, ```minus```, ```times``` and ```over```, representing, less-than, greater-than, lesser-than-or-equal, greater-than-or-equal, equality, addition, subtraction, multiplication and division respectively
 
 
-NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
+> NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
 
 #### Comments
 
