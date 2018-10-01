@@ -75,7 +75,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### Manual
 
-[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.9/zolang)
+[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.10/zolang)
 
 Then setup Zolang as a command line tool locally
 
@@ -258,16 +258,26 @@ let myList as list of text be [ "1", "2", "3" ]
 
 ##### Prefix Operators
 
-There are 2 supported prefix operators in Zolang
+There is only one supported prefix operator in Zolang
 
-```-``` and ```not```, the former is meant to be used for numbers and latter for boolean types
+```not``` and ```!``` both meaning the same thing and are meant to be used as negation for boolean types
 
 ##### Infix Operators
 
 Besides ```not``` there are 2 infix operators strictly meant for comparing boolean values ```or``` and ```and```
 
-Other operators are ```<```, ```>```, ```<=```, ```>=```, ```equals```, ```plus```, ```minus```, ```times``` and ```over```, representing, less-than, greater-than, lesser-than-or-equal, greater-than-or-equal, equality, addition, subtraction, multiplication and division respectively
+Other operators are 
 
+- ```<```: less-than
+- ```>```: greater-than
+- ```<=```: lesser-than-or-equal
+- ```>=```: greater-than-or-equal
+- ```equals```, ```==```: equality
+- ```plus```, ```+```: addition
+- ```minus```, ```-```: subtraction
+- ```multiplied by```, ```times```, ```*```: multiplication
+- ```divided by```, ```over```: division
+- ```modulus```, ```%```: modulus
 
 > NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
 
