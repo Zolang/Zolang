@@ -38,7 +38,7 @@ public enum RegExRepo {
     public static let accessLimitation = "private"
     
     public static let comment = "\\#.*"
-
+    
     public static let boolean = "true|false"
     public static let keyword = "default|describe|make|return|while|from|let|as|be|of|if|else|static"
 }
@@ -61,10 +61,12 @@ extension RegExRepo {
         (RegExRepo.`operator`, { return Token(type: .`operator`, payload: $0) }),
         
         (RegExRepo.label, {
-            if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean) {
+            if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean),
+                boolean == $0 {
                 return Token(type: .booleanLiteral, payload: boolean)
             } else if let keyword = $0.zo.getPrefix(regex: RegExRepo.keyword),
-                let token = Token.keyword(keyword) {
+                keyword == $0,
+                let token = Token.keyword(keyword){
                 return token
             } else {
                 return Token(type: .identifier, payload: $0)
@@ -73,7 +75,7 @@ extension RegExRepo {
         (RegExRepo.string, { payload in
             let start = payload.index(after: payload.startIndex)
             let end = payload.index(before: payload.endIndex)
-
+            
             return Token(type: .textLiteral, payload: String(payload[start..<end]))
         }),
         (RegExRepo.floatingPoint, { Token(type: .floatingPoint, payload: $0) }),
