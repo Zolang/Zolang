@@ -250,6 +250,7 @@ public struct DescriptionList: Node {
         }
         
         let funcs = try functions
+            .filter { $0.isStatic == false }
             .map { (_, accessLimitation, name, function) -> [String: Any] in
                 var ctx: [String: Any] = [
                     "name": name,
