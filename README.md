@@ -264,10 +264,10 @@ There is only one supported prefix operator in Zolang
 
 ##### Infix Operators
 
-Besides ```not``` there are 2 infix operators strictly meant for comparing boolean values ```or``` and ```and```
+Infix operators in Zolang:
 
-Other operators are 
-
+- ```or```: boolean or
+- ```and```: boolean and
 - ```<```: less-than
 - ```>```: greater-than
 - ```<=```: lesser-than-or-equal
