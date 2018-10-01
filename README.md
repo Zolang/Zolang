@@ -75,7 +75,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### Manual
 
-[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.8/zolang)
+[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.9/zolang)
 
 Then setup Zolang as a command line tool locally
 
@@ -362,11 +362,15 @@ describe Person {
 
 However this might not be able to be supported in all languages, many languages such as Python rely on an instanced being passed into the scope of the function to be able to read the model's properties. This function would be likely to throw an error in those languages as the function address never receives the instance being called upon.
 
-If you wanted to transpile Zolang to those types of languages, you would need to declare a function outside the model description:
+If you wanted to transpile Zolang to those types of languages, you would need to declare a static function:
 
 ```zolang
-let address return text from (person as Person) {
-  return "${person.street} ${person.number}"
+describe Person {
+  ...
+
+  static address return text from (person as Person) {
+    return "${person.street} ${person.number}"
+  }
 }
 ```
 
