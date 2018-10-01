@@ -242,6 +242,8 @@ public indirect enum CodeBlock: Node {
 
             return try environment.renderTemplate(string: templateString,
                                                   context: context)
+                .zo
+                .trimmed()
         }
     }
     

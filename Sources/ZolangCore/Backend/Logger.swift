@@ -50,19 +50,19 @@ public struct Log {
     public static func ascii() {
         print(ANSIColors.plain + asciiArt)
     }
-    public static func info(_ message: String) {
-        print(ANSIColors.info + message)
+    public static func info(_ message: String, terminator: String = "\n") {
+        print(ANSIColors.info + message, terminator: terminator)
     }
     
-    public static func plain(_ message: String) {
-        print(ANSIColors.plain + message)
+    public static func plain(_ message: String, terminator: String = "\n") {
+        print(ANSIColors.plain + message, terminator: terminator)
     }
     
-    public static func error(_ message: String) {
-        print(ANSIColors.error + message)
+    public static func error(_ message: String, terminator: String = "\n") {
+        print(ANSIColors.error + message, terminator: terminator)
     }
     
-    public static func warning(_ message: String) {
-        print(ANSIColors.warning + message)
+    public static func warning(_ message: String, terminator: String = "\n") {
+        print(ANSIColors.warning + message, terminator: terminator)
     }
 }

@@ -32,8 +32,8 @@ public enum RegExRepo {
     public static let inlineWhitespaceCharacter = "[\\s\\t]"
     public static let newline = "\n"
     
-    public static let prefixOperator = "not|-"
-    public static let `operator` = "or|and|equals|(<=)|(>=)|<|>|plus|minus|times|over"
+    public static let prefixOperator = "not"
+    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|divided\\sby|modulus|\\*|/|\\+|-|%"
     
     public static let accessLimitation = "private"
     
@@ -44,6 +44,35 @@ public enum RegExRepo {
 }
 
 extension RegExRepo {
+    static let operatorPayloads: [String: String] = [
+        "divided by": "over",
+        "over": "over",
+
+        "or": "or",
+        "||": "or",
+        "and": "and",
+        "&&": "and",
+
+        "<=": "<=",
+        ">=": ">=",
+        ">": ">",
+        "<": "<",
+        
+        "equals": "equals",
+        "==": "equals",
+
+        "times": "times",
+        "plus": "plus",
+        "minus": "minus",
+        "modulus": "modulus",
+        
+        "*": "times",
+        "/": "over",
+        "+": "plus",
+        "-": "minus",
+        "%": "modulus"
+    ]
+
     public static let tokenizers: [(regEx: RegEx, tokenizer: Tokenizer)] = [
         (RegExRepo.newline, { _ in
             Token(type: .newline)
@@ -57,23 +86,29 @@ extension RegExRepo {
         }),
         (RegExRepo.accessLimitation, { return Token(type: .accessLimitation, payload: $0) }),
         
-        (RegExRepo.prefixOperator, { return Token(type: .prefixOperator, payload: $0) }),
-        (RegExRepo.`operator`, { return Token(type: .`operator`, payload: $0) }),
-        
         (RegExRepo.label, {
             if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean),
                 boolean == $0 {
                 return Token(type: .booleanLiteral, payload: boolean)
             } else if let keyword = $0.zo.getPrefix(regex: RegExRepo.keyword),
                 keyword == $0,
-                let token = Token.keyword(keyword){
+                let token = Token.keyword(keyword) {
                 return token
             } else if let accessLimitation = $0.zo.getPrefix(regex: RegExRepo.accessLimitation),
                 accessLimitation == $0 {
                 return Token(type: .accessLimitation, payload: accessLimitation)
+            } else if let prefixOperator = $0.zo.getPrefix(regex: RegExRepo.prefixOperator),
+                prefixOperator == $0 {
+                return Token(type: .prefixOperator, payload: $0)
+            }  else if let `operator` = $0.zo.getPrefix(regex: RegExRepo.`operator`),
+               `operator` == $0 {
+                return Token(type: .`operator`, payload: operatorPayloads[$0])
             } else {
                 return Token(type: .identifier, payload: $0)
             }
+        }),
+        (RegExRepo.operator, {
+            return Token(type: .operator, payload: operatorPayloads[$0])
         }),
         (RegExRepo.string, { payload in
             let start = payload.index(after: payload.startIndex)
