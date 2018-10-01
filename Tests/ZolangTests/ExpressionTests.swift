@@ -25,8 +25,8 @@ class ExpressionTests: XCTestCase {
             "let some be\nsome",
             "make person.name be \"valdi\"",
             "describe Person as {\nname as text }",
-        ]
-
+            ]
+        
         samples
             .map { $0.zo.tokenize() }
             .forEach { tokens in
@@ -44,7 +44,7 @@ class ExpressionTests: XCTestCase {
                         fatalError()
                     }
                 }
-            }
+        }
     }
     
     func testMissingMatchingBracket() {
@@ -69,7 +69,7 @@ class ExpressionTests: XCTestCase {
                         XCTFail("Error should be a ZolangError")
                         fatalError()
                     }
-
+                    
                     guard case .missingMatchingBracket = error.type else {
                         XCTFail("Error should be unexpectedToken")
                         fatalError()
@@ -77,7 +77,7 @@ class ExpressionTests: XCTestCase {
                     
                     XCTAssert(line == error.line)
                 }
-            }
+        }
     }
     
     func testMissingMatchingParens() {
@@ -88,7 +88,7 @@ class ExpressionTests: XCTestCase {
             ("(\n(5 plus 4) plus 3) times (2 plus 1", 2),
             ("(\n(5 plus 4) plus 3) times \n(2 plus 1", 3)
         ]
-
+        
         samples
             .map { args -> ([Token], Int) in
                 let (code, line) = args
@@ -104,7 +104,7 @@ class ExpressionTests: XCTestCase {
                         XCTFail("Error should be a ZolangError")
                         fatalError()
                     }
-
+                    
                     guard case .missingMatchingParens = error.type else {
                         XCTFail("Error should be unexpectedToken")
                         fatalError()
@@ -112,7 +112,7 @@ class ExpressionTests: XCTestCase {
                     
                     XCTAssert(line == error.line)
                 }
-            }
+        }
     }
     
     func testArrayAccess() {
@@ -120,7 +120,7 @@ class ExpressionTests: XCTestCase {
         
         do {
             let tokens = "some[\nfake\n]".zo.tokenize()
-
+            
             let expression = try Expression(tokens: tokens, context: &context)
             
             XCTAssert(context.line == 3)
@@ -137,7 +137,7 @@ class ExpressionTests: XCTestCase {
             
             XCTAssert(payload == "fake", "payload should match token")
             XCTAssert(identifier == "some", "identifier should match token")
-
+            
         } catch {
             XCTFail("Should not fail: \(error.localizedDescription)")
         }
@@ -149,48 +149,48 @@ class ExpressionTests: XCTestCase {
             let tokens: [Token] = [
                 .decimal("55"), .newline, .operator("*"), .parensOpen, .identifier("x"), .operator("+"), .identifier("y"), .parensClose
             ]
-        
+            
             let expression = try Expression(tokens: tokens, context: &context)
-
+            
             XCTAssert(context.line == 2)
-
+            
             guard case let .operation(exprL, op, exprR) = expression else {
                 XCTFail("expression should return operation")
                 fatalError()
             }
-        
+            
             XCTAssert(op == "*", "operator should match token payload")
-        
-        
+            
+            
             guard case let .integerLiteral(integer) = exprL else {
                 XCTFail("expression should return identifier")
                 fatalError()
             }
-        
+            
             XCTAssert(integer == "55", "integer should match token payload")
-        
+            
             guard case let .parentheses(exprRC) = exprR else {
                 XCTFail("expression should return parentheses")
                 fatalError()
             }
-        
+            
             guard case let .operation(exprRL, op2, exprRR) = exprRC else {
                 XCTFail("expression should return operation")
                 fatalError()
             }
-        
+            
             XCTAssert(op2 == "+", "operator should match token payload")
-        
+            
             guard case let .identifier(idL) = exprRL else {
                 XCTFail("expression should return identifier")
                 fatalError()
             }
-        
+            
             guard case let .identifier(idR) = exprRR else {
                 XCTFail("expression should return identifier")
                 fatalError()
             }
-        
+            
             XCTAssert(idL == "x")
             XCTAssert(idR == "y")
         } catch {
@@ -207,7 +207,7 @@ class ExpressionTests: XCTestCase {
             let paramString = "string"
             let paramInt = "55"
             let paramFloat = "46.1"
-
+            
             let tokens = "\(funcIdentifier)\n(\(paramIdentifier), \"\(paramString)\", \(paramInt), \(paramFloat))"
                 .zo
                 .tokenize()
@@ -258,7 +258,7 @@ class ExpressionTests: XCTestCase {
     }
     
     func testArrayLiteral() {
-
+        
         var context = ParserContext(file: "test.zolang")
         
         do {
@@ -266,7 +266,7 @@ class ExpressionTests: XCTestCase {
             let funcIdentifier = "someFunc"
             let paramString = "string"
             let paramInt = "55"
-
+            
             let tokens = "[\n\(paramIdentifier), \"\(paramString)\", \n\t\(paramInt), [ \(funcIdentifier)([\(paramInt)]) ]]"
                 .zo
                 .tokenize()
@@ -322,16 +322,16 @@ class ExpressionTests: XCTestCase {
                 XCTFail("expression should be listLiteral")
                 fatalError()
             }
-
+            
             XCTAssert(functionInnerExpressions.count == 1)
             
             guard case let .integerLiteral(integer) = functionInnerExpressions[0] else {
                 XCTFail("expression should be listLiteral")
                 fatalError()
             }
-
+            
             XCTAssert(intLit == integer)
-
+            
         } catch {
             XCTFail("Should not fail: \(error.localizedDescription)")
         }
@@ -362,17 +362,33 @@ class ExpressionTests: XCTestCase {
                 guard expr.count == 4 else { return -5 }
                 guard case let .textLiteral(str1) = expr[0] else { return -6 }
                 let check1 = str1 == "What's up "
-
+                
                 guard case let .identifier(str2) = expr[1] else { return -7 }
                 let check2 = str2 == "homie"
                 
                 guard case let .textLiteral(str3) = expr[2] else { return -8 }
                 let check3 = str3 == " hundred $ bill y'all. Hello "
-
+                
                 guard case let .listAccess(identifier, inner) = expr[3] else { return -9 }
                 guard case let .integerLiteral(num) = inner else { return -10 }
                 let check4 = num == "2" && identifier == "a"
                 return check1 && check2 && check3 && check4 ? 0 : 3
+            }),
+            ("\"${hello}${beautiful}\"", { expr in
+                guard expr.count == 4 else { return -11 }
+                
+                guard case let .textLiteral(text1) = expr[0] else { return -12 }
+                let check1 = text1 == ""
+                
+                guard case let .identifier(str1) = expr[1] else { return -13 }
+                let check2 = str1 == "hello"
+                
+                guard case let .textLiteral(text2) = expr[2] else { return -14 }
+                let check3 = text2 == ""
+                
+                guard case let .identifier(str2) = expr[3] else { return -15 }
+                let check4 = str2 == "beautiful"
+                return check1 && check2 && check3 && check4 ? 0 : 4
             })
         ]
         
