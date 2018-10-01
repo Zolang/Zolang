@@ -42,7 +42,9 @@ Theoretically though, these (`.stencil`) specification files could make Zolang o
 
 Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
 
-### The Story Behind Zolang
+... for one, it's already transpilable to multiple languages, like Kotlin and Swift.
+
+### A User Story: The Story Behind Zolang
 
 The idea for Zolang came from within a fast moving startup. It was moving fast in the sense that the tech stack was rapidly changing every now and then, the product had projects in 4 languages, Swift, TypeScript, JavaScript and Ruby. All of which had duplications in definitions of models.
 
