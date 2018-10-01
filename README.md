@@ -384,12 +384,12 @@ person.speak("My address is ${person.address()}")
 
 #### Arithmetic
 
-Lets say we wanted to print something like `1 + 2 + (3 * 4) / 5`
+Lets say we wanted to calculate something like `1 + 2 + (3 * 4) / 5`
 
 In Zolang this would be written:
 
 ```zolang
-print("${1 plus 2 plus (3 times 4) over 5}")
+1 plus 2 plus (3 times 4) over 5
 ```
 
 #### Looping through Lists
