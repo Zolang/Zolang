@@ -32,8 +32,8 @@ public enum RegExRepo {
     public static let inlineWhitespaceCharacter = "[\\s\\t]"
     public static let newline = "\n"
     
-    public static let prefixOperator = "not"
-    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|divided\\sby|modulus|\\*|/|\\+|-|%"
+    public static let prefixOperator = "not|!"
+    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|divided\\sby|multiplied\\sby|modulus|\\*|/|\\+|-|%"
     
     public static let accessLimitation = "private"
     
@@ -44,9 +44,13 @@ public enum RegExRepo {
 }
 
 extension RegExRepo {
+    
+    static let prefixOperatorPayloads: [String: String] = [
+        "!": "not",
+        "not": "not"
+    ]
+    
     static let operatorPayloads: [String: String] = [
-        "divided by": "over",
-        "over": "over",
 
         "or": "or",
         "||": "or",
@@ -62,9 +66,12 @@ extension RegExRepo {
         "==": "equals",
 
         "times": "times",
+        "multiplied by": "times",
         "plus": "plus",
         "minus": "minus",
         "modulus": "modulus",
+        "divided by": "over",
+        "over": "over",
         
         "*": "times",
         "/": "over",
@@ -99,13 +106,16 @@ extension RegExRepo {
                 return Token(type: .accessLimitation, payload: accessLimitation)
             } else if let prefixOperator = $0.zo.getPrefix(regex: RegExRepo.prefixOperator),
                 prefixOperator == $0 {
-                return Token(type: .prefixOperator, payload: $0)
+                return Token(type: .prefixOperator, payload: prefixOperatorPayloads[$0])
             }  else if let `operator` = $0.zo.getPrefix(regex: RegExRepo.`operator`),
                `operator` == $0 {
                 return Token(type: .`operator`, payload: operatorPayloads[$0])
             } else {
                 return Token(type: .identifier, payload: $0)
             }
+        }),
+        (RegExRepo.prefixOperator, {
+            return Token(type: .prefixOperator, payload: prefixOperatorPayloads[$0])
         }),
         (RegExRepo.operator, {
             return Token(type: .operator, payload: operatorPayloads[$0])
