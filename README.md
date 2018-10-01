@@ -28,7 +28,7 @@
 # Zolang
 > A lightweight frontend for virtually any general purpose programming language.
 
-<a name="What"/>
+<a name="What"></a>
 ## What is it?
 
 Zolang is a programming language that serves as a code generation DSL and is theoretically through its capabilities transpilable to virtually any other programming language.
@@ -37,7 +37,7 @@ Zolang does this by offloading code generation to its users through [Stencil (te
 
 Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
 
-<a name="Why"/>
+<a name="Why"></a>
 ## Why Zolang?
 
 Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
@@ -48,14 +48,14 @@ The idea for Zolang came from within a fast moving startup. It was moving fast i
 
 So every time the tech stack changed drastically, changes had to be made in many of the (if not all four) implementations. So we wanted a language where we could write the model layer of our application with a single source of truth, generating code for all of our programming languages.
 
-<a name="Name"/>
+<a name="Name"></a>
 ## Name
 
 I'm a Star Wars fan and in the Star Wars world Zolan is the home planet of a species called clawdites, who are known for their ability to transform their appearance to look like virtually any other creature.
 
 As the language aims to be transpilable to virtually any other programming language the clawdites came quickly to mind. Sadly the species doesn't have a catchy name, so I found myself falling back to their planet Zolan. And since this is a language and lang is often used as an abbreviation for language the "g" was soon to follow.
 
-<a name="Roadmap"/>
+<a name="Roadmap"></a>
 ## Roadmap / Upcoming Features
 
 - Hot reload (compilation) - (Scheduled v0.1.x)
@@ -65,10 +65,10 @@ As the language aims to be transpilable to virtually any other programming langu
 - For loop
 - Function mutation
 
-<a name="Docs"/>
+<a name="Docs"></a>
 ## Documentation
 
-<a name="Install"/>
+<a name="Install"></a>
 ### Installation
 
 #### Manual
@@ -109,7 +109,7 @@ cp -f Zolang /usr/local/bin/zolang
 zolang
 ```
 
-<a name="GetStarted"/>
+<a name="GetStarted"></a>
 ### Getting Started
 
 #### Setting up development environment
@@ -133,7 +133,7 @@ zolang init
 
 This will create a zolang.json file that will be used to specify build settings for your Zolang and setup the project's file structure.
 
-<a name="Example"/>
+<a name="Example"></a>
 ### Example
 
 #### The Config File
@@ -195,7 +195,7 @@ zolang build
 
 ... and enjoy checking out the readable code generated to `./zolang/build/swift/Person.swift` and `./zolang/build/kotlin/Person.kt`
 
-<a name="Overview"/>
+<a name="Overview"></a>
 ### Language Overview
 
 #### Types
@@ -401,7 +401,7 @@ while (i < person.friendNames.count) {
 }
 ```
 
-<a name="License"/>
+<a name="License"></a>
 ## License
 
 MIT License
