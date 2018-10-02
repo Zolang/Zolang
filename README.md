@@ -266,8 +266,8 @@ There is only one supported prefix operator in Zolang
 
 Infix operators in Zolang:
 
-- ```or```: boolean or
-- ```and```: boolean and
+- ```or```, ```||```: boolean or
+- ```and```, ```&&```: boolean and
 - ```<```: less-than
 - ```>```: greater-than
 - ```<=```: lesser-than-or-equal
