@@ -80,7 +80,8 @@ Then setup Zolang as a command line tool locally
 
 ```
 chmod +x ~/Downloads/zolang.dms
-mv ~/Downloads/zolang.dms ~/usr/local/bin/zolang
+mv ~/Downloads/zolang.dms /usr/local/bin/
+mv /usr/local/bin/zolang.dms /usr/local/bin/zolang
 ```
 
 #### Build From Source
