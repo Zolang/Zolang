@@ -79,7 +79,7 @@ As the language aims to be transpilable to virtually any other programming langu
 Then setup Zolang as a command line tool locally
 
 ```
-chmod +x ~/Downloads/Zolang
+chmod +x ~/Downloads/zolang
 mv ~/Downloads/zolang /usr/local/bin
 ```
 
