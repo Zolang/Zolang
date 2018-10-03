@@ -79,19 +79,8 @@ As the language aims to be transpilable to virtually any other programming langu
 Then setup Zolang as a command line tool locally
 
 ```
-chmod +x ~/Downloads/zolang
-mv ~/Downloads/zolang /usr/local/bin
-```
-
-#### Using Mint (Recommended)
-
-
-If you don't have Mint you can get it from its [GitHub page](https://github.com/yonaskolb/mint). You'll need a Mac with the Xcode 9.2 or above
-
-When you've installed mint you can
-
-```
-mint install Zolang/Zolang
+chmod +x ~/Downloads/zolang.dms
+mv ~/Downloads/zolang.dms ~/usr/local/bin/zolang
 ```
 
 #### Build From Source
