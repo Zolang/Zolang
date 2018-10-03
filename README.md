@@ -80,7 +80,7 @@ Then setup Zolang as a command line tool locally
 
 ```
 chmod +x ~/Downloads/Zolang
-mv ~/Downloads/Zolang /usr/local/bin
+mv ~/Downloads/zolang /usr/local/bin
 ```
 
 #### Using Mint (Recommended)
