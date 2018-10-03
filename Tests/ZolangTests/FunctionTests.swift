@@ -21,6 +21,7 @@ class FunctionTests: XCTestCase {
     
     func testFailure() {
         let invalidSamples: [(String, Int)] = [
+            ("function return text from (name as some)", 1),
             ("text from () {", 1),
             ("list of \nnumber \nfrom (num as )\n", 3),
             ("number from\n {\n}", 2),

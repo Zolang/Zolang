@@ -30,10 +30,9 @@ public struct CodeGenerator {
                         let parser = Parser(file: url)
                         return (url.lastPathComponent, try parser.parse())
                     }
-
                 return (setting, syntaxTrees)
             }
-            
+
         parsed.forEach { arg in
             let (setting, syntaxTrees) = arg
 
@@ -50,7 +49,9 @@ public struct CodeGenerator {
                     let generated = try ast.compile(buildSetting: setting, fileManager: self.fileManager)
                     
                     do {
-                        try fileManager.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
+                        try fileManager.createDirectory(atPath: url.path,
+                                                        withIntermediateDirectories: true,
+                                                        attributes: nil)
                     } catch {}
                     
                     try generated.write(to: toURL, atomically: true, encoding: .utf8)

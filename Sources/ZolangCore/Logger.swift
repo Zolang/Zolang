@@ -50,6 +50,7 @@ public struct Log {
     public static func ascii() {
         print(ANSIColors.plain + asciiArt)
     }
+
     public static func info(_ message: String, terminator: String = "\n") {
         print(ANSIColors.info + message, terminator: terminator)
     }

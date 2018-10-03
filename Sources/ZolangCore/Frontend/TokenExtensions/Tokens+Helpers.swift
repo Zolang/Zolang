@@ -105,7 +105,7 @@ extension Array where Element == Token {
             index += 1
         }
         
-        guard closeCount == startCount else { return nil }
+        guard closeCount == startCount, end > start else { return nil }
         
         return start...end
     }

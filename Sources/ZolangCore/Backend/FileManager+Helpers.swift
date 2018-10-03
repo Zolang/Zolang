@@ -25,4 +25,10 @@ extension FileManager {
         })
         return urls
     }
+    
+    func listSourceFiles(_ config: Config) -> [URL] {
+        return config.buildSettings
+            .map { FileManager.default.listFiles(path: $0.sourcePath) }
+            .reduce([], +)
+    }
 }

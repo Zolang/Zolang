@@ -17,7 +17,7 @@ public struct Function: Node {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
         
-        // {type} from {ParamList} { {code} }
+        // {type} from ({ParamList}) { {code} }
         
         guard let fromIndex = tokens.index(of: [.from]) else {
             throw ZolangError(type: .missingToken("from"),
@@ -33,7 +33,7 @@ public struct Function: Node {
         }
 
         guard tokens.count > fromIndex + 1 else {
-            throw ZolangError(type: .missingToken("("),
+            throw ZolangError(type:  .missingToken("("),
                               file: context.file,
                               line: context.line)
         }
@@ -43,7 +43,7 @@ public struct Function: Node {
         context.line += tokens.trimLeadingNewlines()
         
         guard tokens.hasPrefixTypes(types: [ .parensOpen ]) else {
-            throw ZolangError(type: .missingToken("("),
+            throw ZolangError(type: .unexpectedToken(tokens[0], .parensOpen),
                               file: context.file,
                               line: context.line)
         }

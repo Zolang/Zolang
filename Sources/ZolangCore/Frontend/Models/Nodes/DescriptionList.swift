@@ -160,13 +160,22 @@ public struct DescriptionList: Node {
                                                 skipping: [ .newline, .comment ],
                                                 startingAt: asOrReturnIndex)
                 
+                guard let fromIndex = tokens.index(of: [ .from ],
+                                                   skipping: [.newline, .comment],
+                                                   startingAt: asOrReturnIndex) else {
+                    throw ZolangError(type: .missingToken("from"),
+                                      file: context.file,
+                                      line: context.line + tokens.newLineCount(to: asOrReturnIndex,
+                                                                               startingAt: asOrReturnIndex))
+                }
+                
                 guard asOrReturnIndex + 1 < tokens.count,
-                    let range = tokens.rangeOfScope(start: asOrReturnIndex,
+                    let range = tokens.rangeOfScope(start: fromIndex,
                                                     open: .curlyOpen,
                                                     close: .curlyClose) else {
                         throw ZolangError(type: indexOfCurly == nil ? .missingToken("{") : .missingMatchingCurlyBracket,
                                       file: context.file,
-                                      line: context.line + tokens.newLineCount(to: indexOfCurly ?? asOrReturnIndex,
+                                      line: context.line + tokens.newLineCount(to: indexOfCurly ?? fromIndex,
                                                                                startingAt: asOrReturnIndex))
                 }
 

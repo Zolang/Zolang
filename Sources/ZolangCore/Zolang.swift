@@ -1,16 +1,17 @@
 import Foundation
 
 public final class Zolang {
-    private static let version = "0.0.10"
+    private static let version = "0.0.12"
     
     private static let help = """
-    Usage: zolang <action>
+    USAGE: zolang [ACTION]
 
-        Help: The Zolang CLI is the compiler and template manager for the Zolang programming language
+        HELP: The Zolang CLI is the compiler and template manager for the Zolang programming language
 
-        Actions:
+        ACTIONS:
               init                Initializes a new Zolang project with a ./zolang.json and some example code.
               build               Compiles Zolang based on the settings specified in ./zolang.json
+              watch               Runs compiler in hot-reload mode, observeing file changes for source files at paths specified in ./zolang.json
     """
 
     private static let dummyZolangDotJson = """
@@ -37,8 +38,11 @@ public final class Zolang {
       ]
     }
     """
+
     private let arguments: [String]
 
+    private var codeGenerator: CodeGenerator!
+    
     public init(arguments: [String] = CommandLine.arguments) {
         self.arguments = arguments
     }
@@ -52,24 +56,45 @@ public final class Zolang {
         }
         
         let action = arguments[1]
-        let validActions = [ "init", "build" ]
+        let validActions = [ "init", "build", "watch" ]
         guard validActions.contains(action) else {
-            Log.error("Encountered an invalid action \(arguments[1])")
-            Log.plain(Zolang.help)
+            Log.error("Encountered an invalid action \(arguments[1]) - See \"zolang help\" for details on usage")
             exit(1)
         }
 
-        if action == "init" {
+        guard action != "init" else {
             try initProject()
-        } else if action == "build" {
-            var codeGenerator: CodeGenerator!
+            return
+        }
+
+        do {
+            self.codeGenerator = try CodeGenerator(configPath: "./zolang.json")
+        } catch {
+            Log.error("Could not find file: \"zolang.json\"")
+            exit(1)
+        }
+
+        if action == "build" {
+            try codeGenerator.build()
+        } else if action == "watch" {
+            watch()
+        }
+    }
+
+    func watch() {
+        let sourceWatcher = SynchronousSourceWatcher(config: codeGenerator.config)
+        sourceWatcher.watchForChangesSync {
             do {
-                codeGenerator = try CodeGenerator(configPath: "./zolang.json")
+                try self.codeGenerator.build()
             } catch {
-                Log.error("Could not find file: \"zolang.json\"")
+                if let error = error as? ZolangError {
+                    error.dump()
+                } else {
+                    Log.error(error.localizedDescription)
+                }
             }
             
-            try codeGenerator?.build()
+            Log.plain("---------------------------\nWatching... (CTRL + C to Stop)")
         }
     }
     
