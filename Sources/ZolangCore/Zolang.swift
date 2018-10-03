@@ -1,7 +1,7 @@
 import Foundation
 
 public final class Zolang {
-    private static let version = "0.0.12"
+    private static let version = "0.1.12"
     
     private static let help = """
     USAGE: zolang [ACTION]

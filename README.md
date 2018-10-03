@@ -60,7 +60,6 @@ As the language aims to be transpilable to virtually any other programming langu
 <a name="Roadmap"></a>
 ## Roadmap / Upcoming Features
 
-- Hot reload (compilation) - (Scheduled v0.1.x)
 - Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
 - Update Zolang from the Zolang CLI
 - Type checking
@@ -75,7 +74,7 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### Manual
 
-[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.0.11/zolang)
+[Download Zolang](https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang)
 
 Then setup Zolang as a command line tool locally
 
@@ -197,6 +196,17 @@ zolang build
 ... and enjoy checking out the readable code generated to `./zolang/build/swift/Person.swift` and `./zolang/build/kotlin/Person.kt`
 
 <a name="Overview"></a>
+
+#### Hot Reloading
+
+Zolang supports hot reloading through the `watch` action
+
+```
+zolang watch
+```
+
+This action will observe changes to Zolang source files with paths specified in `zolang.json` and rebuild.
+
 ### Language Overview
 
 #### Types
