@@ -60,6 +60,8 @@ As the language aims to be transpilable to virtually any other programming langu
 <a name="Roadmap"></a>
 ## Roadmap / Upcoming Features
 
+- Support for `dictionary` (sometimes called `map`) type
+- Faster compilation
 - Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
 - Update Zolang from the Zolang CLI
 - Type checking
