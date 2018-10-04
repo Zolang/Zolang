@@ -75,7 +75,7 @@ As the language aims to be transpilable to virtually any other programming langu
 #### Manual
 
 ```
-curl https://github-production-release-asset-2e65be.s3.amazonaws.com/150035879/bdb35300-c72a-11e8-9597-f1b790bd3dbf?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20181004%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20181004T140114Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=40de35654176735a09b6c75ea50e1278302a84600800626dc49ac72c5b6a3f1c&amp;X-Amz-SignedHeaders=host&amp;actor_id=0&amp;response-content-disposition=attachment%3B%20filename%3Dzolang&amp;response-content-type=application%2Foctet-stream > /usr/local/bin/zolang
+curl -s https://api.github.com/repos/Zolang/Zolang/releases/latest > /usr/local/bin/zolang
 chmod +x /usr/local/bin/zolang
 ```
 
