@@ -75,7 +75,7 @@ As the language aims to be transpilable to virtually any other programming langu
 #### Manual
 
 ```
-curl -s https://api.github.com/repos/Zolang/Zolang/releases/assets/8952678 > /usr/local/bin/zolang
+curl -s https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang > /usr/local/bin/zolang
 chmod +x /usr/local/bin/zolang
 ```
 
