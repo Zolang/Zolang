@@ -74,14 +74,9 @@ As the language aims to be transpilable to virtually any other programming langu
 
 #### Manual
 
-[Download Zolang](https://github.com/Zolang/Zolang/releases/download/latest/zolang)
-
-Then setup Zolang as a command line tool locally
-
 ```
-chmod +x ~/Downloads/zolang.dms
-mv ~/Downloads/zolang.dms /usr/local/bin/
-mv /usr/local/bin/zolang.dms /usr/local/bin/zolang
+curl https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang > /usr/local/bin/zolang
+chmod +x /usr/local/bin/zolang
 ```
 
 #### Build From Source
