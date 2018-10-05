@@ -140,7 +140,7 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
       }
     },
     {
-      "sourcePath": "./zolang/src",
+      "sourcePath": "./.zolang/src",
       "stencilPath": "./.zolang/templates/kotlin",
       "buildPath": "./.zolang/build/kotlin",
       "fileExtension": "kt",
