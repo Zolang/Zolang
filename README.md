@@ -4,7 +4,7 @@
     <a href="https://github.com/Zolang/ZolangIDE">Zolang IDE</a>
 </p>
 
-![alt text](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
+![Zolang Logo](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
 
 <b>Table of Contents</b>
 
@@ -185,13 +185,15 @@ zolang build
 
 #### Hot Reloading
 
-Zolang supports hot reloading through the `watch` action
+Zolang supports hot reloading or live compilation through the `watch` action
 
 ```
 zolang watch
 ```
 
 This action will observe changes to Zolang source files with paths specified in `zolang.json` and rebuild.
+
+![Zolang hot-reloading](https://github.com/Zolang/Zolang/blob/master/Images/hot-reload-demo.png "Zolang live compilation demo")
 
 ### Language Overview
 
