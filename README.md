@@ -193,7 +193,7 @@ zolang watch
 
 This action will observe changes to Zolang source files with paths specified in `zolang.json` and rebuild.
 
-![Zolang hot-reloading](https://github.com/Zolang/Zolang/blob/master/Images/hot-reload-demo.png "Zolang live compilation demo")
+![Zolang hot-reloading](https://github.com/Zolang/Zolang/blob/master/Images/hot-reload-demo.gif "Zolang live compilation demo")
 
 ### Language Overview
 
