@@ -42,7 +42,7 @@ Theoretically though, these (`.stencil`) specification files could make Zolang o
 
 Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
 
-... for one, it's already transpilable to multiple languages, like Kotlin and Swift.
+... for one, it's already transpilable to multiple languages, including Kotlin, Swift and Python.
 
 ### A User Story: The Story Behind Zolang
 
@@ -125,7 +125,7 @@ This will create a zolang.json file that will be used to specify build settings 
 
 #### The Config File
 
-A typical ```zolang.json``` project file compiling to Swift and Kotlin would look something like this:
+A typical ```zolang.json``` project file compiling to Swift, Kotlin and Python would look something like this:
 
 ```JSON
 {
@@ -147,12 +147,21 @@ A typical ```zolang.json``` project file compiling to Swift and Kotlin would loo
       "separators": {
         "CodeBlock": "\n"
       }
+    },
+    {
+      "sourcePath": "./.zolang/src/",
+      "stencilPath": "./.zolang/templates/python2.7",
+      "buildPath": "./.zolang/build/python2.7",
+      "fileExtension": "py",
+      "separators": {
+        "CodeBlock": "\n"
+      }
     }
   ]
 }
 ```
 
-Notice the `./.zolang/templates/swift` and `./.zolang/templates/kotlin` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). But `zolang init` only fetches the two (Swift and Kotlin).
+Notice the `./.zolang/templates/{LANGUAGE}` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). But `zolang init` only fetches the three (Swift, Kotlin and Python).
 
 `./zolang/src` is where all the Zolang code is stored.
 
@@ -363,20 +372,6 @@ describe Person {
   
   address return text from () {
     return "${street} ${number}"
-  }
-}
-```
-
-However this might not be able to be supported in all languages, many languages such as Python rely on an instanced being passed into the scope of the function to be able to read the model's properties. This function would be likely to throw an error in those languages as the function address never receives the instance being called upon.
-
-If you wanted to transpile Zolang to those types of languages, you would need to declare a static function:
-
-```zolang
-describe Person {
-  ...
-
-  static address return text from (person as Person) {
-    return "${person.street} ${person.number}"
   }
 }
 ```

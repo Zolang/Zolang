@@ -407,4 +407,20 @@ class ExpressionTests: XCTestCase {
             }
         }
     }
+    
+    func testDot() {
+        let code = "user.some"
+        
+        let tokens = code.zo.tokenize()
+        let expected = Expression.dot(.identifier("user"), .identifier("some"))
+        
+        var context = ParserContext(file: "test")
+        
+        do {
+            let expression = try Expression(tokens: tokens, context: &context)
+            XCTAssert(expression ~= expected)
+        } catch {
+            XCTFail()
+        }
+    }
 }

@@ -34,6 +34,15 @@ public final class Zolang {
           "separators": {
             "CodeBlock": "\\n"
           }
+        },
+        {
+          "sourcePath": "./.zolang/src/",
+          "stencilPath": "./.zolang/templates/python2.7",
+          "buildPath": "./.zolang/build/python2.7",
+          "fileExtension": "py",
+          "separators": {
+            "CodeBlock": "\n"
+          }
         }
       ]
     }
@@ -136,7 +145,12 @@ public final class Zolang {
         
         Log.plain("Fetching templates ...")
         Log.plain(shell("git clone https://github.com/Zolang/ZolangTemplates"))
-        Log.plain(shell("mv ZolangTemplates/swift .zolang/templates && mv ZolangTemplates/kotlin .zolang/templates"))
+
+        [ "swift", "kotlin", "python2.7" ]
+            .forEach { language in
+                Log.plain(shell("mv ZolangTemplates/\(language) .zolang/templates"))
+            }
+        
         Log.plain(shell("rm -rf ZolangTemplates"))
         Log.info("Done")
         

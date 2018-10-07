@@ -368,7 +368,7 @@ public indirect enum Expression: Node {
         context.line += newlinesToAdd + trailing
         
         let secondExpression = try Expression(tokens: rightTokens, context: &context)
-        guard secondExpression.canDotSyntax() == false else {
+        guard secondExpression.canDotSyntax() else {
             throw ZolangError(type: .invalidExpression,
                               file: context.file,
                               line: context.line)

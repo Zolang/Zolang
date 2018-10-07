@@ -116,15 +116,22 @@ public struct IfStatement: Node {
                               line: context.line)
         }
         
-        guard let rangeOfExpression = tokens.rangeOfScope(open: .parensOpen, close: .parensClose) else {
+        guard let rangeOfParens = tokens.rangeOfScope(open: .parensOpen, close: .parensClose) else {
             throw ZolangError(type: .missingMatchingParens,
                               file: context.file,
                               line: context.line)
         }
 
-        context.line += tokens.newLineCount(to: rangeOfExpression.lowerBound)
+        context.line += tokens.newLineCount(to: rangeOfParens.lowerBound)
 
-        return (try Expression(tokens: Array(tokens[rangeOfExpression]), context: &context), rangeOfExpression)
+        guard rangeOfParens.count > 2 else {
+            throw ZolangError(type: .invalidExpression,
+                              file: context.file,
+                              line: context.line)
+        }
+
+        let rangeOfExpression = (rangeOfParens.lowerBound + 1)...(rangeOfParens.upperBound - 1)
+        return (try Expression(tokens: Array(tokens[rangeOfExpression]), context: &context), rangeOfParens)
     }
     
     private static func parseCodeBlock(tokens: [Token],
