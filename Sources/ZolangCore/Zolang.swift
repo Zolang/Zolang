@@ -41,7 +41,7 @@ public final class Zolang {
           "buildPath": "./.zolang/build/python2.7",
           "fileExtension": "py",
           "separators": {
-            "CodeBlock": "\n"
+            "CodeBlock": "\\n"
           }
         }
       ]
