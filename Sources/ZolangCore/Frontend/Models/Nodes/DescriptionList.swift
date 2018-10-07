@@ -263,6 +263,7 @@ public struct DescriptionList: Node {
             .map { (_, accessLimitation, name, function) -> [String: Any] in
                 var ctx: [String: Any] = [
                     "name": name,
+                    "context": try function.getContext(buildSetting: buildSetting, fileManager: fm),
                     "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
                 ]
                 
@@ -277,6 +278,7 @@ public struct DescriptionList: Node {
             .map { (_, accessLimitation, name, function) -> [String: Any] in
                 var ctx: [String: Any] = [
                     "name": name,
+                    "context": try function.getContext(buildSetting: buildSetting, fileManager: fm),
                     "function": try function.compile(buildSetting: buildSetting, fileManager: fm)
                 ]
                 
