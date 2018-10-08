@@ -42,7 +42,9 @@ Theoretically though, these (`.stencil`) specification files could make Zolang o
 
 Zolang doesn't try to be a general purpose programming language, it is limited in features and is yet to have a standard library, so why use Zolang instead of other programming languages?
 
-... for one, it's already transpilable to multiple languages, including Kotlin, Swift and Python.
+... well, it's transpilable to multiple languages including Kotlin, Swift and Python and there are few limits to how many languages can be supported, to give you the idea of how soon your favorite language will be supported (if not already) adding support for all the three aforementioned languages took about an hour.
+
+This means that Zolang is very good for implementing basic logic in your app with a single source of truth, generating code needed for virtually all platforms your app is running on.
 
 ### A User Story: The Story Behind Zolang
 
