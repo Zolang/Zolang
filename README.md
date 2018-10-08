@@ -6,6 +6,11 @@
 
 ![Zolang Logo](https://github.com/Zolang/Zolang/blob/master/Images/zolang-banner.png "Zolang logo")
 
+<p align="center">
+<a href="https://developer.apple.com/swift/"><img src="https://img.shields.io/badge/Swift-4.2-orange.svg?style=flat" style="max-height: 300px;" alt="Swift"/></a>
+<img src="https://img.shields.io/badge/platforms-MacOS-green.svg" alt="Platforms">
+</p>
+
 <b>Table of Contents</b>
 
 [What is it?](#What)
