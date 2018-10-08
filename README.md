@@ -10,6 +10,7 @@
 <a href="https://developer.apple.com/swift/"><img src="https://img.shields.io/badge/Swift-4.2-orange.svg?style=flat" style="max-height: 300px;" alt="Swift"/></a>
 <img src="https://img.shields.io/badge/platforms-MacOS-green.svg" alt="Platforms"/>
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"/>
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
 </p>
 
 <b>Table of Contents</b>
