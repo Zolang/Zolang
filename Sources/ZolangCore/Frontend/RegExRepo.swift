@@ -34,7 +34,7 @@ public enum RegExRepo {
 
     public static let prefixOperator = "not|!"
     public static let specialOperator = "divided\\sby|multiplied\\sby"
-    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|modulus|\\*|/|\\+|-|%"
+    public static let `operator` = "\\|\\||&&|or|and|equals|==|(<=)|(>=)|<|>|plus|minus|times|over|modulus|\\*|\\/|\\+|-|%"
 
     public static let accessLimitation = "private"
 
