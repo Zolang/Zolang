@@ -285,7 +285,7 @@ Infix operators in Zolang:
 - ```plus```, ```+```: addition
 - ```minus```, ```-```: subtraction
 - ```multiplied by```, ```times```, ```*```: multiplication
-- ```divided by```, ```over```: division
+- ```divided by```, ```over```, ```/```: division
 - ```modulus```, ```%```: modulus
 
 > NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
