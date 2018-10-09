@@ -8,7 +8,7 @@
 
 <p align="center">
 <a href="https://developer.apple.com/swift/"><img src="https://img.shields.io/badge/Swift-4.2-orange.svg?style=flat" style="max-height: 300px;" alt="Swift"/></a>
-<img src="https://img.shields.io/badge/platforms-MacOS-green.svg" alt="Platforms"/>
+<img src="https://img.shields.io/badge/platforms-Linux%20%7C%20MacOS-green.svg" alt="Platforms"/>
 <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"/>
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
 </p>
@@ -83,18 +83,22 @@ As the language aims to be transpilable to virtually any other programming langu
 <a name="Install"></a>
 ### Installation
 
-#### Manual
+#### MacOS
 
 ```
 curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang; mv zolang /usr/local/bin/; chmod +x /usr/local/bin/zolang
 ```
 
-#### Build From Source
+#### General (Build From Source)
+
+You'll need to have the Swift programming language installed
+
+See [Swift Downloads](https://swift.org/download/#releases)
 
 ```
 git clone https://github.com/Zolang/Zolang
 cd Zolang
-swift build -c release -Xswiftc -static-stdlib
+swift build -c release
 cd .build/release
 cp -f Zolang /usr/local/bin/zolang
 ```
