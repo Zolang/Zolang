@@ -42,7 +42,7 @@ Zolang is a programming language with capabilities that make it transpilable to 
 
 Zolang does this by offloading code generation to its users through [Stencil (template language)](https://stencil.fuller.li/en/latest/) specification files.
 
-Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool.
+Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool and a decent (though naive) lightweight alternative to a cross-compiler. 
 
 <a name="Why"></a>
 ## Why Zolang?
