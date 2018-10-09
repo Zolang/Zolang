@@ -91,7 +91,7 @@ curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang; mv zo
 
 #### General (Build From Source)
 
-You'll need to have the Swift programming language installed ([Download Swift](https://swift.org/download/#releases))
+If you're not operating on a mac make sure you have installed Swift ([Download Swift](https://swift.org/download/#releases))
 
 ```
 git clone https://github.com/Zolang/Zolang
