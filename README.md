@@ -21,14 +21,14 @@
 
 [Name](#Name)
 
-[Roadmap](#Roadmap)
-
 [Documentation](#Docs)
 
 - [Installation](#Install)
 - [Getting Started](#GetStarted)
 - [Example](#Example)
 - [Language Overview](#Overview)
+
+[Roadmap](#Roadmap)
 
 [License](#License)
 
@@ -66,16 +66,11 @@ I'm a Star Wars fan and in the Star Wars world Zolan is the home planet of a spe
 
 As the language aims to be transpilable to virtually any other programming language the clawdites came quickly to mind. Sadly the species doesn't have a catchy name, so I found myself falling back to their planet Zolan. And since this is a language and lang is often used as an abbreviation for language the "g" was soon to follow.
 
-<a name="Roadmap"></a>
-## Roadmap / Upcoming Features
+Remember this guy from "Attack of the Clones":
 
-- Support for `dictionary` (sometimes called `map`) type
-- Faster compilation
-- Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
-- Update Zolang from the Zolang CLI
-- Type checking
-- For loop
-- Function mutation
+![Clawdite](https://github.com/Zolang/Zolang/blob/master/Images/clawdite.gif "The clawdite from Attack of the Clones")
+
+That is a clawdite, my inspiration for the name and logo.
 
 <a name="Docs"></a>
 ## Documentation
@@ -419,6 +414,17 @@ while (i < person.friendNames.count) {
   make i be i plus 1
 }
 ```
+
+<a name="Roadmap"></a>
+## Roadmap / Upcoming Features
+
+- Support for `dictionary` (sometimes called `map`) type
+- Faster compilation
+- Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
+- Update Zolang from the Zolang CLI
+- Type checking
+- For loop
+- Function mutation
 
 <a name="License"></a>
 ## License
