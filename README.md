@@ -81,7 +81,7 @@ That is a clawdite, my inspiration for the name and logo.
 #### MacOS
 
 ```
-curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.12/zolang; mv zolang /usr/local/bin/; chmod +x /usr/local/bin/zolang
+curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.14/zolang; mv zolang /usr/local/bin/; chmod +x /usr/local/bin/zolang
 ```
 
 #### General (Build From Source)
