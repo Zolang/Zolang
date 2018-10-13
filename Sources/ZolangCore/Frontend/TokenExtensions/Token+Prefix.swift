@@ -51,7 +51,6 @@ extension Array where Element == Token {
              .colon,
              .comma,
              .curlyClose,
-             .curlyOpen,
              .describe,
              .equals,
              .from,
@@ -77,7 +76,8 @@ extension Array where Element == Token {
              .decimal,
              .textLiteral,
              .booleanLiteral,
-             .parensOpen:
+             .parensOpen,
+             .curlyOpen:
             return true
         }
     }
