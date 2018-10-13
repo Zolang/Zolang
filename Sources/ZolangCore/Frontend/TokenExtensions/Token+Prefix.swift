@@ -38,12 +38,7 @@ extension Array where Element == Token {
         guard let first = self.first else { return false }
         return first.type == .return
     }
-    
-    public func isPrefixComment() -> Bool {
-        guard let first = self.first else { return false }
-        return first.type == .comment
-    }
-    
+
     public func isPrefixExpression() -> Bool {
         guard let first = self.first else { return false }
         switch first.type {
@@ -72,8 +67,7 @@ extension Array where Element == Token {
              .return,
              .operator,
              .accessLimitation,
-             .static,
-             .comment:
+             .static:
             return false
         case .prefixOperator:
             guard self.count > 1 else { return false }
@@ -103,8 +97,6 @@ extension Array where Element == Token {
             return .expression
         } else if isPrefixReturnStatement() {
             return .returnStatement
-        } else if isPrefixComment() {
-            return .comment
         } else {
             return nil
         }

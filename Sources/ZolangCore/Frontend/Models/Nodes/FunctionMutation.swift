@@ -23,7 +23,7 @@ public struct FunctionMutation: Node {
                                line: context.line)
         }
         
-        guard tokens.hasPrefixTypes(types: validPrefix, skipping: [ .newline, .comment ]) else {
+        guard tokens.hasPrefixTypes(types: validPrefix, skipping: [ .newline ]) else {
             throw invalidMutationError(context)
         }
 
@@ -35,7 +35,7 @@ public struct FunctionMutation: Node {
         do {
             self.identifiers = (try tokens.parseSeparatedTokens(of: [ .identifier ],
                                                                 separator: .dot,
-                                                                skipping: [ .newline, .comment ],
+                                                                skipping: [ .newline ],
                                                                 i: &i))
                 .compactMap { $0.first?.payload }
         } catch {

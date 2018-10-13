@@ -47,7 +47,7 @@ public indirect enum Expression: Node {
         ]
         
         guard let valueType = (validValuePrefix.first { (key, types) -> Bool in
-            tokens.hasPrefixTypes(types: types, skipping: [ .newline, .comment ])
+            tokens.hasPrefixTypes(types: types, skipping: [ .newline ])
         })?.key else {
             throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
         }

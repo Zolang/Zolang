@@ -68,7 +68,7 @@ public indirect enum CodeBlock: Node {
             
             left = .ifStatement(try IfStatement(tokens: Array(workingTokens[range]), context: &context))
         case .modelDescription:
-            guard workingTokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline, .comment ]) else {
+            guard workingTokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline]) else {
                 throw ZolangError(type: .unexpectedStartOfStatement(.modelDescription),
                                   file: context.file,
                                   line: context.line)
