@@ -56,8 +56,8 @@ class VariableDeclarationTests: XCTestCase {
             .forEach { code, lineAtEnd in
                 var context = ParserContext(file: "test.zolang")
                 do {
-                    let dec = try VariableDeclaration(tokens: code.zo.tokenize(),
-                                                      context: &context)
+                    _ = try VariableDeclaration(tokens: code.zo.tokenize(),
+                                                context: &context)
                     XCTAssert(context.line == lineAtEnd)
                     
                 } catch {
