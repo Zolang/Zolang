@@ -53,7 +53,7 @@ Theoretically though, these (`.stencil`) specification files could make Zolang o
 #### MacOS
 
 ```
-curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.14/zolang; mv zolang /usr/local/bin/; chmod +x /usr/local/bin/zolang
+curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.15/zolang; mv zolang /usr/local/bin/; chmod +x /usr/local/bin/zolang
 ```
 
 #### General (Build From Source)
