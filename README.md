@@ -194,6 +194,7 @@ Zolang has 4 primitive types
 - text
 - number
 - list
+- dictionary
 
 ##### boolean
 
@@ -240,6 +241,18 @@ List literals are defined with a comma separated sequence of expressions wrapped
 ```zolang
 let myList as list of text be [ "1", "2", "3" ]
 ```
+
+##### dictionary
+
+Dictionaries might be a bit different to the key-value types you're used but fear not they're just as easy to understand.
+
+In Zolang dictionaries only have one available Key type, `text`, so their usage becomes similar to lists:
+
+```zolang
+let myDict as dictionary of number be { "num1": 5, "num2": 7.5 }
+```
+
+This is to make sure all pure Zolang models are easily serializable to JSON so that later on templates in [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) will be able to autogenerate serialization methods for all models.
 
 #### Operators
 
@@ -372,10 +385,18 @@ person.speak("My address is ${person.address()}")
 
 Lets say we wanted to calculate something like `1 + 2 + (3 * 4) / 5`
 
-In Zolang this would be written:
+In Zolang this would be written in various ways:
+
+```zolang
+1 + 2 (3 * 4) / 5
+```
 
 ```zolang
 1 plus 2 plus (3 times 4) over 5
+```
+
+```
+1 plus 2 plus (3 times 4) divided by 5
 ```
 
 #### Looping through Lists
