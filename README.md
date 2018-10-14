@@ -392,7 +392,7 @@ while (i < person.friendNames.count) {
 <a name="Roadmap"></a>
 ## Roadmap / Upcoming Features
 
-- Support for compile variables for meta-programming
+- Add metaprogramming support
 - Faster compilation
 - Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
 - Update Zolang from the Zolang CLI
