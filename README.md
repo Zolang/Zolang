@@ -392,7 +392,7 @@ while (i < person.friendNames.count) {
 <a name="Roadmap"></a>
 ## Roadmap / Upcoming Features
 
-- Support for `dictionary` (sometimes called `map`) type
+- Support for compile variables for meta-programming
 - Faster compilation
 - Fetch [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) from the Zolang CLI
 - Update Zolang from the Zolang CLI
