@@ -88,10 +88,7 @@ extension RegExRepo {
         }),
         (RegExRepo.inlineWhitespaceCharacter, { _ in nil }),
         
-        (RegExRepo.comment, {
-            return Token(type: .comment,
-                         payload: String($0.suffix(from: $0.index($0.startIndex, offsetBy: 1))))
-        }),
+        (RegExRepo.comment, { _ in return nil }),
         (RegExRepo.accessLimitation, { return Token(type: .accessLimitation, payload: $0) }),
         (RegExRepo.specialOperator, {
            return Token(type: .operator, payload: operatorPayloads[$0])

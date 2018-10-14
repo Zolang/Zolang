@@ -15,8 +15,9 @@ public indirect enum Expression: Node {
     case templatedText([Expression])
     case booleanLiteral(String)
     case identifier(String)
-    case listAccess(String, Expression)
+    case `subscript`(String, Expression)
     case listLiteral([Expression])
+    case dictionaryLiteral([(Expression, Expression)])
     case functionCall(String, [Expression])
     case prefix(String, Expression)
     case parentheses(Expression)
@@ -26,13 +27,18 @@ public indirect enum Expression: Node {
     public init(tokens: [Token], context: inout ParserContext) throws {
         var tokens = tokens
         context.line += tokens.trimLeadingNewlines()
+        let trailing = tokens.trimTrailingNewlines()
+        defer {
+            context.line += trailing
+        }
         
         let validValuePrefix: [(key: ValueType, value: [TokenType])] = [
             (.parentheses, [ .parensOpen ]),
             (.prefixOperated, [ .prefixOperator ]),
             (.listLiteral, [ .bracketOpen ]),
+            (.dictionaryLiteral, [ .curlyOpen ]),
             (.functionCall, [ .identifier, .parensOpen ]),
-            (.listAccess, [ .identifier, .bracketOpen ]),
+            (.subscript, [ .identifier, .bracketOpen ]),
             (.identifier, [ .identifier ]),
             (.integerLiteral, [ .decimal ]),
             (.floatLiteral, [ .floatingPoint ]),
@@ -41,13 +47,13 @@ public indirect enum Expression: Node {
         ]
         
         guard let valueType = (validValuePrefix.first { (key, types) -> Bool in
-            tokens.hasPrefixTypes(types: types, skipping: [ .newline, .comment ])
+            tokens.hasPrefixTypes(types: types, skipping: [ .newline ])
         })?.key else {
             throw ZolangError(type: .invalidExpression, file: context.file, line: context.line)
         }
         
         switch valueType {
-        case .listAccess:
+        case .subscript:
             let lineCount = tokens.newLineCount(to: tokens.index(ofNextWithTypeIn: [ .bracketOpen ])!)
             guard let range = tokens.rangeOfScope(open: .bracketOpen, close: .bracketClose) else {
                 
@@ -83,7 +89,7 @@ public indirect enum Expression: Node {
                 
                 context.line += leading + trailing
                 
-                self = .listAccess(identifier, try Expression(tokens: innerTokens, context: &context))
+                self = .subscript(identifier, try Expression(tokens: innerTokens, context: &context))
             }
         case .prefixOperated:
             let prefix = tokens.first!.payload!
@@ -141,7 +147,7 @@ public indirect enum Expression: Node {
             }  else {
                 self = .functionCall(identifier, try .parseExpressionList(tokens: tokens,
                                                                           scopeDef: (.parensOpen, .parensClose),
-                                                                          seperators: [ .comma ],
+                                                                          separators: [ .comma ],
                                                                           context: context))
             }
             
@@ -162,8 +168,28 @@ public indirect enum Expression: Node {
             } else {
                 self = .listLiteral(try .parseExpressionList(tokens: tokens,
                                                              scopeDef: (.bracketOpen, .bracketClose),
-                                                             seperators: [ .comma ],
+                                                             separators: [ .comma ],
                                                              context: context))
+            }
+        case .dictionaryLiteral:
+            guard let rangeOfBrackets = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose) else {
+                throw ZolangError(type: .missingMatchingCurlyBracket, file: context.file, line: context.line)
+            }
+            
+            if let operatorExpression = try Expression.parseOperator(index: rangeOfBrackets.upperBound + 1,
+                                                                     tokens: tokens,
+                                                                     context: &context) {
+                self = operatorExpression
+                
+            } else if let dotExpression = try Expression.parseDotSeparated(index: rangeOfBrackets.upperBound + 1,
+                                                                           tokens: tokens,
+                                                                           context: &context) {
+                self = dotExpression
+            } else {
+                self = .dictionaryLiteral(try .parseKeyValueList(tokens: tokens,
+                                                                 scopeDef: (.curlyOpen, .curlyClose),
+                                                                 separators: [.comma],
+                                                                 context: context))
             }
         case .identifier:
             if let operatorExpression = try Expression.parseOperator(index: 1,
@@ -176,7 +202,7 @@ public indirect enum Expression: Node {
                                                                            context: &context) {
                 self = dotExpression
             } else {
-                guard tokens.count == 1 else {
+                guard tokens.filter({ $0.type != .newline }).count == 1 else {
                     throw ZolangError(type: .unexpectedToken(tokens[1], nil),
                                       file: context.file,
                                       line: context.line)
@@ -426,9 +452,9 @@ public indirect enum Expression: Node {
                 "name": name,
                 "expressions": try expressions.map { try $0.compile(buildSetting: buildSetting, fileManager: fm) }
             ]
-        case .listAccess(let identifier, let expression):
+        case .subscript(let identifier, let expression):
             return [
-                "expressionType": "listAccess",
+                "expressionType": "subscript",
                 "identifier": identifier,
                 "expression": try expression.compile(buildSetting: buildSetting, fileManager: fm)
             ]
@@ -436,6 +462,18 @@ public indirect enum Expression: Node {
             return [
                 "expressionType": "listLiteral",
                 "expressions": try expressions.map { try $0.compile(buildSetting: buildSetting, fileManager: fm) }
+            ]
+        case .dictionaryLiteral(let keyValueList):
+            let keyValuePairs = try keyValueList
+                .map { (key, value) -> [String: Any] in
+                    return [
+                        "key": try key.compile(buildSetting: buildSetting, fileManager: fm),
+                        "value": try value.compile(buildSetting: buildSetting, fileManager: fm)
+                    ]
+                }
+            return [
+                "expressionType": "dictionaryLiteral",
+                "keyValuePairs": keyValuePairs
             ]
         case .parentheses(let expression):
             return [
@@ -458,11 +496,12 @@ public indirect enum Expression: Node {
         }
     }
     
+    /// - Returns: Whether or not expression can be on used on the right side of a dot notation
     func canDotSyntax() -> Bool {
         switch self {
-        case .booleanLiteral(_), .floatLiteral(_), .listLiteral(_), .integerLiteral(_), .operation(_, _, _), .parentheses(_), .templatedText(_), .textLiteral(_), .prefix(_, _):
+        case .booleanLiteral(_), .floatLiteral(_), .listLiteral(_), .integerLiteral(_), .operation(_, _, _), .parentheses(_), .templatedText(_), .textLiteral(_), .prefix(_, _), .dictionaryLiteral(_):
             return false
-        case .dot(_, _), .functionCall(_, _), .identifier(_), .listAccess(_, _):
+        case .dot(_, _), .functionCall(_, _), .identifier(_), .subscript(_, _):
             return true
         }
     }
@@ -479,7 +518,7 @@ public indirect enum Expression: Node {
             return lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
         case (.operation(let lExpr1, let lOp, let lExpr2), .operation(let rExpr1, let rOp, let rExpr2)):
             return lOp == rOp && lExpr1 ~= rExpr1 && lExpr2 ~= rExpr2
-        case (.listAccess(let sL, let exprL), .listAccess(let sR, let exprR)),
+        case (.subscript(let sL, let exprL), .subscript(let sR, let exprR)),
              (.prefix(let sL, let exprL), .prefix(let sR, let exprR)):
             return sL == sR && exprL ~= exprR
         case (.templatedText(let lExprs), .templatedText(let rExprs)),
@@ -489,6 +528,17 @@ public indirect enum Expression: Node {
             while i < lExprs.count {
                 defer { i += 1 }
                 guard lExprs[i] ~= rExprs[i] else {
+                    return false
+                }
+            }
+            return true
+        case (.dictionaryLiteral(let keyValueListLeft), .dictionaryLiteral(let keyValueListRight)):
+            guard keyValueListLeft.count == keyValueListRight.count else { return false }
+            var i = 0
+            while i < keyValueListLeft.count {
+                defer { i += 1 }
+                guard keyValueListLeft[i].0 ~= keyValueListRight[i].0 &&
+                    keyValueListLeft[i].1 ~= keyValueListRight[i].1 else {
                     return false
                 }
             }
@@ -515,8 +565,9 @@ extension Expression {
         case functionCall
         case prefixOperated
         case parentheses
-        case listAccess
+        case `subscript`
         case listLiteral
+        case dictionaryLiteral
         case identifier
         case integerLiteral
         case floatLiteral
@@ -526,7 +577,7 @@ extension Expression {
 }
 
 extension Array where Element == Expression {
-    static func parseExpressionList(tokens: [Token], scopeDef: (open: Token, close: Token), seperators: [TokenType], context: ParserContext) throws -> [Expression] {
+    static func parseExpressionList(tokens: [Token], scopeDef: (open: Token, close: Token), separators: [TokenType], context: ParserContext) throws -> [Expression] {
         guard let indexOfOpen = tokens.index(ofAnyIn: [ scopeDef.open.type ]) else {
             throw ZolangError(type: .missingToken(String(describing: scopeDef.open.payload)),
                               file: context.file,
@@ -546,7 +597,9 @@ extension Array where Element == Expression {
         let startOfList = scopeRange.lowerBound + 1
         
         guard let commaIndices = tokens.indices(of: [ .comma ],
-                                                outsideOf: [ (.parensOpen, .parensClose), (.bracketOpen, .bracketClose) ],
+                                                outsideOf: [(.parensOpen, .parensClose),
+                                                            (.bracketOpen, .bracketClose),
+                                                            (.curlyOpen, .curlyClose)],
                                                 startingAt: startOfList),
             commaIndices.isEmpty == false else {
                 
@@ -590,6 +643,103 @@ extension Array where Element == Expression {
         }
         
         if let expression = (try? parseExpressionForRange(start..<scopeRange.upperBound)) {
+            expressions.append(expression)
+        }
+        
+        return expressions
+    }
+}
+extension Array where Element == (Expression, Expression) {
+    
+    static func parseKeyValueList(tokens: [Token], scopeDef: (open: Token, close: Token), separators: [TokenType], context: ParserContext) throws -> [(Expression, Expression)] {
+        guard let indexOfOpen = tokens.index(ofAnyIn: [ scopeDef.open.type ]) else {
+            throw ZolangError(type: .missingToken(String(describing: scopeDef.open.payload)),
+                              file: context.file,
+                              line: context.line)
+        }
+        
+        let numberOfNewlines = tokens.newLineCount(to: indexOfOpen)
+        guard let scopeRange = tokens.rangeOfScope(open: scopeDef.open, close: scopeDef.close),
+            scopeRange.count >= 2 else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line + numberOfNewlines)
+        }
+        
+        guard scopeRange.count > 2 else { return [] }
+        
+        let startOfList = scopeRange.lowerBound + 1
+        
+        guard let commaIndices = tokens.indices(of: [ .comma ],
+                                                outsideOf: [(.parensOpen, .parensClose),
+                                                            (.bracketOpen, .bracketClose),
+                                                            (.curlyOpen, .curlyClose)],
+                                                startingAt: startOfList),
+            commaIndices.isEmpty == false else {
+                
+                var context = context
+                let innerTokenRange = (scopeRange.lowerBound + 1)...(scopeRange.upperBound - 1)
+                let innerTokens = [Token](tokens[innerTokenRange])
+                
+                let colons = innerTokens.indices(of: [.colon], outsideOf: [(.parensOpen, .parensClose),
+                                                                           (.bracketOpen, .bracketClose),
+                                                                           (.curlyOpen, .curlyClose)])
+                return try (colons ?? [])
+                    .map { idx -> (Expression, Expression) in
+                        let leftRange: ClosedRange<Int> = 0...(idx - 1)
+                        let leftTokens = [Token](innerTokens[leftRange])
+                        
+                        let leftExpression = try Expression(tokens: leftTokens, context: &context)
+
+                        guard idx + 1 < innerTokens.count else {
+                            throw ZolangError(type: .invalidExpression,
+                                              file: context.file,
+                                              line: context.line)
+                        }
+
+                        let rightTokens = [Token](innerTokens.suffix(from: idx + 1))
+                        return (leftExpression, try Expression(tokens: rightTokens, context: &context))
+                    }
+        }
+        
+        var start: Int = startOfList
+
+        let parseKeyValueForRange: (CountableRange<Int>) throws -> (Expression, Expression) = { [unowned context] range in
+            var context = context
+            
+            let innerTokens = [Token](tokens[range])
+
+            guard let colonIdx = innerTokens.index(of: [.colon]) else {
+                throw ZolangError(type: .missingToken(":"),
+                                  file: context.file,
+                                  line: context.line)
+            }
+
+            let leftRange: ClosedRange<Int> = 0...(colonIdx - 1)
+            let leftTokens = [Token](innerTokens[leftRange])
+            
+            let leftExpression = try Expression(tokens: leftTokens, context: &context)
+            
+            guard colonIdx + 1 < innerTokens.count else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            let rightTokens = [Token](innerTokens.suffix(from: colonIdx + 1))
+            
+            return (leftExpression, try Expression(tokens: rightTokens, context: &context))
+        }
+        
+        var expressions = try commaIndices
+            .map { commaIndex throws -> (Expression, Expression) in
+                let range = start..<commaIndex
+                start = commaIndex + 1
+                
+                return try parseKeyValueForRange(range)
+            }
+        
+        if let expression = (try? parseKeyValueForRange(start..<scopeRange.upperBound)) {
             expressions.append(expression)
         }
         

@@ -16,6 +16,7 @@ public enum PrimitiveType: String {
 public indirect enum Type: Node {
     case primitive(PrimitiveType)
     case list(Type)
+    case dictionary(Type)
     case custom(String)
     
     public init(tokens: [Token], context: inout ParserContext) throws {
@@ -46,7 +47,9 @@ public indirect enum Type: Node {
         }
 
         guard let ofIndex = tokens.index(of: [ .of ]),
-            tokens.first(where: { $0.type == .identifier})?.payload == "list" else {
+            let superType = tokens.first(where: { $0.type == .identifier}),
+            superType.payload == "list" ||
+            superType.payload == "dictionary" else {
             throw ZolangError(type: .invalidType,
                               file: context.file,
                               line: context.line)
@@ -62,7 +65,12 @@ public indirect enum Type: Node {
         
         let rest = Array(tokens.suffix(from: ofIndex + 1))
 
-        self = .list(try Type(tokens: rest, context: &context))
+        if superType.payload == "list" {
+            self = .list(try Type(tokens: rest, context: &context))
+        } else {
+            self = .dictionary(try Type(tokens: rest, context: &context))
+        }
+        
     }
     
     public func getContext(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> [String : Any] {
@@ -82,6 +90,11 @@ public indirect enum Type: Node {
                 "type": "list",
                 "innerType": try inner.compile(buildSetting: buildSetting, fileManager: fm)
             ]
+        case .dictionary(let inner):
+            return [
+                "type": "dictionary",
+                "innerType": try inner.compile(buildSetting: buildSetting, fileManager: fm)
+            ]
         }
     }
 }
@@ -91,6 +104,7 @@ extension Type: Equatable {
         switch (lhs, rhs) {
         case (.primitive(let l), .primitive(let r)): return l == r
         case (.list(let lt), .list(let rt)): return lt == rt
+        case (.dictionary(let lt), .dictionary(let rt)): return lt == rt
         case (.custom(let ls), .custom(let rs)): return ls == rs
         default: return false
         }

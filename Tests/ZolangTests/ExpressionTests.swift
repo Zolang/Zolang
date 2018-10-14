@@ -125,7 +125,7 @@ class ExpressionTests: XCTestCase {
             
             XCTAssert(context.line == 3)
             
-            guard case let .listAccess(identifier, innerExpression) = expression else {
+            guard case let .subscript(identifier, innerExpression) = expression else {
                 XCTFail("expression should return operation")
                 fatalError()
             }
@@ -257,7 +257,7 @@ class ExpressionTests: XCTestCase {
         }
     }
     
-    func testArrayLiteral() {
+    func testListLiteral() {
         
         var context = ParserContext(file: "test.zolang")
         
@@ -369,7 +369,7 @@ class ExpressionTests: XCTestCase {
                 guard case let .textLiteral(str3) = expr[2] else { return -8 }
                 let check3 = str3 == " hundred $ bill y'all. Hello "
                 
-                guard case let .listAccess(identifier, inner) = expr[3] else { return -9 }
+                guard case let .subscript(identifier, inner) = expr[3] else { return -9 }
                 guard case let .integerLiteral(num) = inner else { return -10 }
                 let check4 = num == "2" && identifier == "a"
                 return check1 && check2 && check3 && check4 ? 0 : 3
@@ -405,6 +405,45 @@ class ExpressionTests: XCTestCase {
             } catch {
                 XCTFail(error.localizedDescription)
             }
+        }
+    }
+    
+    func testDictionary() {
+        var context = ParserContext(file: "test.zolang")
+        
+        do {
+            let listExample: Expression = .listLiteral([
+                .identifier("some1"),
+                .identifier("some2")
+            ])
+            
+            let innerDictExample: Expression = .dictionaryLiteral([
+                (.identifier("yey"), .identifier("some")),
+                (.integerLiteral("5"), listExample)
+            ])
+
+            let expected: Expression = .dictionaryLiteral([
+                (.textLiteral("some"), .textLiteral("some")),
+                (.textLiteral("innerDict"), innerDictExample)
+            ])
+            
+            let code = """
+            {
+                "some": "some",
+                "innerDict": {
+                    yey: some,
+                    5: [
+                        some1,
+                        some2 # a comment
+                    ]
+                }
+            }
+            """
+            let expression = try Expression(tokens: code.zo.tokenize(), context: &context)
+            XCTAssert(expression ~= expected)
+            XCTAssert(context.line == 10)
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
     

@@ -34,7 +34,7 @@ public struct DescriptionList: Node {
             var accessLimitation: String? = nil
 
             if tokens.hasPrefixTypes(types: [ .accessLimitation ],
-                                     skipping: [ .newline, .comment ],
+                                     skipping: [ .newline ],
                                      startingAt: i) {
                 let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
                                                          startingAt: i)!
@@ -43,7 +43,7 @@ public struct DescriptionList: Node {
             }
             
             if tokens.hasPrefixTypes(types: [ .static ],
-                                     skipping: [ .newline, .comment ],
+                                     skipping: [ .newline ],
                                      startingAt: i) {
                 isStatic = true
                 i = tokens.index(of: [ .static ],
@@ -54,7 +54,7 @@ public struct DescriptionList: Node {
             // Prevent further attributes (accessLimitations or static keyword)
 
             guard tokens.hasPrefixTypes(types: [ .accessLimitation ],
-                                        skipping: [ .newline, .comment ],
+                                        skipping: [ .newline ],
                                         startingAt: i) == false else {
                 let accessLimitationIndex = tokens.index(of: [ .accessLimitation ],
                                                          startingAt: i)!
@@ -65,7 +65,7 @@ public struct DescriptionList: Node {
             }
             
             guard tokens.hasPrefixTypes(types: [ .static ],
-                                        skipping: [ .newline, .comment ],
+                                        skipping: [ .newline ],
                                         startingAt: i) == false else {
                 let staticIndex = tokens.index(of: [ .static ],
                                                          startingAt: i)!
@@ -78,10 +78,10 @@ public struct DescriptionList: Node {
             context.line += tokens.newLineCount(to: i, startingAt: oldI)
             
             let isPropertyDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .as ],
-                                                              skipping: [ .newline, .comment ],
+                                                              skipping: [ .newline ],
                                                               startingAt: i)
             
-            let isFunctionDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .return ], skipping: [ .newline, .comment ], startingAt: i)
+            let isFunctionDeclaration = tokens.hasPrefixTypes(types: [ .identifier, .return ], skipping: [ .newline ], startingAt: i)
             
             guard isPropertyDeclaration
                 || isFunctionDeclaration else {
@@ -129,9 +129,9 @@ public struct DescriptionList: Node {
                 
                 var defaultValue: Expression? = nil
                 if endOfType < tokens.count,
-                    tokens.hasPrefixTypes(types: [.default], skipping: [.newline, .comment ], startingAt: endOfType) {
+                    tokens.hasPrefixTypes(types: [.default], skipping: [.newline ], startingAt: endOfType) {
 
-                    let indexOfDefault = tokens.index(of: [.default], skipping: [ .newline, .comment ], startingAt: endOfType)!
+                    let indexOfDefault = tokens.index(of: [.default], skipping: [ .newline ], startingAt: endOfType)!
 
                     context.line += tokens.newLineCount(to: indexOfDefault, startingAt: endOfType)
 
@@ -157,11 +157,11 @@ public struct DescriptionList: Node {
                 let asOrReturnIndex = tokens.index(of: [ .return ], startingAt: i)!
                 
                 let indexOfCurly = tokens.index(of: [ .curlyOpen ],
-                                                skipping: [ .newline, .comment ],
+                                                skipping: [ .newline ],
                                                 startingAt: asOrReturnIndex)
                 
                 guard let fromIndex = tokens.index(of: [ .from ],
-                                                   skipping: [.newline, .comment],
+                                                   skipping: [.newline],
                                                    startingAt: asOrReturnIndex) else {
                     throw ZolangError(type: .missingToken("from"),
                                       file: context.file,
@@ -203,8 +203,9 @@ public struct DescriptionList: Node {
                 return nil
         }
         
-        guard tokens[firstIndex].payload != "list" else {
-            guard let i = tokens.index(of: [.of], skipping: [ .newline, .comment ], startingAt: firstIndex + 1),
+        let superType = tokens[firstIndex]
+        guard superType.payload != "list" && superType.payload != "dictionary" else {
+            guard let i = tokens.index(of: [.of], skipping: [ .newline ], startingAt: firstIndex + 1),
                 let firstNotNewline = tokens.index(ofFirstThatIsNot: .newline, startingAt: i + 1) else {
                     return nil
             }

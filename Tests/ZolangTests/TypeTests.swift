@@ -44,6 +44,7 @@ class TypeTests: XCTestCase {
             ("\nnumber\n", .primitive(.number), 3),
             ("\nlist of number", .list(.primitive(.number)), 2),
             ("list of list of text\n", .list(.list(.primitive(.text))), 2),
+            ("dictionary of list of text", .dictionary(.list(.primitive(.text))), 1),
             ("\n\ntext", .primitive(.text), 3)
         ]
         
