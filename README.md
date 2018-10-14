@@ -372,10 +372,18 @@ person.speak("My address is ${person.address()}")
 
 Lets say we wanted to calculate something like `1 + 2 + (3 * 4) / 5`
 
-In Zolang this would be written:
+In Zolang this would be written in various ways:
+
+```zolang
+1 + 2 (3 * 4) / 5
+```
 
 ```zolang
 1 plus 2 plus (3 times 4) over 5
+```
+
+```
+1 plus 2 plus (3 times 4) divided by 5
 ```
 
 #### Looping through Lists
