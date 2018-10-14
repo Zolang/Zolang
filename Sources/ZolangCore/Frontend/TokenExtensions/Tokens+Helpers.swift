@@ -224,6 +224,25 @@ extension Array where Element == Token {
             }
             
             return start...(nextNext + nextExpressionRange.upperBound)
+        case .bracketOpen:
+            guard let rangeOfScope = self.rangeOfScope(start: start,
+                                                       open: .bracketOpen,
+                                                       close: .bracketClose) else {
+                                                        return nil
+            }
+            
+            guard let next = index(ofAnyIn: [ .dot, .operator],
+                                   skippingOnly: [ .newline ],
+                                   startingAt: rangeOfScope.upperBound),
+                let nextNext = index(ofFirstThatIsNot: .newline,
+                                     startingAt: next + 1),
+                let nextExpressionRange = Array(self[nextNext...])
+                    .rangeOfExpression() else {
+                        
+                        return rangeOfScope
+            }
+            
+            return start...(nextNext + nextExpressionRange.upperBound)
         case .curlyOpen:
             guard let rangeOfScope = self.rangeOfScope(start: start,
                                                        open: .curlyOpen,
@@ -260,8 +279,8 @@ extension Array where Element == Token {
               .dot, .else, .if,
               .while, .from, .equals,
               .make, .parensClose,
-              .bracketOpen, .bracketClose,
-             .newline, .describe, .of, .let,
+              .bracketClose, .newline,
+              .describe, .of, .let,
              .operator, .other, .accessLimitation,
              .static, .default:
             return nil

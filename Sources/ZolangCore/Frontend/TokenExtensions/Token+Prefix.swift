@@ -47,7 +47,6 @@ extension Array where Element == Token {
              .default,
              .of,
              .bracketClose,
-             .bracketOpen,
              .colon,
              .comma,
              .curlyClose,
@@ -77,7 +76,8 @@ extension Array where Element == Token {
              .textLiteral,
              .booleanLiteral,
              .parensOpen,
-             .curlyOpen:
+             .curlyOpen,
+             .bracketOpen:
             return true
         }
     }
