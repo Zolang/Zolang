@@ -203,7 +203,8 @@ public struct DescriptionList: Node {
                 return nil
         }
         
-        guard tokens[firstIndex].payload != "list" else {
+        let superType = tokens[firstIndex]
+        guard superType.payload != "list" && superType.payload != "dictionary" else {
             guard let i = tokens.index(of: [.of], skipping: [ .newline ], startingAt: firstIndex + 1),
                 let firstNotNewline = tokens.index(ofFirstThatIsNot: .newline, startingAt: i + 1) else {
                     return nil
