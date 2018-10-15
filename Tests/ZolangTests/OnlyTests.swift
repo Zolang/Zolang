@@ -40,12 +40,7 @@ class OnlyTests: XCTestCase {
     }
     
     func testInit() {
-        let code = """
-        only "swift", "python2.7" {
-            print(l)
-        }
-        """
-        //let code = "only \"some\" {\nlet i as number be 5\n}"
+        let code = "only \"some\" {\nlet i as number be 5\n}"
         let lineAtEnd = 3
 
         var context = ParserContext(file: "test.zolang")
