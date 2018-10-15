@@ -117,7 +117,10 @@ A typical ```zolang.json``` project file compiling to Swift, Kotlin and Python w
       "fileExtension": "swift",
       "separators": {
         "CodeBlock": "\n"
-      }
+      },
+      "flags": [
+        "swift"
+      ] 
     },
     {
       "sourcePath": "./.zolang/src",
@@ -126,7 +129,10 @@ A typical ```zolang.json``` project file compiling to Swift, Kotlin and Python w
       "fileExtension": "kt",
       "separators": {
         "CodeBlock": "\n"
-      }
+      },
+      "flags": [
+        "kotlin"
+      ]
     },
     {
       "sourcePath": "./.zolang/src/",
@@ -135,7 +141,10 @@ A typical ```zolang.json``` project file compiling to Swift, Kotlin and Python w
       "fileExtension": "py",
       "separators": {
         "CodeBlock": "\n"
-      }
+      },
+      "flags": [
+        "python2.7"
+      ]
     }
   ]
 }
@@ -144,6 +153,8 @@ A typical ```zolang.json``` project file compiling to Swift, Kotlin and Python w
 Notice the `./.zolang/templates/{LANGUAGE}` This is the location of the `.stencil` files that customize the actual code generation process. The Zolang organization has [a repo of supported languages](https://github.com/Zolang/ZolangTemplates). But `zolang init` only fetches the three (Swift, Kotlin and Python).
 
 `./zolang/src` is where all the Zolang code is stored.
+
+`flags` are compile time constants that can be used in ```only``` statements see [docs](#Docs)
 
 > 😇 P.S. It only took around an hour to add the templates needed to be able to compile Zolang to both Kotlin and Swift! So you shouldn't restrain yourself from using Zolang if your favorite language is not yet supported. Just add it and continue hacking.
 
@@ -405,9 +416,50 @@ In Zolang this would be written in various ways:
 let i as number be 1
 
 while (i < person.friendNames.count) {
-  print(person.friendNames[i])
   make i be i plus 1
 }
+```
+
+#### Metaprogramming
+
+In Zolang there are two features designed for metaprogramming purposes, ```raw``` and ```only```
+
+##### raw
+
+```zolang
+raw {'Any text here'}
+```
+
+This will tell the compiler to skip the code generation process for "Any text here" and forward it as is to the compilers output
+
+##### only
+```only "<flag1>", "<flag2>",... { <code> }```
+
+Using `only` we can tell the compiler to ignore code for buildSettings not included in a comma separated list of flags 
+
+```zolang
+only "python2.7", "swift" {
+  print("text")
+}
+```
+
+##### Putting it all Together
+
+Using these to features (`raw` & `only`) we could create a facade for logging to the console:
+
+```zolang
+describe Sys {
+  static log return from (txt as text) {
+    only "python2.7", "swift" {
+      raw {'print(txt)'}
+    }
+    only "kotlin" {
+      raw {'println(txt)'}
+    }
+  }
+}
+
+Sys.log("Hello World!")
 ```
 
 <a name="Roadmap"></a>
