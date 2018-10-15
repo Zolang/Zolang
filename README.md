@@ -23,6 +23,14 @@
 - [Getting Started](#GetStarted)
 - [Example](#Example)
 - [Language Overview](#Overview)
+  - [Types](#Types)
+  - [Operators](#Operators)
+  - [Comments](#Comments)
+  - [Models](#Models)
+  - [Functions](#Functions)
+  - [Arithmetic](#Arithmetic)
+  - [Loops](#Loops)
+  - [Metaprogramming](#Metaprogramming)
 
 [Roadmap](#Roadmap)
 
@@ -181,8 +189,6 @@ zolang build
 
 ... and enjoy checking out the readable code generated to `./zolang/build/swift/Person.swift` and `./zolang/build/kotlin/Person.kt`
 
-<a name="Overview"></a>
-
 #### Hot Reloading
 
 Zolang supports hot reloading or live compilation through the `watch` action
@@ -195,8 +201,10 @@ This action will observe changes to Zolang source files with paths specified in 
 
 ![Zolang hot-reloading](https://github.com/Zolang/Zolang/blob/master/Images/hot-reload-demo.gif "Zolang live compilation demo")
 
+<a name="Overview"></a>
 ### Language Overview
 
+<a name="Types"></a>
 #### Types
 
 Zolang has 4 primitive types
@@ -265,6 +273,7 @@ let myDict as dictionary of number be { "num1": 5, "num2": 7.5 }
 
 This is to make sure all pure Zolang models are easily serializable to JSON so that later on templates in [ZolangTemplates](https://github.com/Zolang/ZolangTemplates) will be able to autogenerate serialization methods for all models.
 
+<a name="Operators"></a>
 #### Operators
 
 ##### Prefix Operators
@@ -292,6 +301,7 @@ Infix operators in Zolang:
 
 > NOTE! Watch out for precedence. Zolang offloads precedence handling to the languages being compiled to. With types that are of number type this is seldom an issue but as Zolang doesn't currently support type checking, any operator can be used on any type, so beware.
 
+<a name="Comments"></a>
 #### Comments
 
 Zolang currently only supports single line comments prefixed by `#`. Currently, comments are ignored in the build phase and can only be used to document Zolang code.
@@ -300,6 +310,7 @@ Zolang currently only supports single line comments prefixed by `#`. Currently, 
 # This is a comment
 ```
 
+<a name="Models"></a>
 #### Describing a Model
 
 ```zolang
@@ -357,12 +368,21 @@ This can then be accessed by calling:
 Person.species
 ```
 
+<a name="VariableDeclaration"></a>
 #### Variable Declaration
 
 ```zolang
 let person as Person be Person("John Doe", "John's Street", 8, [ "Todd" ])
 ```
 
+<a name="Mutation"></a>
+#### Mutation
+
+```zolang
+make person.name be "Jane Doe"
+```
+
+<a name="Functions"></a>
 #### Functions
 
 Functions in Zolang can be declared in a model description, in `Person`, the model we described above we could define a function address which would combine street and number as so:
@@ -380,18 +400,13 @@ describe Person {
 }
 ```
 
-#### Mutation
-
-```zolang
-make person.name be "Jane Doe"
-```
-
-#### Invoking Functions
+##### Invoking Functions
 
 ```zolang
 person.speak("My address is ${person.address()}")
 ```
 
+<a name="Arithmetic"></a>
 #### Arithmetic
 
 Lets say we wanted to calculate something like `1 + 2 + (3 * 4) / 5`
@@ -410,6 +425,7 @@ In Zolang this would be written in various ways:
 1 plus 2 plus (3 times 4) divided by 5
 ```
 
+<a name="Loops"></a>
 #### Looping through Lists
 
 ```zolang
@@ -420,6 +436,7 @@ while (i < person.friendNames.count) {
 }
 ```
 
+<a name="Metaprogramming"></a>
 #### Metaprogramming
 
 In Zolang there are two features designed for metaprogramming purposes, ```raw``` and ```only```
