@@ -430,7 +430,7 @@ In Zolang there are two features designed for metaprogramming purposes, ```raw``
 raw {'Any text here'}
 ```
 
-This will tell the compiler to skip the code generation process for "Any text here" and forward it as is to the compilers output
+This will tell the compiler to skip the code generation process for "Any text here" and forward it as is to the compiler's output
 
 ##### only
 ```only "<flag1>", "<flag2>",... { <code> }```
