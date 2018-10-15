@@ -43,27 +43,7 @@ extension ZolangError {
                 let expectedStr = expectedType != nil ? "- Expected: \(expectedType!)" : ""
                 return "\(unexpectedTypeStr) \(expectedStr)"
             case .unexpectedStartOfStatement(let statementType):
-                switch statementType {
-                case .comment, .expression:
-                    return "Unexpected start of \(statementType.description)"
-                case .ifStatement:
-                    return "Unexpected start of \(statementType.description) - expected: if (<expression>) { <code> }"
-                case .modelDescription:
-                    return "Unexpected start of \(statementType.description) - expected: \"describe <model> { <descriptions> }\""
-                case .functionDeclaration:
-                    return "Unexpected start of \(statementType.description) - expected \"let <identifier> return <type> from (<params>) { <code> }\""
-                case .functionMutation:
-                    return "Unexpected start of \(statementType.description) - expected \"make <identifier> return <type> from (<params>) { <code> }\""
-                case .variableDeclaration:
-                    return "Unexpected start of \(statementType.description) - expected: \"let <variable> as <type> be <expression>\""
-                case .variableMutation:
-                    return "Unexpected start of \(statementType.description) - expected: \"make <name> be <expression>\""
-                case .whileLoop:
-                    return "Unexpected start of while loop - expected: \"while (<expression>) { <code> }\""
-                case .returnStatement:
-                    return "Unexpected start of return statement - expected \"return <expression>\""
-                    
-                }
+                return statementType.errorMessage
             case .unexpectedNewline(let statementType):
                 return "Unexpected newline found in \(statementType.description)"
             case .missingToken(let string):

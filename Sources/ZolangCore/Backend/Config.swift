@@ -14,6 +14,7 @@ public struct Config: Codable {
         let buildPath: String
         let fileExtension: String
         let separators: [String: String]
+        let flags: [String]
     }
 
     let buildSettings: [BuildSetting]
