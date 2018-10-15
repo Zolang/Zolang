@@ -175,6 +175,15 @@ extension Array where Element == Token {
         return index...matchingParensRange.upperBound
     }
     
+    public func rangeOfOnly() -> ClosedRange<Int>? {
+        guard let index = index(of: [.only]),
+            let range = rangeOfScope(open: .curlyOpen, close: .curlyClose) else {
+            return nil
+        }
+        
+        return index...range.upperBound
+    }
+    
     public func rangeOfExpression() -> ClosedRange<Int>? {
         guard let start = index(ofStatementWithType: .expression) else { return nil }
         guard start < count else { return nil }
@@ -282,7 +291,8 @@ extension Array where Element == Token {
               .bracketClose, .newline,
               .describe, .of, .let,
              .operator, .other, .accessLimitation,
-             .static, .default:
+             .static, .default, .only,
+             .raw:
             return nil
         }
         

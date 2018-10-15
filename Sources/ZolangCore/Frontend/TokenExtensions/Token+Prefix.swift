@@ -38,6 +38,16 @@ extension Array where Element == Token {
         guard let first = self.first else { return false }
         return first.type == .return
     }
+    
+    public func isPrefixOnlyBlock() -> Bool {
+        guard let first = self.first else { return false }
+        return first.type == .only
+    }
+    
+    public func isPrefixRaw() -> Bool {
+        guard let first = self.first else { return true }
+        return first.type == .raw
+    }
 
     public func isPrefixExpression() -> Bool {
         guard let first = self.first else { return false }
@@ -65,7 +75,9 @@ extension Array where Element == Token {
              .return,
              .operator,
              .accessLimitation,
-             .static:
+             .static,
+             .only,
+             .raw:
             return false
         case .prefixOperator:
             guard self.count > 1 else { return false }
@@ -97,6 +109,10 @@ extension Array where Element == Token {
             return .expression
         } else if isPrefixReturnStatement() {
             return .returnStatement
+        } else if isPrefixOnlyBlock(){
+            return .only
+        } else if isPrefixRaw() {
+            return .raw
         } else {
             return nil
         }

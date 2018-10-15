@@ -20,6 +20,8 @@ public indirect enum CodeBlock: Node {
     case ifStatement(IfStatement)
     case returnStatement(Expression)
     case whileLoop(Expression, CodeBlock)
+    case only(Only)
+    case raw(String)
     case combination(CodeBlock, CodeBlock)
 
     public init(tokens: [Token], context: inout ParserContext) throws {
@@ -42,10 +44,27 @@ public indirect enum CodeBlock: Node {
         var leftEndIndex: Int
 
         switch prefixType {
-        case .comment:
-            // Comments are skipped for now
-            left = .empty
+        case .raw:
+            let raw: String = workingTokens.first!.payload!
+            let range = raw.range(of: "{'")!
+            
+            let suffix = String(raw.suffix(from: range.upperBound))
+            let innerRaw = String(suffix.prefix(upTo: suffix.range(of: "'}")!.lowerBound))
+            
+            context.line += raw.filter { $0 == "\n" }.count
+            
+            left = .raw(innerRaw)
             leftEndIndex = 1
+        case .only:
+            guard let range = workingTokens.rangeOfOnly() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.only),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            leftEndIndex = range.upperBound + 1
+            context.line += workingTokens.newLineCount(to: range.lowerBound)
+            
+            left = .only(try Only(tokens: Array(workingTokens[range]), context: &context))
         case .expression:
             guard let range = workingTokens.rangeOfExpression() else {
                 throw ZolangError(type: .invalidExpression,
@@ -127,6 +146,7 @@ public indirect enum CodeBlock: Node {
                                                                        close: .parensClose),
                 let curlyRange = workingTokens.rangeOfScope(open: .curlyOpen,
                                                             close: .curlyClose),
+                expressionContainer.upperBound < curlyRange.lowerBound,
                 expressionContainer.count > 2 else {
 
                 throw ZolangError(type: .unexpectedStartOfStatement(.whileLoop),
@@ -228,6 +248,8 @@ public indirect enum CodeBlock: Node {
             return try mut.compile(buildSetting: buildSetting, fileManager: fm)
         case .variableMutation(let mut):
             return try mut.compile(buildSetting: buildSetting, fileManager: fm)
+        case .only(let only):
+            return try only.compile(buildSetting:buildSetting, fileManager: fm)
         case .whileLoop(let expr, let codeBlock):
             let context = [
                 "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm),
@@ -244,6 +266,8 @@ public indirect enum CodeBlock: Node {
                                                   context: context)
                 .zo
                 .trimmed()
+        case .raw(let str):
+            return str
         }
     }
     

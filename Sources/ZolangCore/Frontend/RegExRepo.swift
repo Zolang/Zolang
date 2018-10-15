@@ -40,6 +40,9 @@ public enum RegExRepo {
 
     public static let comment = "\\#.*"
     
+    public static let raw = "raw\\s+(\\s|\\n|\\r)*\\{\\'(.|\\n|\\r)*\\'\\}"
+    public static let only = "only"
+    
     public static let boolean = "true|false"
     public static let keyword = "default|describe|make|return|while|from|let|as|be|of|if|else|static"
 }
@@ -87,11 +90,17 @@ extension RegExRepo {
             
         }),
         (RegExRepo.inlineWhitespaceCharacter, { _ in nil }),
-        
         (RegExRepo.comment, { _ in return nil }),
+
         (RegExRepo.accessLimitation, { return Token(type: .accessLimitation, payload: $0) }),
         (RegExRepo.specialOperator, {
            return Token(type: .operator, payload: operatorPayloads[$0])
+        }),
+        (RegExRepo.only, { _ in
+            return Token(type: .only, payload: nil)
+        }),
+        (RegExRepo.raw, {
+            return Token(type: .raw, payload: $0)
         }),
         (RegExRepo.label, {
             if let boolean = $0.zo.getPrefix(regex: RegExRepo.boolean),

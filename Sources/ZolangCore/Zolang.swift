@@ -1,7 +1,7 @@
 import Foundation
 
 public final class Zolang {
-    private static let version = "0.1.16"
+    private static let version = "0.1.17"
     
     private static let help = """
     USAGE: zolang [ACTION]
@@ -24,7 +24,10 @@ public final class Zolang {
           "fileExtension": "swift",
           "separators": {
             "CodeBlock": "\\n"
-          }
+          },
+          "flags": [
+              "swift"
+          ]
         },
         {
           "sourcePath": "./.zolang/src/",
@@ -33,7 +36,10 @@ public final class Zolang {
           "fileExtension": "kt",
           "separators": {
             "CodeBlock": "\\n"
-          }
+          },
+          "flags": [
+              "kotlin"
+          ]
         },
         {
           "sourcePath": "./.zolang/src/",
@@ -42,7 +48,10 @@ public final class Zolang {
           "fileExtension": "py",
           "separators": {
             "CodeBlock": "\\n"
-          }
+          },
+          "flags": [
+              "python2.7"
+          ]
         }
       ]
     }
@@ -79,7 +88,7 @@ public final class Zolang {
         do {
             self.codeGenerator = try CodeGenerator(configPath: "./zolang.json")
         } catch {
-            Log.error("Could not find file: \"zolang.json\"")
+            Log.error("Missing or invalid: \"zolang.json\"")
             exit(1)
         }
 

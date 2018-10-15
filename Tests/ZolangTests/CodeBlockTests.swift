@@ -287,4 +287,30 @@ class CodeBlockTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+    
+    func testRaw() {
+        let validSamples: [(String, String, Int)] = [
+            ("raw {''}", "", 1),
+            ("raw {'\n someFunc() '}", "\n someFunc() ", 2)
+        ]
+        
+        do {
+            try validSamples.forEach { args in
+                let (code, expected, lineAtEnd) = args
+                var context = ParserContext(file: "test")
+                
+                let codeBlock = try CodeBlock(tokens: code.zo.tokenize(), context: &context)
+                guard case let .raw(text) = codeBlock else {
+                    XCTFail()
+                    return
+                }
+                
+                XCTAssert(text == expected)
+                XCTAssert(lineAtEnd == context.line)
+            }
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+        
+    }
 }

@@ -73,6 +73,10 @@ extension Token {
         return Token(type: .other, payload: raw)
     }
     
+    public var only: Token {
+        return Token(type: .only)
+    }
+    
     public static var curlyOpen: Token {
         return Token(type: .curlyOpen)
     }
