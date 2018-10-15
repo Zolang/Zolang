@@ -435,7 +435,7 @@ This will tell the compiler to skip the code generation process for "Any text he
 ##### only
 ```only "<flag1>", "<flag2>",... { <code> }```
 
-Using `only` we can tell the compiler to ignore code for buildSettings not included in a comma separated list of flags (flags are specified in `./zolang.json` under flags for buildSettings)
+Using `only` we can tell the compiler to ignore code for buildSettings not included in a comma separated list of flags (flags are specified in `./zolang.json` under `"flags"` in each buildSetting)
 
 ```zolang
 only "python2.7", "swift" {
