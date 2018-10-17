@@ -68,7 +68,7 @@ chmod +x /usr/local/bin/zolang
 
 #### Linux & Mac (Build From Source)
 
-At the time of writing there is a bug in Swift on Linux that prevents me from providing a proper installation method for Linux so if you're running on Linux you will have to have Swift installed ([Download Swift](https://swift.org/download/#releases)) and simply build from source.
+At the time of writing there is a bug in Swift on Linux that prevents me from providing working build for Linux so if you're running on Linux you will (for now) have to have Swift installed ([Download Swift](https://swift.org/download/#releases)) and simply build from source.
 
 ```
 git clone https://github.com/Zolang/Zolang
