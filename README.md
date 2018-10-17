@@ -462,7 +462,7 @@ only "python2.7", "swift" {
 
 ##### Putting it all Together
 
-Using these to features (`raw` & `only`) we could create a facade for logging to the console:
+Using these two features (`raw` & `only`) we could create a facade for logging to the console:
 
 ```zolang
 describe Sys {
