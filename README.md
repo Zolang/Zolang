@@ -229,7 +229,7 @@ Defined within double quotes
 "a piece of text"
 ```
 
-You can format a piece of text usign ```${...}```
+You can format a piece of text using ```${...}```
 
 ```
 "this is a string with an embedded variable: ${someVar}"
