@@ -17,6 +17,8 @@
 
 [What is it?](#What)
 
+- [What Zolang is Not](#IsNot)
+
 [Documentation](#Docs)
 
 - [Installation](#Install)
@@ -52,6 +54,10 @@ Zolang does this by offloading code generation to its users through [Stencil (te
 
 Theoretically though, these (`.stencil`) specification files could make Zolang output any kind of text. Making the language a very useful code generation tool and a decent lightweight alternative to many cross-platform frameworks. 
 
+<a name="IsNot"></a>
+### What Zolang is Not
+Zolang is not a general purpose programming language and probably won't have support for standard library functionalities in the forseeable future. This is because Zolang uses a templating language for compilation, which is not the expected usage of such a language, and becomes slow quite quickly, limiting the amount of code feasable for Zolang development.
+
 <a name="Docs"></a>
 ## Documentation
 
@@ -61,7 +67,7 @@ Theoretically though, these (`.stencil`) specification files could make Zolang o
 #### MacOS
 
 ```
-curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.17/zolang
+curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.18/zolang
 mv zolang /usr/local/bin/
 chmod +x /usr/local/bin/zolang
 ```
