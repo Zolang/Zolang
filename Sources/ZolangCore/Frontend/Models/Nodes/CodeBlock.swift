@@ -206,6 +206,181 @@ public indirect enum CodeBlock: Node {
             throw error
         }
     }
+
+    public static func parse(tokens: inout [Token], context: inout ParserContext) throws -> CodeBlock {
+        context.line += tokens.trimLeadingNewlines()
+        
+        guard tokens.isEmpty == false else {
+            return .empty
+        }
+        
+        guard let prefixType = tokens.prefixType() else {
+            throw ZolangError(type: .unknown,
+                              file: context.file,
+                              line: context.line)
+        }
+        
+        var codeBlock: CodeBlock
+        var blockEndIndex: Int
+        
+        switch prefixType {
+        case .raw:
+            let raw: String = tokens.first!.payload!
+            let range = raw.range(of: "{'")!
+            
+            let suffix = String(raw.suffix(from: range.upperBound))
+            let innerRaw = String(suffix.prefix(upTo: suffix.range(of: "'}")!.lowerBound))
+            
+            context.line += raw.filter { $0 == "\n" }.count
+            
+            codeBlock = .raw(innerRaw)
+            blockEndIndex = 1
+        case .only:
+            guard let range = tokens.rangeOfOnly() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.only),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            
+            codeBlock = .only(try Only(tokens: Array(tokens[range]), context: &context))
+        case .expression:
+            guard let range = tokens.rangeOfExpression() else {
+                throw ZolangError(type: .invalidExpression,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            
+            codeBlock = .expression(try Expression(tokens: Array(tokens[range]), context: &context))
+        case .ifStatement:
+            guard let range = tokens.rangeOfIfStatement() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.ifStatement),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            
+            codeBlock = .ifStatement(try IfStatement(tokens: Array(tokens[range]), context: &context))
+        case .modelDescription:
+            guard tokens.hasPrefixTypes(types: [.describe, .identifier, .curlyOpen], skipping: [.newline]) else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.modelDescription),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            let curlyIndex = tokens.index(ofAnyIn: [ .curlyOpen ])!
+            context.line += tokens.newLineCount(to: curlyIndex)
+            guard let blockRange = tokens.rangeOfScope(open: .curlyOpen, close: .curlyClose) else {
+                throw ZolangError(type: .missingMatchingCurlyBracket,
+                                  file: context.file,
+                                  line: context.line)
+            }
+            
+            blockEndIndex = blockRange.upperBound + 1
+            
+            let descr = try ModelDescription(tokens: Array(tokens[0...blockRange.upperBound]), context: &context)
+            codeBlock = .modelDescription(descr)
+            
+        case .variableDeclaration:
+            guard let range = tokens.rangeOfVariableDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.variableDeclaration),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            codeBlock = .variableDeclaration(try VariableDeclaration(tokens: Array(tokens[range]), context: &context))
+        case .variableMutation:
+            guard let range = tokens.rangeOfVariableDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.variableMutation),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            codeBlock = .variableMutation(try VariableMutation(tokens: Array(tokens[range]), context: &context))
+        case .functionDeclaration:
+            guard let range = tokens.rangeOfFunctionDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.functionDeclaration),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            codeBlock = .functionDeclaration(try FunctionDeclaration(tokens: Array(tokens[range]), context: &context))
+        case .functionMutation:
+            guard let range = tokens.rangeOfFunctionDeclarationOrMutation() else {
+                throw ZolangError(type: .unexpectedStartOfStatement(.functionMutation),
+                                  file: context.file,
+                                  line: context.line)
+            }
+            blockEndIndex = range.upperBound + 1
+            codeBlock = .functionMutation(try FunctionMutation(tokens: Array(tokens[range]), context: &context))
+        case .whileLoop:
+            
+            guard let expressionContainer = tokens.rangeOfScope(open: .parensOpen,
+                                                                       close: .parensClose),
+                let curlyRange = tokens.rangeOfScope(open: .curlyOpen,
+                                                            close: .curlyClose),
+                expressionContainer.upperBound < curlyRange.lowerBound,
+                expressionContainer.count > 2 else {
+                    
+                    throw ZolangError(type: .unexpectedStartOfStatement(.whileLoop),
+                                      file: context.file,
+                                      line: context.line)
+            }
+            
+            let expressionRange: ClosedRange<Int> = (expressionContainer.lowerBound + 1)...(expressionContainer.upperBound - 1)
+            let expressionTokens = Array(tokens[expressionRange])
+            
+            context.line += tokens.newLineCount(to: expressionRange.lowerBound)
+            
+            let expression = try Expression(tokens: expressionTokens,
+                                            context: &context)
+            
+            if curlyRange.count >= 2 {
+                let codeRange: ClosedRange<Int> = (curlyRange.lowerBound + 1)...(curlyRange.upperBound - 1)
+                let codeTokens = Array(tokens[codeRange])
+                
+                let code = try CodeBlock(tokens: codeTokens, context: &context)
+                
+                codeBlock = .whileLoop(expression, code)
+            } else {
+                codeBlock = .whileLoop(expression, .empty)
+            }
+            
+            blockEndIndex = curlyRange.upperBound + 1
+        case .returnStatement:
+            let returnIndex = tokens.index(of: [ .return ])!
+            
+            guard returnIndex + 1 < tokens.count,
+                let range = tokens.rangeOfExpression(),
+                let expectedStartOfExpression = tokens.index(ofFirstThatIsNot: .newline,
+                                                                    startingAt: returnIndex + 1),
+                expectedStartOfExpression == range.lowerBound else {
+                    throw ZolangError(type: .unexpectedStartOfStatement(.returnStatement),
+                                      file: context.file,
+                                      line: context.line)
+            }
+            
+            blockEndIndex = range.upperBound + 1
+            context.line += tokens.newLineCount(to: range.lowerBound)
+            
+            codeBlock = .returnStatement(try Expression(tokens: Array(tokens[range]), context: &context))
+        }
+        
+        guard blockEndIndex < tokens.count else {
+            tokens = []
+            return codeBlock
+        }
+        
+        tokens = Array(tokens.suffix(from: blockEndIndex))
+        return codeBlock
+    }
     
     public func compile(buildSetting: Config.BuildSetting, fileManager fm: FileManager) throws -> String {
         switch self {
@@ -230,11 +405,13 @@ public indirect enum CodeBlock: Node {
         case .ifStatement(let statement):
             return try statement.compile(buildSetting: buildSetting, fileManager: fm)
         case .returnStatement(let expr):
-            let url = URL(fileURLWithPath: buildSetting.stencilPath)
-                .appendingPathComponent("ReturnStatement.stencil")
+            let nodeName = "ReturnStatement"
+            
             
             let environment = Environment()
-            let templateString = try String(contentsOf: url, encoding: .utf8)
+            let templateString = try CompilationEnvironment
+                .template(buildSetting: buildSetting,
+                          nodeName: nodeName)
             
             let context = [
                 "expression": try expr.compile(buildSetting: buildSetting, fileManager: fm)
@@ -256,11 +433,10 @@ public indirect enum CodeBlock: Node {
                 "codeBlock": try codeBlock.compile(buildSetting: buildSetting, fileManager: fm)
             ]
             
-            let url = URL(fileURLWithPath: buildSetting.stencilPath)
-                .appendingPathComponent("WhileLoop.stencil")
-            
             let environment = Environment()
-            let templateString = try String(contentsOf: url, encoding: .utf8)
+            let templateString = try CompilationEnvironment
+                .template(buildSetting: buildSetting,
+                          nodeName: "WhileLoop")
 
             return try environment.renderTemplate(string: templateString,
                                                   context: context)

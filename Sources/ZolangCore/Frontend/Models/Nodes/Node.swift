@@ -25,16 +25,14 @@ extension Node {
 
     public func compile(buildSetting: Config.BuildSetting, fileManager fm: FileManager = .default) throws -> String {
 
-        let url = URL(fileURLWithPath: buildSetting.stencilPath)
-            .appendingPathComponent("\(Self.stencilName).stencil")
-
         let environment = Environment()
         do {
-            let templateString = try String(contentsOf: url, encoding: .utf8)
+            let templateString = try CompilationEnvironment.template(buildSetting: buildSetting, nodeName: Self.stencilName)
             let rendered = try environment.renderTemplate(string: templateString,
                                                           context: try getContext(buildSetting: buildSetting, fileManager: fm))
             return rendered.zo.trimmed()
         } catch {
             throw error
-        }    }
+        }
+    }
 }

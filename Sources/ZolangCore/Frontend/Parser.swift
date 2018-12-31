@@ -15,14 +15,22 @@ public class Parser {
         self.context = ParserContext(file: file.path)
     }
 
-    public func parse() throws -> CodeBlock {
+    public func parse() throws -> AST {
         do {
             let code = try String(contentsOfFile: self.context.file)
             
-            let tokens = code.zo.tokenize()
+            var tokens = code.zo.tokenize()
             
             // Return the AST
-            return try CodeBlock(tokens: tokens, context: &self.context)
+            var codeBlocks: AST = []
+
+            while tokens.isEmpty == false {
+                let block = try CodeBlock.parse(tokens: &tokens, context: &context)
+                codeBlocks.append(block)
+            }
+
+            return codeBlocks
+
         } catch {
             throw error
         }
