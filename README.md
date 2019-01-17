@@ -11,7 +11,7 @@
 <img src="https://img.shields.io/badge/platforms-Linux%20%7C%20MacOS-green.svg" alt="Platforms"/>
 <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT"/>
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
-<a href="https://twitter.com/fold_left"><img src="https://img.shields.io/twitter/url/https/twitter.com/valdi101.svg?style=social&label=valdi101"></a>
+<a href="https://twitter.com/valdi101"><img src="https://img.shields.io/twitter/url/https/twitter.com/valdi101.svg?style=social&label=valdi101"></a>
 </p>
 
 <b>Table of Contents</b>
