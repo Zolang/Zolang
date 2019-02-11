@@ -214,7 +214,7 @@ This action will observe changes to Zolang source files with paths specified in 
 <a name="Types"></a>
 #### Types
 
-Zolang has 4 primitive types
+Zolang has five primitive types
 
 - boolean
 - text
