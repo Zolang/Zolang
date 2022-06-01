@@ -556,6 +556,8 @@ public indirect enum Expression: Node {
                 }
             }
             return true
+        default:
+            fatalError("Uh oh something went wrong!")
         }
     }
 }

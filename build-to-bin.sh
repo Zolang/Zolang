@@ -1,6 +1,3 @@
 #!/bin/sh
-swift build -c release -Xswiftc -static-stdlib
-cd .build/release
-cp -f Zolang /usr/local/bin/zolang
-cd ..
-cd ..
+swift build -c release
+sudo cp -f .build/release/Zolang /usr/local/bin/zolang
