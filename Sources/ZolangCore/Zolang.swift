@@ -65,7 +65,7 @@ public final class Zolang {
         self.arguments = arguments
     }
     
-    public func help() {
+    func help() {
         Log.ascii()
         Log.info("Thanks for using Zolang \(Zolang.version)")
         Log.plain(Zolang.help)
