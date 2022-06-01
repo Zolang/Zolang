@@ -80,7 +80,7 @@ public final class Zolang {
         let action = arguments[1]
         let validActions = [ "init", "build", "watch", "help" ]
         guard validActions.contains(action) else {
-            Log.error("Encountered an invalid action \(arguments[1]) - See \"zolang help\" for details on usage")
+            Log.error("Encountered an invalid action \(arguments[1]) - See \"zolang\" for details on usage")
             exit(1)
         }
 
