@@ -64,17 +64,21 @@ public final class Zolang {
     public init(arguments: [String] = CommandLine.arguments) {
         self.arguments = arguments
     }
+    
+    public func help() {
+        Log.ascii()
+        Log.info("Thanks for using Zolang \(Zolang.version)")
+        Log.plain(Zolang.help)
+    }
 
     public func run() throws {
         guard arguments.count > 1 else {
-            Log.ascii()
-            Log.info("Thanks for using Zolang \(Zolang.version)")
-            Log.plain(Zolang.help)
+            help()
             exit(0)
         }
         
         let action = arguments[1]
-        let validActions = [ "init", "build", "watch" ]
+        let validActions = [ "init", "build", "watch", "help" ]
         guard validActions.contains(action) else {
             Log.error("Encountered an invalid action \(arguments[1]) - See \"zolang help\" for details on usage")
             exit(1)
@@ -96,6 +100,9 @@ public final class Zolang {
             try codeGenerator.build()
         } else if action == "watch" {
             watch()
+        } else if action == "help" {
+            help()
+            exit(0)
         }
     }
 
