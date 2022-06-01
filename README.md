@@ -67,7 +67,7 @@ Zolang is not a general purpose programming language and probably won't have sup
 #### MacOS
 
 ```
-curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.18/zolang
+curl -LO https://github.com/Zolang/Zolang/releases/download/0.1.19/zolang
 mv zolang /usr/local/bin/
 chmod +x /usr/local/bin/zolang
 ```
